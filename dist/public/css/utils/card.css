@@ -1,0 +1,30 @@
+
+.card {
+    box-shadow: 0 1px 4px 3px #00000028;
+    transition: 0.3s;
+}
+
+.cardTop {
+    box-shadow: 0 4px 8px 8px rgb(0, 0, 0);
+    transition: 0.3s;
+}
+
+.cardHover {
+    box-shadow: 0 4px 8px 0 rgb(0, 0, 0);
+    transition: 0.3s;
+}
+
+.cardHover:hover {
+    box-shadow: 0 8px 16px 0 rgb(0, 0, 0);
+}
+
+.cardWhite {
+    box-shadow: 0 1px 4px 3px rgb(255, 255, 255);
+    transition: 0.3s;
+}
+
+.cardMenu {
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+        rgba(0, 0, 0, 0.3) 0px 30px 60px -30px,
+        rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+}

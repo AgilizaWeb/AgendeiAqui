@@ -1,0 +1,201 @@
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/datatables/css/jquery.dataTables.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/select2/css/select2.min.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/select2.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/css/slim.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/slim.css" />
+
+<form onsubmit="editPorcentagem_afiliado_event(event)" id="afiliado_porcentagem_bg"
+  class="fixed z-50 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full xl:w-1/2 h-full relative flex justify-center items-center">
+    <div
+      class="bg-zinc-100 dark:bg-black p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[99vh] overflow-auto animate-slideBottomToTop">
+      <h1 class="w-full mb-3 font-bold flex">Editar comissão do afiliado <span id="title-afiliado" class="font-bold ml-1 text-green-500"></span></h1>
+
+      <div id="bg-test">
+        <div  class="flex flex-col w-full">
+          <label class="max-xs:text-xs max-sm:text-sm" for="afiliado-porcentagem">
+            Comissão do afiliado
+            <span class="text-xs text-red-500 font-medium opacity-0">test</span>
+          </label>
+          <div class="relative flex items-center mb-1">
+            <i class="fi fi-rs-badge-percent text-xl absolute translate-x-1/2 flex z-[1]"></i>
+            <input class="w-full max-xs:text-xs max-sm:text-sm drop-shadow-sm focus:drop-shadow focus:outline-none bg-zinc-50 dark:bg-zinc-700 p-1 pl-10 border-[1px] border-zinc-100 dark:border-zinc-600 rounded bg-transparent flex"
+              type="number" id="afiliado-porcentagem" name="afiliado-porcentagem" placeholder="Comissão do afiliado" required>
+          </div>
+        </div>
+        <input type="hidden" name="afiliado_id" id="afiliado_id">
+      </div>
+
+
+      <div class="w-full flex items-center gap-2 mt-3">
+        <button id="cancelar_cliente" type="button" onclick="toggleEditPorcentagem_afiliado(true)"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-x mr-1 sm:text-xl flex transition-all duration-1000 transform text-red-500"></i>
+          Cancelar
+        </button>
+        <button type="submit"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-check mr-1 sm:text-xl flex transition-all duration-1000 transform text-green-500"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+</form>
+<div class="container mx-auto my-3">
+  <h1 class="mb-4 text-center text-2xl font-bold">Afiliados</h1>
+
+
+  <div class="table-wrapper table-responsive">
+    <!-- <div class="overflow-auto"> -->
+    <table id="datatableFatura"
+      class="w-full text-gray-400 border-separate space-y-6 text-sm table display responsive nowrap dataTable no-footer dtr-inline collapsed" style="width: 100%;">
+      <thead class="bg-zinc-700 text-white">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3 text-center">Nome</th>
+          <th class="p-3 text-center">Codigo</th>
+          <th class="p-3 text-center">Whatsapp</th>
+          <th class="p-3 text-center">Email</th>
+          <th class="p-3 text-center">Autorizado</th>
+          <th class="p-3 text-center">Comissão</th>
+          <th class="p-3 text-center">Total de empresas</th>
+          <th class="p-3 text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="afiliadosTable">
+        <% afiliados.forEach(Afiliado=> { %>
+          <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+            <td class="p-3 text-center font-medium capitalize">
+              <%= Afiliado.id %>
+            </td>
+            <td class="p-3 text-center">
+              <%= Afiliado.nome %>
+            </td>
+            <td class="p-3 text-center font-medium capitalize">
+              <%= Afiliado.codigo %>
+            </td>
+            <td class="p-3 text-center">
+              <%= Afiliado.whatsapp %>
+            </td>
+            <td class="p-3 text-center">
+              <%= Afiliado.email %>
+            </td>
+            <td class="p-3 text-center font-medium">
+              <div class="flex items-center justify-center gap-1">
+                <div class="w-2 h-2 flex rounded-full bg-<%= Afiliado.autorizado ? 'green' : 'red' %>-500"></div>
+                <span class="text-<%= Afiliado.autorizado ? 'green' : 'red' %>-500"><%= Afiliado.autorizado ? 'Sim' : 'Não' %></span>
+              </div>
+            </td>
+            <td id="porcentagem-<%= Afiliado.id %>" class="p-3 text-center capitalize">
+              <%= Afiliado.porcentagem %>
+            </td>
+            <td class="p-3 text-center" title="<%= Afiliado.empresas.map((empresa) => `Empresa: ${empresa.nome} , Subdominio: ${empresa.subdomain} , Em teste: ${empresa.teste ? 'Sim' : 'Não'} \n` ) %>">
+              <%= Afiliado.empresas.length %>
+            </td>
+            <td class="p-3 text-center">
+              <div class="flex justify-center gap-1">
+                <button id="btn-porcentagem-<%= Afiliado.id %>" onclick="editPorcentagem_afiliado('<%= Afiliado.id %>', '<%= Afiliado.nome %>', '<%= Afiliado.porcentagem %>')"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white relative group">
+                  <i class="fi fi-rs-gears flex text-2xl"></i>
+                  <span
+                    class="absolute z-1 pointer-events-none bg-zinc-600 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+                    Editar Comissão</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+  
+  <%- include('../includes/script_tables/js.ejs') %>
+
+<script>
+  let nomeAfiliado;
+  async function editPorcentagem_afiliado(id, nome, porcentagem) {
+    nomeAfiliado = nome;
+    $('#afiliado_id').val(id);
+    $('#title-afiliado').text(nome);
+    $('#afiliado-porcentagem').val(porcentagem);
+    toggleEditPorcentagem_afiliado();
+  }
+    async function editPorcentagem_afiliado_event(event) {
+        event.preventDefault()
+        const porcentagem = $('#afiliado-porcentagem').val()
+        let vencimentoChatbot = $('#vencimento-chatbot').val()
+        const afiliadoId = $('#afiliado_id').val()
+        if (!afiliadoId) {
+            aToast('Selecione um afiliado', {
+                type: 'error',
+                progress: true,
+            }) 
+        }
+        let body = {
+            porcentagem: porcentagem? Number(porcentagem) : 0,
+            afiliadoId: Number(afiliadoId),
+        }
+        let res = await requestPost('/v1/superadmin/dashboard/edit_afiliado', body)
+        console.log('res: ', res)
+        if (res.success) {
+          $('#porcentagem-' + afiliadoId).text(porcentagem);
+          function newClick() {
+            editPorcentagem_afiliado(afiliadoId, nomeAfiliado, porcentagem)
+          }
+          document.getElementById('btn-porcentagem-' + afiliadoId).onclick = newClick;
+          aToast(res.message, {
+            type: 'success',
+            progress: true,
+          })
+            toggleEditPorcentagem_afiliado(true)
+        } else {
+          aToast(res.message, {
+            type: 'error',
+            progress: true,
+          })
+        }
+    }
+  function toggleEditPorcentagem_afiliado(close = Boolean) {
+    if (!close) {
+      $('#afiliado_porcentagem_bg').toggleClass('hidden flex')
+      return
+    }
+
+    $('#afiliado_porcentagem_bg').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#afiliado_porcentagem_bg').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#afiliado_porcentagem_bg').toggleClass('hidden flex')
+    }, 500);
+  }
+  $(function () {
+    'use strict';
+
+    $('#datatableFatura').DataTable({
+      "order": [[0, "desc"]],
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Buscar...',
+        sSearch: '',
+        lengthMenu: '_MENU_ ítens',
+      }
+    });
+
+    $('#datatable2').DataTable({
+      bLengthChange: false,
+      searching: false,
+      responsive: true
+    });
+
+    // Select2
+    $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+
+  });
+</script>

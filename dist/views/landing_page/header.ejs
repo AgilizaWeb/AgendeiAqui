@@ -1,0 +1,42 @@
+
+<% const rota = typeof routeAfiliado !== 'undefined' && routeAfiliado ? '/afiliado' : '' %>
+<header class=" bg-zinc-950 text-white relative">
+  <div class="flex justify-between items-center py-1 px-2 gap-1">
+      <div class="flex items-center gap-1">
+          <img src="./icons/logo.png" alt="Logo AgilizaWeb" class="h-20">
+          <h1 class="font-bold text-xl h-full"><%= nomeApp %></h1>
+      </div>
+      <nav class="hidden md:flex flex-wrap">
+          <ul class="flex flex-wrap justify-center sm:space-x-4 space-x-2">
+              <li><a href="/#descricao" class="nav-link text-xs lg:text-lg">Sobre o Sistema</a></li>
+              <li><a href="/#reserva" class="nav-link text-xs lg:text-lg">Como Reservar</a></li>
+              <li><a href="/#calendario" class="nav-link text-xs lg:text-lg">Calendário</a></li>
+              <li><a href="/#configuracoes" class="nav-link text-xs lg:text-lg">Configurações</a></li>
+              <li><a href="/#funcionalidades" class="nav-link text-xs lg:text-lg">Funcionalidades</a></li>
+              <li"><a href="/afiliados" id="afiliado-link" class="nav-link text-xs lg:text-lg">Afiliado</a></li>
+          </ul>
+      </nav>
+      <div>
+          <div class="hidden md:flex justify-center md:justify-end mt-4 md:mt-0">
+              <a href="<%= rota %>/login" class="text-white px-4 py-2 rounded">Login</a>
+              <a href="<%= rota ? rota+'/register' : '/cadastro' %>"
+                  class="bg-white text-blue-500 px-4 py-2 rounded-lg hover:bg-gray-200 ml-2">Cadastrar <i class="fas fa-arrow-right fa-beat-fade text-blue-500"></i></a>
+          </div>
+          <div class="md:hidden flex items-center">
+              <button id="menu-toggle" class="text-white focus:outline-none">
+                  <i class="fas fa-bars fa-2x"></i>
+              </button>
+          </div>
+      </div>
+  </div>
+  <div id="mobile-menu" class="mobile-menu">
+      <a href="/#descricao">Sobre o Sistema</a>
+      <a href="/#reserva">Como Reservar</a>
+      <a href="/#calendario">Calendário</a>
+      <a href="/#configuracoes">Configurações</a>
+      <a href="/#funcionalidades">Funcionalidades</a>
+      <a href="/afiliados" id="mobile-afiliado-link">Afiliado</a> <!-- Novo link -->
+      <a href="<%= rota %>/login">Login</a>
+      <a href="<%= rota ? rota+'/register' : '/cadastro' %>">Cadastrar</a>
+  </div>
+</header>

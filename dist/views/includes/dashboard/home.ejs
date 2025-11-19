@@ -1,0 +1,218 @@
+<div class="w-full my-3 px-2">
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Dashboard
+  </h1>
+
+  <div class="flex justify-end mb-4">
+    <select id="filter-month"
+      class="cursor-pointer block bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 py-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">
+      <option value="0">Mês Atual</option>
+      <option value="1">Janeiro</option>
+      <option value="2">Fevereiro</option>
+      <option value="3">Março</option>
+      <option value="4">Abril</option>
+      <option value="5">Maio</option>
+      <option value="6">Junho</option>
+      <option value="7">Julho</option>
+      <option value="8">Agosto</option>
+      <option value="9">Setembro</option>
+      <option value="10">Outubro</option>
+      <option value="11">Novembro</option>
+      <option value="12">Dezembro</option>
+    </select>
+  </div>
+
+  <div class="grid grid-cols-2 max-xs:grid-cols-1 lg:grid-cols-4 gap-4 gap-y-10">
+    <div class="shadow-blue-500 group border border-blue-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-blue-500 flex flex-col items-center relative py-10">
+      <div class="text-blue-500 group-hover:border-b-8 border-b-2 border-blue-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fas fa-calendar-check fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Total de Agendamentos</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="total-agendamentos" class="text-2xl">0</p>
+          <i id="total-agendamentos-icon" class="fas fa-arrow-up text-green-500"></i>
+        </div>
+      </div>
+    </div>
+    <div class="shadow-orange-500 group border border-orange-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-orange-500 flex flex-col items-center relative py-10">
+      <div class="text-orange-500 group-hover:border-b-8 border-b-2 border-orange-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fas fa-user-tie fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Top Profissional</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="top-profissional" class="text-2xl">N/A</p>
+          <i id="top-profissional-icon" class="fas fa-arrow-up text-green-500"></i>
+        </div>
+      </div>
+    </div>
+    <div class="shadow-yellow-500 group border border-yellow-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-yellow-500 flex flex-col items-center relative py-10">
+      <div class="text-yellow-500 group-hover:border-b-8 border-b-2 border-yellow-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fi fi-bs-workflow-setting-alt fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Top Serviço</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="top-servico" class="text-2xl">N/A</p>
+          <!-- <p id="top-servico-total" class="text-2xl">0</p> -->
+          <i id="top-servico-icon" class="fas fa-arrow-up text-green-500"></i>
+        </div>
+      </div>
+    </div>
+    <div class="shadow-green-500 group border border-green-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-green-500 flex flex-col items-center relative py-10">
+      <div class="text-green-500 group-hover:border-b-8 border-b-2 border-green-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fas fa-dollar-sign fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Total Ganho</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="total-ganho" class="text-2xl">R$ 0,00</p>
+          <i id="total-ganho-icon" class="fas fa-arrow-up text-green-500"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <div id="estatisticas-chart" class="text-black"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script>
+    $(document).ready(function () {
+      let chart;
+      const currentMonth = new Date().getMonth() + 1;
+
+      $('#filter-month').change(function () {
+        const month = $(this).val();
+        console.log('Month:', month);
+        fetchEstatisticas(month);
+      });
+
+      let isMesAtual = true;
+      function fetchEstatisticas(month) {
+        $.ajax({
+          url: '/v1/getEstatisticas',
+          method: 'POST',
+          data: { month: month },
+          success: function (data) {
+            data = data.data;
+            console.log('Estatísticas:', data);
+            isMesAtual = (month === '0' || currentMonth === parseInt(month));
+            $('#total-agendamentos').text((!isMesAtual ? data.totalAgendamentos : data.totalAgendamentosAtual));
+            $('#top-profissional').text(/*data.topProfissional.total + 'x ' + */(!isMesAtual ? data.topProfissional.name : data.topProfissionalAtual.name));
+            $('#top-servico').text(/*data.topServico.total + 'x ' + */(!isMesAtual ? data.topServico.name : data.topServicoAtual.name));
+            $('#total-ganho').text(new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format((!isMesAtual ? data.totalGanho : data.totalGanhoAtual)));
+            updateIcons(data);
+            updateChart(data, month);
+          },
+          error: function (error) {
+            console.error('Erro ao buscar estatísticas:', error);
+          }
+        });
+      }
+
+      function updateIcons(data) {
+        updateIcon('#total-agendamentos-icon', data.totalAgendamentosAtual, data.totalAgendamentos);
+        updateIcon('#top-profissional-icon', data.topProfissionalAtual.total, data.topProfissional.total);
+        updateIcon('#top-servico-icon', data.topServicoAtual.total, data.topServico.total);
+        updateIcon('#total-ganho-icon', data.totalGanhoAtual, data.totalGanho);
+      }
+
+      function updateIcon(selector, currentValue, previousValue) {
+        const icon = $(selector);
+        if (currentValue < previousValue && !isMesAtual) {
+          icon.removeClass('fa-arrow-down text-red-500').addClass('fa-arrow-up text-green-500');
+        } else if (currentValue > previousValue && !isMesAtual) {
+          icon.removeClass('fa-arrow-up text-green-500').addClass('fa-arrow-down text-red-500');
+        } else {
+          icon.removeClass('fa-arrow-up text-green-500 fa-arrow-down text-red-500');
+        }
+      }
+
+      function updateChart(data, month) {
+        console.log('Current Month:', currentMonth, 'Month:', parseInt(month));
+        if (chart) {
+          chart.destroy();
+        }
+        const series = [
+          {
+            name: 'Mês Atual',
+            data: [data.totalAgendamentosAtual, data.totalGanhoAtual]
+          }
+        ];
+        if (month !== '0' && currentMonth !== parseInt(month)) {
+          series.push({
+            name: 'Mês Selecionado',
+            data: [data.totalAgendamentos, data.totalGanho]
+          });
+        }
+        const options = {
+          series: series,
+          chart: {
+            type: 'bar',
+            height: 430
+          },
+          plotOptions: {
+            bar: {
+              horizontal: false,
+              dataLabels: {
+                position: 'top',
+              },
+            }
+          },
+          dataLabels: {
+            enabled: true,
+            offsetX: -6,
+            style: {
+              fontSize: '12px',
+              colors: ['#fff']
+            }
+          },
+          stroke: {
+            show: true,
+            width: 1,
+            colors: ['#fff']
+          },
+          tooltip: {
+            shared: true,
+            intersect: false
+          },
+          title: {
+            text: 'Estatísticas',
+            align: 'center',
+            margin: 20,
+            offsetY: 20,
+            style: {
+              fontSize: '25px',
+              color: 'gray'
+            }
+          },
+          xaxis: {
+            categories: ['Total de Agendamentos', 'Total Ganho'],
+            labels: {
+              style: {
+                colors: ['gray', 'gray'], // Altere a cor aqui
+                fontSize: '14px'
+              }
+            }
+          },
+          yaxis: {
+            labels: {
+              style: {
+                colors: ['gray', 'gray'], // Altere a cor aqui
+                fontSize: '14px'
+              }
+            }
+          }
+        };
+        chart = new ApexCharts(document.querySelector("#estatisticas-chart"), options);
+        chart.render();
+      }
+
+      // Fetch initial data
+      fetchEstatisticas('0');
+    });
+  </script>
+</div>

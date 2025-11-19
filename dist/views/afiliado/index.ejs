@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <%- include('../includes/head.ejs') %>
+    <title>Painel</title>
+    <link href="../css/tailwind.css" rel="stylesheet">
+    <link href="../css/darkmode.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/radio.css">
+    <link rel="stylesheet" href="../css/checkbox.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="../js/utils.js"></script>
+    <!-- <link href="css/radios_bottom.css" rel="stylesheet"> -->
+</head>
+<style>
+  .mygrid {
+    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+  :root {
+    --textcolor: black;
+    --bgcolor: oklch(0.967 0.001 286.375);
+  }
+    /* verrifica se o thema atual é dark atraves do data-mode="dark" e definir o input date para dark */
+    body[data-mode="dark"] {
+      --textcolor: white;
+      --bgcolor: oklch(0.141 0.005 285.823);
+      
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #ffffff4f transparent; /* Firefox */
+    /* Para navegadores baseados em WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #ffffff4f;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #ffffff4f;
+        border: 3px solid #ffffff4f;
+    }
+      & input[type="date"] {
+        color-scheme: dark;
+      }
+    }
+    body[data-mode="light"] {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #0000004f transparent; /* Firefox */
+    /* Para navegadores baseados em WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #0000004f;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #0000004f;
+        border: 3px solid #0000004f;
+    }
+    }
+        .steps-list ol {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            counter-reset: steps;
+        }
+    .steps-list li {
+            /* color: #4A5568; */
+            /* font-size: 15px; */
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            line-height: 1.5;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .steps-list li::before {
+            counter-increment: steps;
+            content: counter(steps);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background-color: #4299E1;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* font-size: 14px; */
+            font-weight: bold;
+        }
+</style>
+
+<body data-mode="<%= user.darkMode ? 'dark' : 'light' %>" class="min-h-screen bg-zinc-100 dark:text-white relative flex flex-col overflow-hidden">
+  
+  <%- include('../includes/header.ejs') %>
+    <div class="h-full pt-16 z-0 absolute w-full">
+      <div class=" flex relative h-full w-full overflow-hidden">
+        <%- include('./sidbar.ejs', { route }) %>
+          <div id="main"
+            class="dark:bg-zinc-950 dark:text-white flex flex-col h-full w-full transition-colors ease-in duration-500 overflow-auto scroll-smooth">
+            <main class="mb-auto relative">
+              <% if (!user.autorizado) { %>
+                <% const linkDeAutorizacao = `https://auth.mercadopago.com.br/authorization?client_id=${superAdmin.gateway.dados.client_id}&response_type=code&platform_id=mp&redirect_uri=https://${superAdmin.domain}/afiliado/authorization` %>
+                <div id="modal-mercado-pago" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-2xl w-full p-2 sm:p-8">
+                    <div class="flex flex-col items-center justify-center mb-1 sm:mb-4">
+                      <div class="flex items-center gap-4 mb-1 sm:mb-4">
+                        <img src="../icons/logo.png" alt="Logo" class="w-12 h-12">
+                        <span class="text-2xl">↔️</span>
+                        <img src="https://http2.mlstatic.com/ui/navigation/2.3.5/mercadopago/logo__small@2x.png" alt="Mercado Pago" class="w-12 h-12">
+                      </div>
+                      <h2 class="text-md max-xs:text-sm sm:text-2xl font-bold text-gray-800 dark:text-gray-100">Autorização do Mercado Pago</h2>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-1 sm:mb-4 text-center max-sm:text-xs">Para continuar, você precisa ter uma conta no Mercado Pago e autorizar nossa integração.</p>
+                    <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg mb-1 sm:mb-4 border-l-4 border-blue-400">
+                      <p class="text-gray-800 dark:text-gray-200 text-xs max-xs:text-xss sm:text-base">Importante: Se você ainda não tem uma conta no Mercado Pago, será necessário criar uma antes de prosseguir com a autorização.</p>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-1 sm:mb-4 steps-list">
+                      <h3 class="text-md max-xs:text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 text-center">Como prosseguir:</h3>
+                      <ol class="list-decimal list-inside text-gray-800 dark:text-gray-200">
+                        <li class="text-xs max-xs:text-xss sm:text-base">Você será redirecionado para a página do Mercado Pago</li>
+                        <li class="text-xs max-xs:text-xss sm:text-base">Faça login na sua conta do Mercado Pago (ou crie uma nova se necessário)</li>
+                        <li class="text-xs max-xs:text-xss sm:text-base">Revise as permissões solicitadas</li>
+                        <li class="text-xs max-xs:text-xss sm:text-base">Autorize a integração para começar a receber pagamentos</li>
+                      </ol>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-1 sm:p-4 rounded-lg mb-1 sm:mb-4">
+                      <div class="flex items-start gap-2">
+                        <input type="checkbox" id="terms" class="mt-1">
+                        <label for="terms" class="text-gray-800 dark:text-gray-200 text-xs max-xs:text-xss sm:text-base">Entendi que preciso ter uma conta no Mercado Pago e autorizo a integração com minha conta.</label>
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-0.5 text-center text-xs max-xs:text-xss sm:text-base">
+                      <button class="bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 xs:py1 sm:py-2 rounded-xl hover:bg-gray-300 dark:hover:bg-gray-500 hidden">Fechar</button>
+                      <a href="<%= linkDeAutorizacao %>" id="continueBtn" class="bg-blue-500 text-white xs:py1 sm:py-2 rounded-xl hover:bg-blue-600 opacity-50 pointer-events-none">Ir para Autorização</a>
+                    </div>
+                  </div>
+                </div>
+                <script>
+                  const checkbox = document.getElementById('terms');
+                  const continueBtn = document.getElementById('continueBtn');
+              
+                  checkbox.addEventListener('change', function() {
+                    continueBtn.classList.toggle('opacity-50', !this.checked);
+                    continueBtn.classList.toggle('pointer-events-none', !this.checked);
+                  });
+                </script>
+              <% } %>
+              <!-- rotas -->
+              <% if (route==='planos' ){ %>
+                <%- include('./planos.ejs') %>
+              <% } else if (route==='settings' ){ %>
+                <%- include('./settings.ejs') %>
+              <% } else if (route==='empresas' ){ %>
+                <%- include('./empresas.ejs') %>
+              <% } else if (route==='faturas' ){ %>
+                <%- include('./faturas.ejs') %>
+              <% } else {  %>
+                <%- include('./home.ejs') %>
+              <% } %>
+
+            </main>
+            <%- include('../includes/footer.ejs') %>
+          </div>
+      </div>
+    </div>
+</body>
+
+<script src="../js/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+</html>
+
+
+<script>
+  let nomeDaEmpresa = '<%#= empresa?.empresa %>'
+  const socket = io();
+
+  async function route(route, rota = '/afiliado/dashboard') {
+    await requestPost(rota, { route: route })
+    window.location.href = route === 'home' ? 'dashboard' : route
+  }
+
+
+  function showModal_(id_bg, title, msg, id_btn, btn_text) {
+    let textElements = `<%- include('../includes/components/modal.ejs') %>`
+    textElements.replace(/id_bg/g, id_bg).replace(/title/g, title).replace(/btn_text/g, btn_text).replace(/id_btn/g, id_btn)
+    appendInElement(id, textElements)
+  }
+
+</script>

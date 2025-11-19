@@ -1,0 +1,26 @@
+<div id="bg_<%= id %>" class="flex flex-col w-full">
+  <label class="max-xs:text-xs max-sm:text-sm"><%= placeholder %></label>
+  <div id="bg_<%= id %>" class="relative flex items-center mb-[15px]">
+    <label onclick="window.open($(this).text())" class="text-blue-500 hover:text-blue-600 hover:underline cursor-pointer absolute top-full max-xs:text-xs max-sm:text-sm" 
+    id="label_<%= id %>" for="<%= id %>">https://<%= value %>.<%= typeof domain !== 'undefined' && domain ? domain : 'agendeiaqui.com' %></label>
+    <i class="<%= icon %> text-xl absolute z-[1] translate-x-1/2 flex"></i>
+    <input
+      class="w-full max-xs:text-xs max-sm:text-sm drop-shadow-sm focus:drop-shadow focus:outline-none bg-zinc-50 dark:bg-zinc-700 p-1 pl-10 border-[1px] border-zinc-100 dark:border-zinc-600 rounded bg-transparent flex"
+      type="text" id="<%= id %>" name="<%= id %>" placeholder="<%= placeholder %>" value="<%= value %>" required>
+  </div>
+</div>
+
+<script>
+  // Adiciona um listener para o evento 'input' no campo de subdomínio
+  document.getElementById('<%= id %>').addEventListener('input', function () {
+      // Obtém o valor do subdomínio
+      var subdomain = document.getElementById('<%= id %>')
+        subdomain.value = subdomain.value.replace(/[^a-zA-Z0-9\-_]/g, '').toLocaleLowerCase();
+      // console.log('subdomain:', subdomain)
+      if (subdomain.value) {
+        $('#label_<%= id %>').text(`https://${subdomain.value}.<%= typeof domain !== 'undefined' && domain ? domain : 'agendeiaqui.com' %>`)
+      } else {
+        $('#label_<%= id %>').text("https://exemplo.<%= typeof domain !== 'undefined' && domain ? domain : 'agendeiaqui.com' %>")
+      }
+  });
+</script>

@@ -1,0 +1,157 @@
+<style>
+
+  .horario {
+    flex-direction: column;
+    background-color: #52525b;
+    /* position: relative; */
+    /* padding: 5px; */
+    display: flex;
+    justify-content: center;
+    white-space: noWrap;
+    overflow: hidden;
+    border-radius: 3px;
+    box-shadow: 0 0 5px #3f3f46;
+    cursor: pointer;
+
+  }
+
+  .horario h3 {
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .horario:hover {
+    box-shadow: 0 0px 5px 2px white;
+    font-weight: bolder;
+  }
+
+  .selected {
+    background-color: green;
+    box-shadow: 0 0px 5px 2px white;
+    font-weight: bolder;
+  }
+</style>
+
+<div id="edit_agendamentos_bg"
+  class="fixed z-10 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full h-full relative flex justify-center items-center">
+    <div
+      class="bg-zinc-100 dark:bg-black p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[80vh] overflow-auto animate-slideBottomToTop">
+      <h1 class="w-full mb-3 font-bold">Editar agendamento</h1>
+
+      <%#- include('./input_text.ejs', { id: 'edit_name_agendamento' , icon: 'fi fi-rs-edit' ,
+        placeholder: 'Nome do cliente' }) %>
+        <%#- include('./input_text.ejs', { id: 'edit_contato_agendamento' , icon: 'fi fi-brands-whatsapp' ,
+          placeholder: 'Whatsapp do cliente' }) %>
+          <style>
+            #ui-datepicker-div {
+              width: auto;
+            }
+          </style>
+          <%- include('./input_text.ejs', { id: 'edit_data_agendamento' , icon: 'fi fi-rs-calendar-day' ,
+            placeholder: 'Alterar data' , off: true, myclass: 'cursor-pointer' }) %>
+
+            <%- include('./input_text.ejs', { id: 'edittext_inicio_agendamento' , icon: 'fi fi-rs-calendar-clock' ,
+              placeholder: 'Alterar inicio' , off: true, myclass: 'cursor-pointer' }) %>
+              <script>
+                $('#edittext_inicio_agendamento').click(function () {
+                  getHorarios()
+                })
+              </script>
+
+              <div id="edit_inicio_agendamento"
+                class="flex justify-center bg-zinc-600 hover:bg-zinc-500 gap-4 px-0.5 sm:px-1 py-px cursor-pointer items-center rounded-sm text-white">
+
+              </div>
+              <div id="edit_horarios_agendamento" class="w-full mygrid">
+
+              </div>
+
+
+
+              <div class="w-full flex items-center gap-2 mt-3">
+                <button id="cancelar_agendamento" onclick="toggleEditAgendamento(true)"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+                  <i class="fi fi-br-x mr-1 sm:text-xl flex transition-all duration-1000 transform text-red-500"></i>
+                  Cancelar
+                </button>
+                <button onclick="editarAgendamento()"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+                  <i
+                    class="fi fi-br-check mr-1 sm:text-xl flex transition-all duration-1000 transform text-green-500"></i>
+                  Salvar
+                </button>
+              </div>
+    </div>
+  </div>
+
+
+</div>
+<script>
+  $(document).ready(function () {
+    $('#edit_data_agendamento').on('change', async function () {
+      agendamento_editado.data = $(this).val()
+      getHorarios()
+    });
+  });
+
+  async function getHorarios() {
+    let req = await requestPost('/v1/gethorariosdisponiveis', {
+      profissional: agendamento_editado.profissional,
+      service: agendamento_editado.service,
+      data: agendamento_editado.data
+    })
+    console.log('req: ', req)
+    if (req?.success) {
+      $('#edit_inicio_agendamento').html(req.res)
+      $('#edit_inicio_agendamento').removeClass('flex justify-center bg-zinc-600 hover:bg-zinc-500')
+      $('#edit_inicio_agendamento').addClass('mygrid')
+      return
+    }
+    toastr.error(req.res)
+  }
+
+  function selectHorario(hr, event) {
+      console.log('selectHorario-edit')
+    $('#edittext_inicio_agendamento').val(hr)
+    let elements = document.querySelectorAll('.horario');
+
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].classList.remove('selected')
+    }
+
+    event.target.classList.add('selected')
+
+    agendamento_editado.inicio = hr;
+  }
+
+  function toggleEditAgendamento(close = Boolean) {
+    if (!close) {
+      $('#edit_agendamentos_bg').toggleClass('hidden flex')
+      return
+    }
+    
+    $('#edit_agendamentos_bg').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#edit_agendamentos_bg').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#edit_agendamentos_bg').toggleClass('hidden flex')
+    }, 500);
+  }
+  async function editarAgendamento() {
+    let req = await requestPost('/v1/editar_agendamento', agendamento_editado)
+    console.log('req: ', req)
+    if (req?.success) {
+      toastr.success(req.message)
+      toggleEditAgendamento(true)
+      setTimeout(() => {
+        window.location.reload()
+      }, 500);
+      $('#cancelar_agendamento').click(function () {
+        window.location.reload()
+      })
+      return
+    }
+    toastr.error(req.message)
+  }
+</script>

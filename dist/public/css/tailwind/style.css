@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    @apply text-base scroll-smooth;
+}
+
+.scrollView {
+    @apply blur-sm opacity-0 transition-all duration-300;
+}
+
+.scrollViewShow {
+    @apply blur-0 opacity-100 transition-all duration-300
+}
+
+.app_buttons {
+    @apply px-2 py-1 flex items-center rounded-sm;
+}
+
+.app_buttons i {
+    @apply mr-1 flex;
+}
+
+#sidebar nav {
+    @apply h-full relative flex flex-col pt-2.5 pb-2.5;
+}
+
+#sidebar nav ul {
+    @apply mb-auto;
+}
+
+#sidebar nav li {
+    @apply my-3 max-xss:my-0.5 dark:text-white text-xl pl-2.5 pr-2.5;
+}
+
+#sidebar nav a {
+    @apply flex hover:border-gray-500 border-l-2 py-2.5 max-xss:py-1 items-center transform transition-all duration-300;
+}
+
+#sidebar nav a p {
+    @apply transition-all duration-500 ease-in-out
+}
+
+#sidebar nav a i {
+    @apply transition-all duration-500 ease-in-out flex items-center ml-3 mr-3 text-2xl;
+}
+
+#sidebar nav .group:hover a p {
+    @apply absolute flex left-[150%] z-[1] bg-zinc-900 dark:bg-zinc-100 opacity-100 px-3 py-1 rounded-e text-white dark:text-black;
+}
+.dataTables_filter input {
+    @apply bg-zinc-50 dark:bg-zinc-900 border border-gray-300 dark:border-gray-700 ;
+}
+.dataTables_filter input:focus {
+    @apply text-black dark:text-white;
+}
+
+.select2-results__option[aria-selected] {
+    @apply bg-zinc-50 dark:bg-zinc-900 border text-black dark:text-white;
+}
+.select2-container--default .select2-selection--single {
+  @apply bg-zinc-50 dark:bg-zinc-900 border border-gray-300 dark:border-gray-700;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  @apply text-black dark:text-white;
+}
+.dataTables_info,
+.dataTables_length label {
+    @apply text-black dark:text-white;
+}

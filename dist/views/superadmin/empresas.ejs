@@ -1,0 +1,266 @@
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/datatables/css/jquery.dataTables.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/select2/css/select2.min.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/select2.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/css/slim.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/slim.css" />
+
+<form onsubmit="editVencimentos_event(event)" id="vencimentos_empresa_bg"
+  class="fixed z-50 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full xl:w-1/2 h-full relative flex justify-center items-center">
+    <div
+      class="bg-zinc-100 dark:bg-black p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[99vh] overflow-auto animate-slideBottomToTop">
+      <h1 class="w-full mb-3 font-bold flex">Editar vencimentos da empresa <span id="title-empresaName" class="font-bold ml-1 text-green-500"></span></h1>
+
+      <div id="bg-test">
+        <div  class="flex flex-col w-full">
+          <label class="max-xs:text-xs max-sm:text-sm" for="vencimento-site">
+            Vencimento do Site
+            <span class="text-xs text-red-500 font-medium opacity-0">test</span>
+          </label>
+          <div class="relative flex items-center mb-1">
+            <i class="fi fi-rs-calendar-pen text-xl absolute translate-x-1/2 flex z-[1]"></i>
+            <input class="w-full max-xs:text-xs max-sm:text-sm drop-shadow-sm focus:drop-shadow focus:outline-none bg-zinc-50 dark:bg-zinc-700 p-1 pl-10 border-[1px] border-zinc-100 dark:border-zinc-600 rounded bg-transparent flex"
+              type="date" id="vencimento-site" name="vencimento-site" placeholder="Vencimento do site" required>
+          </div>
+        </div>
+        <div  class="flex flex-col w-full">
+          <label class="max-xs:text-xs max-sm:text-sm" for="vencimento-chatbot">
+            Vencimento do ChatBot
+            <span class="text-xs text-red-500 font-medium opacity-0">test</span>
+          </label>
+          <div class="relative flex items-center mb-1">
+            <i class="fi fi-rs-calendar-pen text-xl absolute translate-x-1/2 flex z-[1]"></i>
+            <input class="w-full max-xs:text-xs max-sm:text-sm drop-shadow-sm focus:drop-shadow focus:outline-none bg-zinc-50 dark:bg-zinc-700 p-1 pl-10 border-[1px] border-zinc-100 dark:border-zinc-600 rounded bg-transparent flex"
+              type="date" id="vencimento-chatbot" name="vencimento-chatbot" placeholder="Vencimento do Chatbot" required>
+          </div>
+        </div>
+        <input type="hidden" name="empresa_id" id="empresa_id">
+      </div>
+
+
+      <div class="w-full flex items-center gap-2 mt-3">
+        <button id="cancelar_cliente" type="button" onclick="toggleEditVencimentos(true)"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-x mr-1 sm:text-xl flex transition-all duration-1000 transform text-red-500"></i>
+          Cancelar
+        </button>
+        <button type="submit"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-check mr-1 sm:text-xl flex transition-all duration-1000 transform text-green-500"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    
+  function toggleEditVencimentos(close = Boolean) {
+    if (!close) {
+      $('#vencimentos_empresa_bg').toggleClass('hidden flex')
+      return
+    }
+
+    $('#vencimentos_empresa_bg').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#vencimentos_empresa_bg').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#vencimentos_empresa_bg').toggleClass('hidden flex')
+    }, 500);
+  }
+  </script>
+
+</form>
+
+<div class="container mx-auto my-3">
+  <h1 class="mb-4 text-center text-2xl font-bold">Empresas</h1>
+
+
+  <div class="table-wrapper table-responsive">
+    <!-- <div class="overflow-auto"> -->
+    <table id="datatableEmpresas"
+      class="text-gray-400 border-separate space-y-6 text-sm table display responsive nowrap dataTable no-footer dtr-inline collapsed" style="width: 100%;">
+      <thead class="bg-zinc-700 text-white">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3 text-center">Empresa</th>
+          <th class="p-3 text-center">Subdominio</th>
+          <th class="p-3 text-center">Dono</th>
+          <th class="p-3 text-center">Email</th>
+          <th class="p-3 text-center">Afiliado</th>
+          <th class="p-3 text-center">V. Site</th>
+          <th class="p-3 text-center">V. ChatBot</th>
+          <th class="p-3 text-center">Cadastrada em</th>
+          <th class="p-3 text-center">Em Teste</th>
+          <th class="p-3 text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="empresasTable">
+        <% empresas.forEach(empresa=> { %>
+          <% const cadastro = new Date(empresa.createdAt).toISOString().split('T')[0].split('-') %>
+          <% const vencimentoSistema = empresa.vencimentoSistema.split('-') %>
+          <% const vencimentoChatbot = empresa.vencimentoChatbot.split('-') %>
+          <tr data-empresaIdTr="<%= empresa.id %>" class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+            <td class="p-3 text-center font-medium capitalize">
+              <%= empresa.id %>
+            </td>
+            <td class="p-3 text-center" title="<%= empresa.nome %>"><%= empresa.nome.length > 20 ? empresa.nome.substring(0, 20) + '...' : empresa.nome %></td>
+            <td class="p-3 text-center" title="<%= empresa.subdomain  %>"><%= empresa.subdomain.length > 20 ? empresa.subdomain.substring(0, 20) + '...' : empresa.subdomain %></td>
+            <td class="p-3 text-center" title="<%= empresa.users[0].user  %>"><%= empresa.users[0].user.length > 20 ? empresa.users[0].user.substring(0, 20) + '...' : empresa.users[0].user %></td>
+            <td class="p-3 text-center" title="<%= empresa.users[0].email  %>"><%= empresa.users[0].email.length > 20 ? empresa.users[0].email.substring(0, 20) + '...' : empresa.users[0].email %></td>
+            <td class="p-3 text-center" title="<%= empresa.afiliado ? `Codigo: ${empresa.afiliado.codigo}\nWhatsapp: ${empresa.afiliado.whatsapp}\nE-mail: ${empresa.afiliado.email}` : ''  %>"><%= empresa.afiliado ? empresa.afiliado.nome/*`${empresa.afiliado.nome} - ${empresa.afiliado.codigo}`*/ : 'N/A'  %></td>
+            <td class="p-3 text-center"><%= `${vencimentoSistema[2]}/${vencimentoSistema[1]}/${vencimentoSistema[0]}`  %></td>
+            <td class="p-3 text-center"><%= `${vencimentoChatbot[2]}/${vencimentoChatbot[1]}/${vencimentoChatbot[0]}`  %></td>
+            <td class="p-3 text-center"><%= `${cadastro[2]}/${cadastro[1]}/${cadastro[0]}` %></td>
+            
+            <td class="p-3 text-center font-medium">
+              <div class=" flex items-center justify-center gap-1">
+                <div class="w-2 h-2 flex rounded-full bg-<%= empresa.teste===1 ? 'green' : 'red' %>-500"></div>
+                <span class="text-<%= empresa.teste===1 ? 'green' : 'red' %>-500"><%= empresa.teste===1 ? 'Sim' : 'Não' %></span>
+              </div>
+            </td>
+            <td class="p-3 text-center">
+              <div class="flex justify-center gap-1">
+                <button onclick="login('<%= empresa.users[0].email %>')"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-green-600 hover:bg-green-500 text-white relative group">
+                  <i class="fi fi-rs-portal-enter flex text-2xl"></i>
+                  <span
+                    class="absolute z-1 pointer-events-none bg-green-600 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+                    Logar na empresa</span>
+                </button>
+                <button onclick="editVencimentos_empresa('<%= empresa.id %>', '<%= empresa.nome %>', '<%= empresa.vencimentoSistema %>', '<%= empresa.vencimentoChatbot %>')"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white relative group">
+                  <i class="fi fi-rs-gears flex text-2xl"></i>
+                  <span
+                    class="absolute z-1 pointer-events-none bg-zinc-600 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+                    Editar Vencimentos</span>
+                </button>
+                <button onclick="delete_empresa('<%= empresa.id %>')"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-red-600 hover:bg-red-500 text-white relative group">
+                  <i class="fi fi-sr-trash-xmark flex text-2xl"></i>
+                  <span
+                    class="absolute z-1 pointer-events-none bg-red-500 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+                    Excluir</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+  
+  <%- include('../includes/script_tables/js.ejs') %>
+
+<script>
+  async function editVencimentos_empresa(id, nome, vencimentoSistema, vencimentoChatbot) {
+    $('#empresa_id').val(id);
+    $('#vencimento-site').val(vencimentoSistema);
+    $('#vencimento-chatbot').val(vencimentoChatbot);
+    $('#title-empresaName').text(nome);
+    toggleEditVencimentos();
+  }
+    async function login(user) {
+        // regex para validar email em user
+        const regexEmail = /^[a-z0-9.]+@[a-z0-9]+\.[a-z]+(\.[a-z]+)?$/i
+        if (!regexEmail.test(user)) {
+            toastr.warning('E-mail inválido!')
+            return
+        }
+        let res = await requestPost('/login', { user })
+        if (res.success) {
+            toastr.success(res.res)
+            setTimeout(() => {
+                window.location.href = res.route
+            }, 2000);
+        } else {
+            toastr.error(res.res)
+        }
+    }
+
+    async function editVencimentos_event(event) {
+        event.preventDefault()
+        let vencimentoSite = $('#vencimento-site').val()
+        let vencimentoChatbot = $('#vencimento-chatbot').val()
+        let empresaId = $('#empresa_id').val()
+        let body = {
+            vencimentoSite,
+            vencimentoChatbot,
+            empresaId
+        }
+        let res = await requestPost('/v1/superadmin/dashboard/edit_vencimentos', body)
+        console.log('res: ', res)
+        if (res.success) {
+          const [ano, mes, dia] = vencimentoSite.split('-')
+          vencimentoSite = `${dia}/${mes}/${ano}`
+          const [anoChat, mesChat, diaChat] = vencimentoChatbot.split('-')
+          vencimentoChatbot = `${diaChat}/${mesChat}/${anoChat}`
+          $(`tr[data-empresaIdTr="${empresaId}"]`).find('td:nth-child(6)').text(vencimentoSite)
+          $(`tr[data-empresaIdTr="${empresaId}"]`).find('td:nth-child(7)').text(vencimentoChatbot)
+          aToast(res.message, {
+            type: 'success',
+            progress: true,
+          })
+            toggleEditVencimentos(true)
+        } else {
+          aToast(res.message, {
+            type: 'error',
+            progress: true,
+          })
+        }
+    }
+  
+  async function delete_empresa(id) {
+    let confirm = await showConfirm('Tem certeza que deseja deletar esta empresa, sera excluido tudo referentes a ela', { type: 'error', btn_yes: 'Deletar', btn_no: 'Cancelar' })
+    if (!confirm) {
+      return
+    }
+    let body = {
+      empresaId: id
+    }
+    const req = await requestPost('/v1/superadmin/dashboard/delete_empresa', body)
+    console.log(req)
+    if (req?.success) {
+      // deletar a linha da tabela com base no data-empresaIdTr
+      $(`tr[data-empresaIdTr="${id}"]`).remove();
+      aToast(req.message, {
+        type: 'success',
+        progress: true,
+      })
+      return
+    }
+    aToast(req?.message && !req?.message.includes('is not valid JSON') ? req?.message : 'Erro ao deletar empresa.', {
+      type: 'error',
+      progress: true,
+    })
+  }
+</script>
+<script>
+  $(function () {
+    'use strict';
+
+    $('#datatableEmpresas').DataTable({
+      "order": [[0, "desc"]],
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Buscar...',
+        sSearch: '',
+        lengthMenu: '_MENU_ ítens',
+      }
+    });
+
+    $('#datatable2').DataTable({
+      bLengthChange: false,
+      searching: false,
+      responsive: true
+    });
+
+    // Select2
+    $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+
+  });
+</script>

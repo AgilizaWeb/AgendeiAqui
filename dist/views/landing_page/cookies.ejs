@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <% const dominio = typeof superAdmin !== 'undefined' && superAdmin.domain ? superAdmin.domain : 'agendeiaqui.com' %>
+    <% const nomeApp = typeof superAdmin !== 'undefined' && superAdmin.applicationName ? superAdmin.applicationName : 'AgendeiAqui' %>
+
+    <%- include('./head.ejs', {
+        dominio,
+        nomeApp
+    }) %>
+
+<body class="bg-gray-100 text-gray-800 h-screen flex flex-col justify-between">
+    <div>
+        <%- include('./header.ejs', {
+            dominio,
+            nomeApp
+        }) %>
+        <main class="container mx-auto my-10">
+            <style>
+                .cookies-section {
+                    background: white;
+                    border-radius: 1rem;
+                    padding: 2rem;
+                    margin-bottom: 2rem;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                }
+        
+                .cookies-section h3 {
+                    font-size: 1.5rem;
+                    font-weight: 600;
+                    margin-bottom: 1rem;
+                    color: var(--primary);
+                }
+        
+                .cookies-section p {
+                    color: var(--gray);
+                    line-height: 1.6;
+                    margin-bottom: 1rem;
+                }
+        
+                .cookies-section ul {
+                    list-style-type: disc;
+                    margin-left: 1.5rem;
+                    color: var(--gray);
+                    line-height: 1.6;
+                }
+        
+                .cookies-section li {
+                    margin-bottom: 0.5rem;
+                }
+            </style>
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold mb-8 text-center">Política de Cookies</h1>
+                <p class="text-gray-600 text-center mb-12">
+                    Última atualização: 25/03/2025
+                </p>
+
+                <div class="cookies-section">
+                    <h3>1. O que são Cookies?</h3>
+                    <p>
+                        Cookies são pequenos arquivos de texto que são armazenados no seu dispositivo quando você visita nosso site. Eles nos ajudam a:
+                    </p>
+                    <ul>
+                        <li>Lembrar suas preferências</li>
+                        <li>Melhorar a experiência do usuário</li>
+                        <li>Analisar o uso do site</li>
+                        <li>Garantir a segurança</li>
+                    </ul>
+                </div>
+
+                <div class="cookies-section">
+                    <h3>2. Tipos de Cookies que Utilizamos</h3>
+                    <p>
+                        Utilizamos diferentes tipos de cookies para diferentes finalidades:
+                    </p>
+                    <ul>
+                        <li><strong>Cookies Essenciais:</strong> Necessários para o funcionamento básico do site</li>
+                        <li><strong>Cookies de Desempenho:</strong> Nos ajudam a entender como os visitantes interagem com o site</li>
+                        <li><strong>Cookies de Funcionalidade:</strong> Permitem que o site lembre suas escolhas e preferências</li>
+                        <li><strong>Cookies de Marketing:</strong> Usados para rastrear visitantes para fins de publicidade</li>
+                    </ul>
+                </div>
+
+                <div class="cookies-section">
+                    <h3>3. Como Gerenciar Cookies</h3>
+                    <p>
+                        Você pode controlar e/ou excluir cookies conforme desejar. Você pode:
+                    </p>
+                    <ul>
+                        <li>Excluir todos os cookies do seu navegador</li>
+                        <li>Configurar seu navegador para bloquear cookies</li>
+                        <li>Gerenciar preferências de cookies específicas</li>
+                    </ul>
+                    <p class="mt-4">
+                        Para mais informações sobre como gerenciar cookies, visite:
+                    </p>
+                    <ul>
+                        <li><a href="https://support.google.com/chrome/answer/95647" class="text-blue-600 hover:underline" target="_blank">Chrome</a></li>
+                        <li><a href="https://support.mozilla.org/pt-BR/kb/cookies-informacoes-armazenadas-por-sites-em-seu-computador" class="text-blue-600 hover:underline" target="_blank">Firefox</a></li>
+                        <li><a href="https://support.microsoft.com/pt-br/microsoft-edge/excluir-cookies-no-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" class="text-blue-600 hover:underline" target="_blank">Edge</a></li>
+                    </ul>
+                </div>
+
+                <div class="cookies-section">
+                    <h3>4. Atualizações da Política</h3>
+                    <p>
+                        Podemos atualizar esta política periodicamente. Recomendamos que você revise regularmente para se manter informado sobre como utilizamos cookies.
+                    </p>
+                </div>
+
+                <!-- <div class="cookies-section">
+                    <h3>5. Contato</h3>
+                    <p>
+                        Para questões sobre nossa política de cookies, entre em contato conosco através do e-mail: <a href="mailto:cookies@<%#= dominio %>" class="text-blue-600 hover:underline">cookies@<%#= dominio %></a>
+                    </p>
+                </div> -->
+            </div>
+        </main>
+        <%- include('./footer.ejs', {
+            dominio,
+            nomeApp
+        }) %>
+    </div>
+    </body>
+</html>

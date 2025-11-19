@@ -1,0 +1,130 @@
+<form onsubmit="addService(event)" id="add_service_bg"
+  class="fixed z-50 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full h-full relative flex justify-center items-center">
+    <div
+      class="bg-zinc-100 dark:bg-black p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[99vh] overflow-auto animate-slideBottomToTop">
+      <h1 id="title_addService" class="w-full mb-3 font-bold">Adicionar serviço</h1>
+
+      <div id="bg-test">
+        <%- include('./input_text.ejs', { id: 'service_input-name' , icon: 'fi fi-rs-pen-field' , placeholder: 'Nome' })
+          %>
+          <%- include('./input_text.ejs', { id: 'service_input-time' , icon: 'fi fi-rs-calendar-clock' ,
+            placeholder: 'Duração' , type: 'time' }) %>
+            <%- include('./input_text.ejs', { id: 'service_input-value' , icon: 'fi fi-rs-usd-circle' ,
+              placeholder: 'Valor' , type: 'text' }) %>
+
+              <div>
+                <h1>Atribuir Profissionais</h1>
+                <div class="mygrid bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+                  <% profissionais.forEach(profissional => { %>
+                  <%# for (const id in profissionais) { %>
+                    <div class="flex gap-1 items-center relative">
+                      <%- include('./checkbox.ejs', {verify: false, id: `${profissional.id}-profissional_id`,
+                        classes: 'profissionais_check' }) %>
+                        <span class="text-nowrap">
+                          <%= profissional.nome %>
+                        </span>
+                    </div>
+                    <% }) %>
+                </div>
+              </div>
+      </div>
+
+
+      <div class="w-full flex items-center gap-2 mt-3">
+        <button id="cancelar_service" type="button" onclick="toggleAddService(true)"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-x mr-1 sm:text-xl flex transition-all duration-1000 transform text-red-500"></i>
+          Cancelar
+        </button>
+        <button id="save_service" data-id_service="" type="submit"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-check mr-1 sm:text-xl flex transition-all duration-1000 transform text-green-500"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+</form>
+
+<script>
+  $('#service_input-value').on('input', function () {
+    let valor = $(this).val().replace(/\D/g, ''); // Remove caracteres não numéricos
+    valor = Number(valor) / 100; // Divide por 100 para tratar centavos
+    $(this).val(valorFormat_real(valor));
+  });
+  let add_service = true;
+  async function addService(event) {
+    event.preventDefault();
+
+    let profissionais = [];
+    document.querySelectorAll('.profissionais_check').forEach(element => {
+      if ($(element).is(':checked') ? true : false) {
+        profissionais.push(element.id.split('-')[0])
+      }
+    });
+
+    let val = (id) => $('#' + id).val()
+    let name = val('service_input-name')
+    let time = val('service_input-time')
+    let value = val('service_input-value')
+    let id_service = $('#save_service').data('id_service')
+    let body = {
+      name,
+      time,
+      value,
+      profissionais,
+      add: add_service,
+      id_service
+    }
+
+console.log('body: ', body)
+// return
+    let req = await requestPost('/v1/add_service', body)
+    console.log('req: ', req)
+    if (req?.success) {
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+      aToast(req.message, {
+        type: 'success',
+        progress: true,
+      })
+      return
+    }
+    aToast(req.message, {
+      type: 'error',
+      progress: true,
+    })
+  }
+
+  function toggleAddService(close = Boolean, add) {
+    add_service = add ? true : false
+    if (!close) {
+      if (add) {
+        $('#title_addService').text('Adicionar serviço')
+      } else {
+        $('#title_addService').text('Editar serviço')
+      }
+      $('#add_service_bg').toggleClass('hidden flex')
+      return
+    }
+    $('#service_input-name').val('');
+    $('#service_input-time').val('');
+    $('#service_input-value').val('R$ 0,00');
+    document.querySelectorAll('.profissionais_check').forEach(element => {
+      $(element).prop('checked', false)
+      console.log
+    });
+
+
+    $('#add_service_bg').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#add_service_bg').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#add_service_bg').toggleClass('hidden flex')
+    }, 500);
+  }
+</script>

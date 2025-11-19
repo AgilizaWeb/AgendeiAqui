@@ -1,0 +1,137 @@
+<style>
+    .custom-scrollbar {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #0000004f transparent; /* Firefox */
+
+    /* Para navegadores baseados em WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #0000004f;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #0000004f;
+        border: 3px solid #0000004f;
+    }
+}
+
+body[data-mode="dark"] {
+    .custom-scrollbar {
+        scrollbar-color: #ffffff4f transparent; /* Firefox */
+        &::-webkit-scrollbar-track {
+            background: #ffffff4f;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: #ffffff4f;
+            border: 3px solid #ffffff4f;
+        }
+    }
+}
+</style>
+<div id="sidebar"
+    class="max-sm:absolute max-sm:pb-[6.5vh] sm:max-w-16 max-sm:hidden max-sm:max-w-0 transition-[max-width] duration-500 ease-in-out h-full bg-zinc-50 dark:bg-zinc-950 shadow-md drop-shadow dark:shadow-black z-10">
+    <nav class="h-full relative flex flex-col pt-2.5 pb-2.5 overflow-y-auto overflow-x-hidden custom-scrollbar">
+        <ul class="max-sm:overflow-y-auto max-sm:max-h-full">
+            <li class="group">
+                <a class="<%= route === 'home' || route === '' ? 'dark:border-white border-black' : 'dark:border-black border-zinc-300' %> cursor-pointer max-sm:opacity-0"
+                    onclick="route('home')">
+                    <i class="fi fi-rs-home max-sm:opacity-0"></i>
+                    <div class="absolute z-0 bg-zinc-900 dark:bg-zinc-100 transform rotate-45 h-3 w-3 left-[140%] hidden group-hover:block"></div>
+                    <p class="hidden opacity-0 whitespace-nowrap">Dashboard</p>
+                </a>
+            </li>
+            <li class="group">
+                <a class="<%= route === 'empresas' || route === '' ? 'dark:border-white border-black' : 'dark:border-black border-zinc-300' %> cursor-pointer max-sm:opacity-0"
+                    onclick="route('empresas')">
+                    <i class="fi fi-rs-building max-sm:opacity-0"></i>
+                    <div class="absolute z-0 bg-zinc-900 dark:bg-zinc-100 transform rotate-45 h-3 w-3 left-[140%] hidden group-hover:block"></div>
+                    <p class="hidden opacity-0 whitespace-nowrap">Empresas</p>
+                </a>
+            </li>
+            <li class="group">
+                <a class="<%= route === 'faturas' || route === '' ? 'dark:border-white border-black' : 'dark:border-black border-zinc-300' %> cursor-pointer max-sm:opacity-0"
+                    onclick="route('faturas')">
+                    <i class="fi fi-rs-file-invoice-dollar max-sm:opacity-0"></i>
+                    <div class="absolute z-0 bg-zinc-900 dark:bg-zinc-100 transform rotate-45 h-3 w-3 left-[140%] hidden group-hover:block"></div>
+                    <p class="hidden opacity-0 whitespace-nowrap">Faturas</p>
+                </a>
+            </li>
+            <li class="group">
+                <a class="<%= route === 'settings' || route === '' ? 'dark:border-white border-black' : 'dark:border-black border-zinc-300' %> cursor-pointer max-sm:opacity-0"
+                    onclick="route('settings')">
+                    <i class="fi fi-rs-settings-sliders max-sm:opacity-0"></i>
+                    <div class="absolute z-0 bg-zinc-900 dark:bg-zinc-100 transform rotate-45 h-3 w-3 left-[140%] hidden group-hover:block"></div>
+                    <p class="hidden opacity-0 whitespace-nowrap">Configurações</p>
+                </a>
+            </li>
+            </ul>
+        <li class="list-none mt-2 group max-md:hidden">
+            <a class="dark:border-black border-zinc-300 cursor-pointer max-sm:opacity-0" href="/logout"><i
+                    class="fi fi-rr-leave max-sm:opacity-0"></i>
+                    <div class="absolute z-0 bg-zinc-900 dark:bg-zinc-100 transform rotate-45 h-3 w-3 left-[140%] hidden group-hover:block"></div>
+                <p class="hidden opacity-0 whitespace-nowrap">Deslogar</p>
+            </a>
+        </li>
+    </nav>
+</div>
+
+<script>
+
+
+    // document.querySelectorAll('#sidebar nav li').forEach(li => {
+    //     const p = li.querySelector('p'); // Encontra o elemento <p> dentro do <li>
+
+    //     li.addEventListener('mouseover', () => {
+    //         if (!openedSidebar) p.classList.add('hoverLi');
+    //     });
+
+    //     li.addEventListener('mouseout', () => {
+    //         p.classList.remove('hoverLi');
+    //     });
+    // });
+
+    function showOptionNameSidebar(show) {
+        document.querySelectorAll('#sidebar nav li').forEach(li => {
+            let element = $(li).find('a')
+            let p = $(element).find('p')
+            let i = $(element).find('i')
+            // console.log('element:', p)
+            $(li).toggleClass('group')
+            if (show) {
+                $('#sidebar').removeClass('max-sm:hidden')
+                $(p).removeClass('hidden')
+                $(element).toggleClass('max-sm:opacity-0 max-sm:opacity-100')
+                setTimeout(() => {
+                    $('#sidebar').removeClass('max-sm:max-w-0')
+                    $('#sidebar').removeClass('sm:max-w-16')
+
+                    $(i).removeClass('max-sm:opacity-0')
+                    $(p).removeClass('opacity-0')
+                    $('#sidebar').addClass('max-w-full')
+                }, 1);
+                return
+            }
+
+            $(p).addClass('opacity-0')
+            $(element).toggleClass('max-sm:opacity-0 max-sm:opacity-100')
+            setTimeout(() => {
+                $('#sidebar').addClass('sm:max-w-16')
+                $('#sidebar').addClass('max-sm:max-w-0')
+                $('#sidebar').removeClass('max-w-full')
+            }, 1);
+            setTimeout(() => {
+                $(i).addClass('max-sm:opacity-0')
+                $('#sidebar').addClass('max-sm:hidden')
+                $(p).addClass('hidden')
+            }, 500);
+
+
+        });
+    }
+
+
+</script>

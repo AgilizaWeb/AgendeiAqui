@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= empresa ? 'Empresa Vencida' : 'Empresa não encontrada' %></title>
+  <link href="<%= domain %>/css/tailwind.css" rel="stylesheet">
+  <style>
+    .fade-in {
+      animation: fadeIn 2s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 flex items-center justify-center h-screen">
+  <div class="bg-zinc-900 p-8 rounded-lg shadow-lg max-w-md w-full text-center fade-in max-sm:mx-5">
+    <div class="mb-4">
+      <svg class="w-16 h-16 text-red-600 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 8v.01M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"></path>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-red-600 mb-4"><%= empresa ? 'Empresa Vencida' : 'Empresa não encontrada' %></h1>
+    <p class="text-zinc-200 mb-6"><%= empresa ? 'A validade da sua empresa para agendamentos no site expirou. Por favor, acesse o painel de administração para renovar sua assinatura.' : ' Por favor, acesse o painel de administração para obter o link da sua empresa.' %></p>
+    <a href="<%= domain %>/dashboard" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300">Acessar painel</a>
+  </div>
+</body>
+</html>

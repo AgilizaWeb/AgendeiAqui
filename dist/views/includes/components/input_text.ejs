@@ -1,0 +1,14 @@
+<div class="relative flex flex-col transition-all duration-1000 items-center w-full mt-6">
+  <div class="flex justify-start w-[90%] ml-5">
+    <label for="<%= id %>"
+      class="px-3 rounded-t absolute bottom-0 z-[1] transform label-<%= id %> transition-all ease-linear duration-300 whitespace-nowrap max-xs:text-xs">
+      <%= label %><i class="fi fi-rs-arrow-small-down opacity-0"></i>
+    </label>
+  </div>
+  <div class="w-full flex justify-center items-center">
+    <i class="<%= icon ? icon.includes('fi fi') ? icon : 'fi fi-rs-'+icon : 'fi fi-rs-pen-field' %> flex mr-1"></i>
+    <input type="<%= typeof type !== 'undefined' && type ? type : 'text' %>" value="<%= value %>" name="<%= id %>" id="<%= id %>"
+      onfocus="focusInput('.label-<%= id %>', this)" onblur="focusInput('.label-<%= id %>', this, true)"
+      class="dark:bg-zinc-400 w-[90%] p-1 rounded-sm drop-shadow shadow-inner shadow-zinc-500 focus:shadow-black focus:border-transparent focus:outline-none" />
+  </div>
+</div>

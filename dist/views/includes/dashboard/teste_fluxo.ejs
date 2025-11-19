@@ -1,0 +1,520 @@
+<style>
+  .botui-actions-container input.botui-actions-text-input {
+    color: black;
+  }
+  .botui-actions-container form.botui-actions-text {
+    background: white;
+  }
+  .botui-actions-text .botui-actions-text-submit {
+    border: none;
+  }
+  .botui-actions-text .botui-actions-text-submit::after {
+    border: none;
+  }
+  .botui-actions-text-submit span {
+    font-size: 0;
+  }
+
+  .botui-actions-text-submit span::after {
+    content: 'Enviar';
+    padding: 0 10px;
+    font-size: 16px;
+  }
+  .bg-whatsapp {
+    background-image: url('./images/wa-background.png');
+    /* background-size: cover; */
+  }
+    /* verrifica se o thema atual é dark atraves do data-mode="dark" e definir o input date para dark */
+    body[data-mode="dark"] {
+      .bg-whatsapp {
+    background-image: url('./images/wa-background-dark.jpg');
+      }
+  .botui-actions-container input.botui-actions-text-input {
+    color: white;
+  }
+  .botui-actions-container form.botui-actions-text {
+    background: #232323;
+  }
+    }
+
+
+
+  .botui-container {
+    font-size: 14px;
+  }
+
+  .botui-messages-container {
+    padding: 10px 20px;
+  }
+
+  .botui-actions-container {
+    padding: 10px 20px
+  }
+
+  .botui-message {
+    min-height: 30px
+  }
+
+  .botui-message-content {
+    padding: 7px 15px;
+    border-radius: 2px;
+    color: #ebebeb;
+    background-color: #232323
+  }
+
+  .botui-message-content.human {
+    color: #f7f8f8;
+    background-color: green
+  }
+
+  .botui-message-content.text {
+    line-height: 1.3
+  }
+
+  .botui-message-content.embed {
+    padding: 7px 15px;
+    border-radius: 2px
+  }
+
+  .botui-message-content-link {
+    color: #919292
+  }
+
+  .botui-actions-text-input {
+    border: 0;
+    outline: 0;
+    border-radius: 0;
+    padding: 5px 7px;
+    font-family: "Open Sans", sans-serif;
+    background-color: transparent;
+    color: #595a5a;
+    border-bottom: 1px solid #919292
+  }
+
+  .botui-actions-text-submit {
+    color: #fff;
+    padding: 5px;
+    height: 30px;
+    line-height: 1;
+    border-radius: 2px;
+    border: 1px solid lightgreen;
+    background: green;
+    cursor: pointer;
+  }
+
+  .botui-actions-buttons-button {
+    border: 0;
+    color: #fff;
+    line-height: 1;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 7px 15px;
+    border-radius: 4px;
+    font-family: "Open Sans", sans-serif;
+    background: #777979;
+    box-shadow: 2px 3px 4px 0 rgba(0, 0, 0, .25)
+  }
+
+
+  form.botui-actions-text {
+    background: #232323;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  button.botui-actions-buttons-button,
+  input.botui-actions-text-input {
+    margin: 0;
+    font-size: 100%;
+    outline: none;
+    border: none;
+    color: white;
+    line-height: normal;
+    width: 100%;
+    vertical-align: baseline
+  }
+
+  button.botui-actions-buttons-button::-moz-focus-inner,
+  input.botui-actions-text-input::-moz-focus-inner {
+    border: 0;
+    padding: 0
+  }
+
+  button.botui-actions-buttons-button {
+    cursor: pointer;
+    -webkit-appearance: button
+  }
+
+  .bodyChat {
+    height: 100%;
+    width: 100%;
+    position: relative;
+  }
+
+  #botui-app {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .botui-app-container {
+    width: 100%;
+    height: 100%;
+    line-height: 1
+  }
+
+  @media (min-width:400px) {
+    .botui-app-container {
+      width: 400px;
+      height: 500px;
+      margin: 0 auto
+    }
+  }
+
+
+  .botui-message {
+    margin: 5px 0;
+    min-height: 20px
+  }
+
+  .botui-message:after {
+    display: block;
+    content: "";
+    clear: both
+  }
+
+  .botui-message-content {
+    width: auto;
+    max-width: 75%;
+    display: inline-block
+  }
+
+  .botui-message-content.human {
+    float: right
+  }
+
+</style>
+
+<form id="id_fluxo_bot"
+  class="fixed z-50 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full h-full relative flex justify-center items-center">
+    <div
+      class="bg-whatsapp p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[99vh] h-full overflow-auto animate-slideBottomToTop">
+
+
+      <div class="bodyChat">
+        <h1 onclick="toggleFluxoBot(true)"
+          class="absolute left-0 z-[1] text-zinc-700 bg-zinc-50 dark:text-white dark:bg-zinc-700 px-2 py-1 rounded text-center flex items-center cursor-pointer hover:bg-black hover:text-zinc-50 dark:hover:text-black dark:hover:bg-zinc-50">
+          X</h1>
+        <button id="clear-chat"
+          class="absolute right-0 z-[1] text-zinc-700 bg-zinc-50 dark:text-white dark:bg-zinc-700 px-2 py-1 rounded text-center flex items-center hover:bg-black hover:text-zinc-50 dark:hover:text-black dark:hover:bg-zinc-50">
+          <i class="fi fi-bs-rotate-right flex mr-1"></i>Reiniciar Fluxo</button>
+        <div id="botui-app">
+          <bot-ui></bot-ui>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+
+
+</form>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/botui/build/botui.min.js"></script>
+<script>
+
+  localStorage.removeItem('chatMessages');
+  var botui = new BotUI('botui-app');
+  
+      function next7days() {
+        let days = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+        let months = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+        let today = new Date();
+        let next7days = [];
+        for (let i = 0; i < 7; i++) {
+          let nextDay = new Date(today);
+          nextDay.setDate(today.getDate() + i);
+          let dayName = days[nextDay.getDay()];
+          let day = String(nextDay.getDate()).padStart(2, '0');
+          let month = months[nextDay.getMonth()];
+          let year = nextDay.getFullYear();
+          next7days.push(`${dayName}, ${day} de ${month} de ${year}`);
+        }
+        return next7days;
+      }
+
+      const optionsNext7days = next7days().map((day, index) => `${index + 1} - ${day}`).join('\n');
+      console.log('optionsNext7days:', optionsNext7days)
+
+  let fluxo = {
+    saudacao: {
+      message: `<%= chatbot.saudacao %>`,
+      options: '1 - Fazer agendamento \n2 - Aguardar atendimento humano'
+    },
+    services: {
+      message: `Escolha o serviço`,
+      options: '1 - Corte de cabelo \n2 - Barba e bigode \n3 - Corte de cabelo e barba'
+    },
+    profissionais: {
+      message: 'Escolha o profissional:',
+      options: '1 - João \n2 - Pedro \n3 - Maria'
+    },
+    datas: {
+      message: 'Escolha a data:',
+      options: optionsNext7days
+    },
+    horarios: {
+      message: 'Escolha o horário:',
+      options: '1 - 10:00 \n2 - 11:00 \n3 - 12:00'
+    },
+    confirmar: {
+      message: 'Deseja confirmar seu agendamento?',
+      options: '1 - Sim \n2 - Não'
+    },
+    criado: {
+      message: `<%= chatbot.criado %>`
+    },
+    confirmado: {
+      message: `<%= chatbot.confirmado %>`
+    },
+    cancelado: {
+      message: `<%= chatbot.cancelado %>`
+    },
+    aguardar_humano: {
+      message: `<%= chatbot.aguardarHumano %>`
+    },
+    cobrarConfirmacao: {
+      message: `<%= chatbot?.cobrarConfirmacao %>`
+    },
+    informativa: {
+      message: `<%= chatbot?.informativa %>`
+    },
+    informativaProfissional: {
+      message: `<%= chatbot?.informativaProfissional %>`
+    },
+  };
+
+  let agendamento = {
+    servico: '',
+    profissional: '',
+    data: '',
+    horario: ''
+  };
+
+  function saveMessage(role, content) {
+    let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+    messages.push({ role, content });
+    localStorage.setItem('chatMessages', JSON.stringify(messages));
+  }
+
+  function loadMessages() {
+    let messages = JSON.parse(localStorage.getItem('chatMessages')) || [];
+    messages.forEach(msg => {
+      botui.message[msg.role === 'user' ? 'human' : 'bot']({ content: msg.content.replace(/\n/g, '<br>'), loading: false });
+    });
+  }
+
+  loadMessages();
+
+  $('#clear-chat').click(function (e) {
+    e.preventDefault();
+    localStorage.removeItem('chatMessages');
+    $('.botui-messages-container').html('');
+    startChat()
+  });
+  function formatMessage(message) {
+    return message.replace(/\*([^*]+)\*/g, '<strong>$1</strong>');
+  }
+
+
+  function handleFlow(step) {
+    console.log('step:', step)
+    const currentStep = fluxo[step];
+    const formattedMessage = formatMessage(currentStep.message);
+
+    const formattedOptions = currentStep.options ? formatMessage(currentStep.options) : '';
+    botui.message.add({
+      type: 'html',
+      content: formattedMessage.replace(/\n/g, '<br>').replace(/{{empresa}}/g, nomeDaEmpresa)
+    }).then(function () {
+      if (formattedOptions) {
+        return botui.message.add({
+          type: 'html',
+          delay: 500,
+          content: formattedOptions.replace(/\n/g, '<br>')
+        });
+      }
+    }).then(function () {
+      if (formattedOptions) {
+        return botui.action.text({
+          // delay: 1000,
+          action: {
+            placeholder: 'Digite sua mensagem aqui'
+          }
+        }).then(function (res) {
+          saveMessage('user', res.value);
+          navigateFlow(step, res.value);
+        });
+      }
+    });
+  }
+
+  function navigateFlow(step, input) {
+    const currentStep = fluxo[step];
+    const options = currentStep.options ? currentStep.options.split('\n').map(option => option.trim().split(' - ')[0]) : [];
+    if (options.includes(input)) {
+      let switchCase = {
+        saudacao: function () {
+          if (input === '1') {
+            handleFlow('services');
+          } else if (input === '2') {
+            botui.message.add({
+              type: 'html',
+              content: fluxo.aguardar_humano.message.replace(/\n/g, '<br>')
+            }).then(function () {
+              return botui.message.add({
+                type: 'html',
+                delay: 500,
+                content: 'Caso queira retomar o atendimento automático basta enviar: #'.replace(/\n/g, '<br>')
+              });
+            }).then(function (res) {
+              if (res.value === '#') {
+                return handleFlow('services');
+              }
+              aguardarMessage()
+            });
+          }
+
+          function aguardarMessage() {
+            return botui.action.text({
+              // delay: 1000,
+              action: {
+                placeholder: 'Digite sua mensagem aqui'
+              }
+            }).then(function (res) {
+              if (res.value === '#') {
+                return handleFlow('services');
+              }
+              aguardarMessage()
+            });
+          }
+        },
+        services: function () {
+          selectStep('profissionais', 'servico')
+        },
+        profissionais: function () {
+          selectStep('datas', 'profissional')
+        },
+        datas: function () {
+          selectStep('horarios', 'data')
+        },
+        horarios: function () {
+          agendamento.horario = getSelectedOption(step, input);
+          showConfirmation();
+        },
+        confirmar: function () {
+          if (input === '1') {
+            handleFlow('confirmado');
+          } else if (input === '2') {
+            handleFlow('cancelado');
+          } else {
+            botui.message.add({
+              content: 'Opção inválida. Por favor, tente novamente.'
+            }).then(function () {
+              handleFlow('confirmar');
+            });
+          }
+        },
+      }[step]
+
+      function selectStep(next_flow, agenda) {
+        if (next_flow) handleFlow(next_flow);
+        if (agenda) agendamento[agenda] = getSelectedOption(step, input);
+      }
+
+      if (switchCase) switchCase();
+
+    } else {
+      let next_step;
+      for (const step_id in fluxo) {
+        if (step_id === step) {
+          next_step = null
+        } else if (next_step === null) {
+          next_step = step_id;
+        }
+      }
+      botui.message.add({
+        content: 'Opção não encontrada, escolha uma opção válida.'
+      }).then(function () {
+        botui.message.add({
+          type: 'html',
+          content: currentStep.options.replace(/\n/g, '<br>')
+        }).then(function (res) {
+          askForOption(step)
+        });;
+      });
+    }
+  }
+  function askForOption(step) {
+    botui.action.text({
+      // delay: 1000,
+      action: {
+        placeholder: 'Digite sua mensagem aqui'
+      }
+    }).then(function (res) {
+      saveMessage('user', res.value);
+      navigateFlow(step, res.value);
+    });
+  }
+
+
+  function getSelectedOption(step, input) {
+    const options = fluxo[step].options.split('\n');
+    const selectedOption = options.find(option => option.startsWith(input));
+    return selectedOption ? selectedOption.substring(4).trim() : 'Opção inválida';
+  }
+
+  function showConfirmation() {
+    botui.message.add({
+      type: 'html',
+      content: formatMessage(`Seu agendamento<br>*Serviço*: ${agendamento.servico}<br>*Profissional*: ${agendamento.profissional}<br>*Data*: ${agendamento.data}<br>*Horário*: ${agendamento.horario}`)
+    }).then(function () {
+      handleFlow('confirmar');
+    });
+  }
+
+  function startChat() {
+    botui.action.text({
+      delay: 1000,
+      action: {
+        placeholder: 'Digite sua mensagem aqui'
+      }
+    }).then(function (res) {
+      saveMessage('user', res.value);
+      handleFlow('saudacao');
+    });
+  }
+
+
+
+  function toggleFluxoBot(close = Boolean) {
+    startChat();
+    if (!close) {
+      $('#id_fluxo_bot').toggleClass('hidden flex')
+      return
+    }
+    $('#id_fluxo_bot').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#id_fluxo_bot').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#id_fluxo_bot').toggleClass('hidden flex')
+    }, 500);
+  }
+</script>

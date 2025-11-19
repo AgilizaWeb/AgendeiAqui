@@ -1,0 +1,32 @@
+<button class="<%= typeof bg !== 'undefined' && bg ? bg : 'bg-blue-500' %> 
+  <%= typeof hover !== 'undefined' && hover ? 'hover:'+hover : 'hover:bg-blue-600' %> 
+  <%= typeof text_color !== 'undefined' && text_color ? text_color : 'text-white' %> px-2 py-1 flex items-center rounded-sm 
+  <%= typeof new_class !== 'undefined' && new_class ? new_class : '' %>"
+
+    <%= typeof id !== 'undefined' && id ? `id=${id}` : '' %>
+    <%= typeof click !== 'undefined' && click ? `onclick=${click}` : '' %>
+    type="<%= typeof type !== 'undefined' && type ? type : 'button' %>">
+
+    <% if (typeof icon !== 'undefined' && icon) { %>
+      <i class="mr-1 flex <%= icon %> <%= typeof icon_color !== 'undefined' && icon_color ? icon_color : '' %>"></i>
+    <% } %>
+  
+    
+    <%= value %>
+
+</button>
+
+
+<!-- Exemplo de uso: -->
+<!-- <%#- include('../components/button.ejs', {
+  value: 'Salvar alterações',
+  id: 'tetete',
+  bg: 'bg-green-500',
+  hover: 'bg-green-600',
+  icon: 'fi fi-rr-disk',
+  icon_color: 'text-red-500',
+  text_color: 'text-yellow-500',
+  click: 'alert("clicado")',
+  type: 'submit',
+  new_class: 'justify-center'
+}) %> -->

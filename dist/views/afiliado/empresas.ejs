@@ -1,0 +1,91 @@
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/datatables/css/jquery.dataTables.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/select2/css/select2.min.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/select2.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/css/slim.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/slim.css" />
+
+
+<div class="container mx-auto my-3">
+  <h1 class="mb-4 text-center text-2xl font-bold">Empresas</h1>
+
+
+  <div class="table-wrapper table-responsive">
+    <!-- <div class="overflow-auto"> -->
+    <table id="datatableEmpresas"
+      class="text-gray-400 border-separate space-y-6 text-sm table display responsive nowrap dataTable no-footer dtr-inline collapsed" style="width: 100%;">
+      <thead class="bg-zinc-700 text-white">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3 text-center">Empresa</th>
+          <th class="p-3 text-center">Subdominio</th>
+          <th class="p-3 text-center">Dono</th>
+          <th class="p-3 text-center">Whatsapp</th>
+          <th class="p-3 text-center">Email</th>
+          <th class="p-3 text-center">V. Site</th>
+          <th class="p-3 text-center">V. ChatBot</th>
+          <th class="p-3 text-center">Cadastrada em</th>
+          <th class="p-3 text-center">Em Teste</th>
+        </tr>
+      </thead>
+      <tbody id="empresasTable">
+        <% empresas.forEach(empresa=> { %>
+          <% const cadastro = new Date(empresa.createdAt).toISOString().split('T')[0].split('-') %>
+          <% const vencimentoSistema = empresa.vencimentoSistema.split('-') %>
+          <% const vencimentoChatbot = empresa.vencimentoChatbot.split('-') %>
+          <tr data-empresaIdTr="<%= empresa.id %>" class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+            <td class="p-3 text-center font-medium capitalize">
+              <%= empresa.id %>
+            </td>
+            <td class="p-3 text-center"><%= empresa.nome  %></td>
+            <td class="p-3 text-center"><%= empresa.subdomain  %></td>
+            <td class="p-3 text-center"><%= empresa.users[0].user  %></td>
+            <td class="p-3 text-center"><%= empresa.users[0].whatsapp  %></td>
+            <td class="p-3 text-center"><%= empresa.users[0].email  %></td>
+            <td class="p-3 text-center"><%= `${vencimentoSistema[2]}/${vencimentoSistema[1]}/${vencimentoSistema[0]}`  %></td>
+            <td class="p-3 text-center"><%= `${vencimentoChatbot[2]}/${vencimentoChatbot[1]}/${vencimentoChatbot[0]}`  %></td>
+            <td class="p-3 text-center"><%= `${cadastro[2]}/${cadastro[1]}/${cadastro[0]}` %></td>
+            
+            <td class="p-3 text-center font-medium">
+              <div class=" flex items-center justify-center gap-1">
+                <div class="w-2 h-2 flex rounded-full bg-<%= empresa.teste ? 'green' : 'red' %>-500"></div>
+                <span class="text-<%= empresa.teste ? 'green' : 'red' %>-500"><%= empresa.teste ? 'Sim' : 'Não' %></span>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+  
+  <%- include('../script_tables/js.ejs') %>
+
+<script>
+  $(function () {
+    'use strict';
+
+    $('#datatableEmpresas').DataTable({
+      "order": [[0, "desc"]],
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Buscar...',
+        sSearch: '',
+        lengthMenu: '_MENU_ ítens',
+      }
+    });
+
+    $('#datatable2').DataTable({
+      bLengthChange: false,
+      searching: false,
+      responsive: true
+    });
+
+    // Select2
+    $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+
+  });
+</script>

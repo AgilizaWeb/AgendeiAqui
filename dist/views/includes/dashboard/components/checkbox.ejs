@@ -1,0 +1,9 @@
+<div class="flex justify-center items-center">
+  <input <%= typeof verify !== 'undefined' && verify ? 'checked' : '' %>
+  <%= typeof attrs !== 'undefined' && attrs ? attrs : '' %>
+   id="<%= id %>" type="checkbox" class="<%= typeof classes !== 'undefined' && classes ? classes : '' %> before:content[''] text-white peer relative h-5 w-5 cursor-pointer appearance-none rounded-sm border 
+    drop-shadow border-zinc-500 dark:border-zinc-100 transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-5 before:w-5 before:-translate-y-2/4 before:-translate-x-2/4 
+  before:bg-gray-500 before:opacity-0 before:transition-opacity hover:before:opacity-10" />
+  <i
+    class="fi fi-br-check flex text-green-800 dark:text-green-500 absolute z-[1] pointer-events-none transition-all duration-500 opacity-0 scale-0 peer-checked:scale-100 peer-checked:opacity-100"></i>
+</div>

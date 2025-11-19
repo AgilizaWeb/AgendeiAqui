@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= empresa %>
+  </title>
+
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/input.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/calendario.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/buttons.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/btn_close.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/form.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/grid.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/switch.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/card.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/animations.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/utils/utils.css">
+  <link rel="stylesheet" type="text/css" href="<%= domain %>/css/empresa.css">
+
+  <meta property="og:image" content="<%= typeof domain !== 'undefined' && domain ? domain : 'agendeiaqui.com' %>/<%= logo %>">
+  
+  
+  <link rel="shortcut icon" type="image/png" href="<%= typeof domain !== 'undefined' && domain ? domain : 'agendeiaqui.com' %>/<%= logo %>">
+  <link rel="apple-touch-icon" href="<%= typeof domain !== 'undefined' && domain ? domain : 'agendeiaqui.com' %>/<%= logo %>">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://agilizaweb.com/atoast.css">
+  <script src="https://agilizaweb.com/atoast.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
+
+</head>
+
+<!-- tema escuro abaixo -->
+<% const textColor = themes.textColor %>
+  <% const themeColor = themes.themeColor %>
+    <% const backgroundColor = themes.bgColor %>
+
+      <!-- tema claro abaixo -->
+      <!-- <%# const textColor=typeof hidden !=='undefined' && text ? text : 'white' %>
+<%# const themeColor=typeof hidden !=='undefined' && theme ? theme : 'red' %>
+<%# const backgroundColor=typeof hidden !=='undefined' && background ? background : 'gray' %> -->
+      <style>
+        body {
+          background-image: radial-gradient(<%=themeColor %> 0.8px, transparent 0);
+          background-color: <%=backgroundColor %>;
+          color: <%=textColor %>;
+        }
+
+        header {
+          background-color: <%=themeColor %>;
+        }
+
+        main .servicoBG .servico {
+          background-color: <%= themeColor %>;
+          border-bottom: 1px solid <%=themeColor %>;
+          color: <%=textColor %>;
+        }
+
+        main .servicoBG .agendamentosBG {
+          background-color: <%=themeColor %>;
+          color: <%=textColor %>;
+        }
+      </style>
+
+      <body>
+
+        <div class="mycontainer">
+          <header class="vCenter card">
+            <div class="vCenter">
+              <img src="<%= logo %>" style="border-radius: 50%; padding: 10px;" alt="logo">
+              <h2 class="name">
+                <%= empresa %>
+              </h2>
+            </div>
+          </header>
+
+          <main>
+
+            <div id="finalizarReserva" class="vBottom hCenter">
+              <div class="card content">
+                <div class="fullH displayCenter title">
+                  <h3>Serviço adicionado</h3>
+                  <div style="width: 90%; position: absolute;" class="hRight">
+                    <div onclick="closeFinalizarReserva()" class="close-container hCenter">
+                      <div class="leftright"></div>
+                      <div class="rightleft"></div>
+                      <label class="close">fechar</label>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="displayCenter fullH">
+                  <div style="width: 100%;">
+                    <h4 style="color: gray; border-bottom: 1px solid #333; padding: 0px 0px 5px 10px; width: auto;">
+                      Agendamento atual</h4>
+                    <div class="grid my-2 gap-0 px-2"
+                      style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+
+                      <div class="option vCenter">
+                        <i class="bi bi-pin-angle"></i>
+                        <p id="svName"></p>
+                      </div>
+                      <div class="option vCenter">
+                        <i class="bi bi-calendar2-event"></i>
+                        <p id="svData"></p>
+                      </div>
+                      <div class="option vCenter">
+                        <img id="svImg" class="img">
+                        <p id="svProf"></p>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+                <div class="displayCenter">
+                  <div
+                    style="width: 100%; padding: 20px; border-top: 1px solid #333; flex-direction: column; display: grid; grid-template-columns: minmax(50px, 1fr);">
+                    <button class="btnPositive finalizar" style="margin: 3px 0;" type="button">Finalizar
+                      agendamento</button>
+                    <button onclick="closeFinalizarReserva()" class="btnYellow" style="margin: 3px 0;"
+                      type="button">Agendar
+                      novo serviço</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal para inserir dados de contato -->
+            <div id="modalContato" class="vBottom hCenter">
+              <div class="card content">
+                <div class="fullH displayCenter title">
+                  <h3>Inserir seus dados para contato</h3>
+                  <div style="width: 90%; position: absolute;" class="hRight">
+                    <div onclick="closeModalContato()" class="close-container hCenter">
+                      <div class="leftright"></div>
+                      <div class="rightleft"></div>
+                      <label class="close">fechar</label>
+                    </div>
+                  </div>
+                </div>
+                <h4 style="color: gray; border-bottom: 1px solid #333; padding: 0px 0px 5px 10px; width: auto;">
+                  Agendamentos</h4>
+                <style>
+                  .agendamentosContainer {
+                    overflow-y: auto;
+                    max-height: 400px;
+                  }
+
+                  /* definir que para celualr o max de altura é 200 */
+                  @media (max-width: 600px) {
+                    .agendamentosContainer {
+                      max-height: 300px;
+                    }
+                  }
+
+                  @media (max-width: 400px) {
+                    .agendamentosContainer {
+                      max-height: 200px;
+                    }
+                  }
+                </style>
+                <div class="agendamentosContainer bg-zinc-900"></div>
+                <div class="displayCenter">
+                  <div
+                    style="width: 100%; padding: 20px; border-top: 1px solid #333; flex-direction: column; display: grid; grid-template-columns: minmax(50px, 1fr);">
+                    <%- include('./includes/dashboard/components/input_text.ejs', { id: 'userName' , placeholder: 'Nome'
+                      , myclass: 'input' , icon: 'bi bi-person' , }) %>
+                      <%- include('./includes/dashboard/components/input_text.ejs', { id: 'userWhatsapp' ,
+                        placeholder: 'WhatsApp/Contato' , myclass: 'input' , icon: 'bi bi-phone' , }) %>
+                        <button class="btnPositive" style="margin: 3px 0;" type="button"
+                          onclick="finalizarAgendamento()">Agendar</button>
+                        <button onclick="closeModalContato()" class="btnYellow" style="margin: 3px 0;"
+                          type="button">Cancelar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="servicoBG">
+
+
+              <div id="modalBG" class="modalBG">
+                <div class="mycontainer">
+                  <div style="width: 90%;" class="hRight">
+                    <div onclick="openModal()" class="close-container hCenter">
+                      <div class="leftright"></div>
+                      <div class="rightleft"></div>
+                      <label class="close">fechar</label>
+                    </div>
+                  </div>
+
+                  <div class="content displayCenter">
+
+                    <h3>Serviço selecionado: <strong class="serv_selected"></strong></h3>
+
+                    <div class="profissionalContainer">
+                      <h3>Selecione o profissional</h3>
+                      <div id="profissionalBG" class="profissionalBG grid">
+
+                      </div>
+                      <!-- </div> -->
+
+                      <div id="dias" class="diasContainer">
+                        <h3>Selecione o dia</h3>
+
+                        <div class="diasBG grid">
+
+                          <div id="calendar">
+                            <div id="calendar-header">
+                              <span id="month-prev" class="changeLeft">&lt;</span>
+                              <h3 id="month"></h3>
+                              <span id="month-next" class="changeRight">&gt;</span>
+                            </div>
+                            <div id="days"></div>
+                            <div id="calendar-body"></div>
+                          </div>
+
+                        </div>
+                      </div>
+
+                      <div id="horarios" class="horariosContainer">
+                        <h4>Selecione o horario de incio</h4>
+                        <div class="horariosBG grid"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="vCenter hRight">
+                <div class="vCenter agendamentosBG" onclick="openModalContato()">
+                  <div class="displayCenter agendamentos">
+                    <i style="font-size: 40px;" class="bi bi-calendar4"></i>
+                    <span class="tooltip">AGENDAMENTOS</span>
+                    <p id="totalAgendamentos"
+                      style="font-weight: bolder; height: 20px; width: 20px; text-align: center; position: absolute; margin-top: 8px; border-radius: 50%; background-color: white;">
+                      0</p>
+                  </div>
+                  <p>Finalizar agendamentos</p>
+                </div>
+              </div>
+
+              <div class="fullH hCenter searchBG">
+                <div class="vCenter search">
+                  <input class="input text-zinc-950" type="text" id="search" name="search"
+                    placeholder="Pesquisar serviço">
+                  <!-- <span class="displayCenter iconBG"><i class="bi bi-search"></i></span> -->
+                </div>
+              </div>
+
+              <% services.forEach(service=> { const id = service.id; %>
+                <div id="<%= id %>" data-name="<%= service.name %>" class="servico vCenter">
+                  <ul>
+                    <li><i class="bi bi-pin-angle"></i>
+                      <%= service.name %>
+                    </li>
+                    <li><i class="bi bi-stopwatch"></i>
+                      <%= service.time %>min
+                    </li>
+                    <li><i class="bi bi-currency-dollar"></i>Apartir de R$ <%= new Intl.NumberFormat('pt-BR', {
+                        minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseFloat(service.value)) %>
+                    </li>
+                  </ul>
+                  <div class="displayCenter">
+                    <button id="btn_reservar_<%= id %>" type="button"
+                      onclick="reservar('<%= id %>', '<%= service.name %>','<%= service.time %>',`<%= service.value %>`)"
+                      class="btnPositive relative"><i class="bi bi-calendar-check"></i>Reservar</button>
+
+                    <button id="btn_deletar_<%= id %>" style="display: none;" type="button"
+                      onclick="deletar('<%= id %>')" class="btnNegative ml-1">
+                      <i class="bi bi-trash" style="margin-right: 0;"></i></button>
+
+                  </div>
+                </div>
+                <% }) %>
+
+            </div>
+          </main>
+
+          <footer>
+
+          </footer>
+
+        </div>
+
+      </body>
+
+</html>
+<script src="<%= domain %>/js/utils.js"></script>
+<script src="<%= domain %>/js/utils/calendario.js"></script>
+<script>
+
+  const meuAgendamento = {
+    user: {
+      name: "",
+      whatsapp: ""
+    },
+    servico: {
+      id: "",
+      name: "",
+      time: "",
+      value: "",
+    },
+    profissional: {
+      id: "",
+      name: ""
+    },
+    agendamento: {
+      dia: "",
+      mes: "",
+      ano: "",
+      diaName: "",
+      horario: "",
+    }
+  }
+  const agendamentos = [];
+  // localStorage.setItem('agenda', [])
+  const agenda = localStorage.getItem('agenda') ? JSON.parse(localStorage.getItem('agenda')) : []
+  console.log('agenda:', agenda)
+  if (agenda.length > 0) {
+    agenda.forEach(agendamento => {
+      console.log('agendamento:', agendamento)
+      setSelectedService(agendamento.servico.id)
+    });
+  }
+  setAgendamentos()
+
+  async function reservar(service, name, time, value) {
+    let req = await requestPost('/v1/servicegetprofissional', { service })
+    console.log('reservar-req:: ', req)
+
+    document.querySelector('.serv_selected').textContent = name
+
+    let profissional = ''
+    getID('profissionalBG').innerHTML = ''
+    req.res.forEach(element => {
+      profissional += `
+                  <div onclick="selectProfissional('${element.id}', '${element.name}')" class="profissional vCenter">
+                    <img class="img" src="./v1/getlogoprofissional/${element.uuid}" alt="ico">
+                    <p class="name">${element.name}</p>
+                    <p class="info">Ver Horários</p>
+                  </div>
+`
+    });
+    getID('profissionalBG').innerHTML = profissional
+
+    meuAgendamento.servico.id = service;
+    meuAgendamento.servico.name = name;
+    time = time.replace('h', '');
+    if (time.length === 2) time = '00:' + time;
+    if (time.length === 4) time = '0' + time;
+
+    meuAgendamento.servico.time = time;
+    meuAgendamento.servico.value = value;
+    openModal()
+    // console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+  }
+
+  function openModal() {
+
+    let display = getID('modalBG').style.display
+    if (!display || display === 'none') {
+      getID('dias').style.display = 'none'
+      getID('horarios').style.display = 'none'
+      getID('modalBG').style.display = 'block'
+      document.querySelector('#modalBG .mycontainer').style.animation = 'slideToButtom 1s ease-in forwards'
+    } else {
+      document.querySelector('#modalBG .mycontainer').style.animation = 'slideToTop 0.5s ease-in forwards'
+      setTimeout(() => {
+        getID('modalBG').style.display = 'none'
+      }, 500);
+    }
+
+  }
+
+
+  async function selectedDate(dia, mes, ano, diaName) {
+    mes = mes + ''
+    if (mes.length <= 1) mes = '0' + mes;
+
+    let data = `${dia}/${mes}/${ano}`
+    let req = await requestPost('/v1/gethorariosdisponiveis', { profissional: meuAgendamento.profissional.id, service: meuAgendamento.servico.id, data, agenda })
+    console.log('req: ', req)
+
+
+    document.querySelector('#horarios .horariosBG').innerHTML = req.res
+
+
+    meuAgendamento.agendamento.dia = dia;
+    meuAgendamento.agendamento.mes = mes;
+    meuAgendamento.agendamento.ano = ano;
+    meuAgendamento.agendamento.diaName = diaName;
+    document.getElementById('horarios').style.display = 'block'
+
+    window.location.href = '#horarios'
+    // console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+  }
+
+  let diasDisponiveisDaSemana = {}
+  let horariosDeFechamento = {}
+  async function selectProfissional(id, name) {
+    let req = await requestPost('/v1/getdatasdisponiveis', { profissional: id })
+    console.log('req success: ', req.success)
+    document.getElementById('horarios').style.display = 'none'
+    diasDisponiveisDaSemana = req.res
+    horariosDeFechamento = req.fechamento
+    // console.log('horariosDeFechamento: ', horariosDeFechamento)
+
+    meuAgendamento.profissional.id = id;
+    meuAgendamento.profissional.name = name;
+    document.getElementById('dias').style.display = 'block'
+    window.location.href = '#dias'
+    renderCalendar(selectedDate);
+
+    // console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+  }
+
+
+
+  function selectHorario(hr, event) {
+
+    let elements = document.querySelectorAll('.modalBG .content .horariosContainer .horariosBG .horario');
+
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].classList.remove('selected')
+    }
+
+    event.target.classList.add('selected')
+
+    meuAgendamento.agendamento.horario = hr;
+    // console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+
+    let data = () => {
+      let dia = meuAgendamento.agendamento.dia
+      let mes = meuAgendamento.agendamento.mes
+      let ano = meuAgendamento.agendamento.ano
+      let diaName = meuAgendamento.agendamento.diaName
+      let horario = meuAgendamento.agendamento.horario
+
+      console.log('horario: ', horario)
+      let tempo = meuAgendamento.servico.time.replace('h', '')
+
+      if (tempo.length === 2) tempo = '00:' + tempo
+
+
+      let r = `${diaName}, ${dia}/${mes}/${ano} - ${horario} as ${somarHoras(horario, tempo)}`
+      return r
+    }
+
+    getID('svName').textContent = 'Serviço: ' + meuAgendamento.servico.name
+    // getID('svTime').textContent = 'Tempo: ' + meuAgendamento.servico.time
+    // getID('svValue').textContent = 'Valor: ' + meuAgendamento.servico.value
+    getID('svProf').textContent = 'Profissional: ' + meuAgendamento.profissional.name
+    getID('svImg').src = './v1/getlogoprofissional/' + meuAgendamento.profissional.uuid
+    getID('svData').innerHTML = data()
+    // openModal()
+    getID('modalBG').style.display = 'none'
+
+    let display = getID('finalizarReserva').style.display
+    if (!display || display === 'none') {
+      getID('finalizarReserva').style.display = 'flex'
+      document.querySelector('#finalizarReserva .content').style.animation = 'slideToTop2 1s ease-in forwards'
+    }
+
+
+    agenda.push(JSON.parse(JSON.stringify(meuAgendamento)));
+    localStorage.setItem('agenda', JSON.stringify(agenda))
+    console.log(agenda)
+    setAgendamentos()
+    setSelectedService(meuAgendamento.servico.id)
+  }
+
+  function deletar(id) {
+    agenda.length = 0
+    JSON.parse(localStorage.getItem('agenda')).forEach(agendamento => {
+      if (agendamento.servico.id !== id) {
+        agenda.push(JSON.parse(JSON.stringify(agendamento)))
+      }
+    });
+    console.log('agenda-delete:', agenda)
+    localStorage.setItem('agenda', JSON.stringify(agenda))
+
+    btnDeixarDeSerReservado(id)
+    // $('#btn_reservar_' + id).html('<i class="bi bi-calendar-check"></i>Reservar')
+    // $('#btn_reservar_' + id).css('background-color', '')
+    // $('#btn_reservar_' + id).css('color', '')
+    // $('#btn_reservar_' + id).css('pointer-events', '')
+    setAgendamentos()
+    // $('#btn_deletar_' + id).css('display', 'none')
+  }
+  function setSelectedService(id) {
+    // buscar os dados do agendamento no localStorage com base no id do serviço
+    let agendamento = agenda.find(agendamento => agendamento.servico.id === id);
+    let text = 'Reservado';
+    if (agendamento) {
+      const a = agendamento.agendamento;
+      text += `<span class="text-xs max-sm:text-[9px] absolute top-full left-0 text-[<%= textColor %>] whitespace-nowrap font-light">${a.dia}/${a.mes}/${a.ano} - ${a.horario} as ${somarHoras(a.horario, agendamento.servico.time)}</span>`;
+    }
+    $('#btn_reservar_' + id).html(`<i class="bi bi-calendar-check"></i>${text}`)
+    $('#btn_reservar_' + id).css('background-color', 'white')
+    $('#btn_reservar_' + id).css('color', 'green')
+    $('#btn_reservar_' + id).css('pointer-events', 'none')
+    $('#btn_deletar_' + id).css('display', 'flex')
+  }
+  function btnDeixarDeSerReservado(id) {
+    $('#btn_reservar_' + id).html('<i class="bi bi-calendar-check"></i>Reservar')
+    $('#btn_reservar_' + id).css('background-color', '')
+    $('#btn_reservar_' + id).css('color', '')
+    $('#btn_reservar_' + id).css('pointer-events', '')
+    $('#btn_deletar_' + id).css('display', 'none')
+  }
+
+  function setAgendamentos() {
+    let number = agenda.length
+    if (number > 0) {
+      getID('totalAgendamentos').style.color = 'green'
+      document.querySelector('.agendamentosBG .agendamentos  .tooltip').classList.add('tooltipShow')
+      document.querySelector('main .servicoBG .agendamentosBG').classList.add('activeAgendamento')
+    } else {
+      getID('totalAgendamentos').style.color = 'black'
+      document.querySelector('.agendamentosBG .agendamentos .tooltip').classList.remove('tooltipShow')
+      document.querySelector('main .servicoBG .agendamentosBG').classList.remove('activeAgendamento')
+    }
+    getID('totalAgendamentos').textContent = number
+  }
+
+
+  function closeFinalizarReserva() {
+
+    let display = getID('finalizarReserva').style.display
+    if (display || display !== 'none') {
+      document.querySelector('#finalizarReserva .content').style.animation = 'slideToButtom2 0.5s ease-in forwards'
+      setTimeout(() => {
+        getID('finalizarReserva').style.display = 'none'
+      }, 500);
+    }
+
+  }
+
+  // Função para abrir o modal de contato
+  function openModalContato() {
+    if (agenda.length === 0) {
+      aToast('Nenhum serviço selecionado', {
+        type: 'warning'
+      })
+      return;
+    }
+    document.getElementById('userName').value = localStorage.getItem('userName') || '';
+    document.getElementById('userWhatsapp').value = localStorage.getItem('userWhatsapp') || '';
+    // formatar o número de telefone ativando o campo
+    $('#userWhatsapp').trigger('change');
+
+    let display = getID('modalContato').style.display;
+    if (!display || display === 'none') {
+      getID('modalContato').style.display = 'flex';
+      document.querySelector('#modalContato .content').style.animation = 'slideToTop2 1s ease-in forwards';
+
+      // Preencher os agendamentos
+      const agendamentosContainer = document.querySelector('.agendamentosContainer');
+      agendamentosContainer.innerHTML = ''; // Limpar agendamentos anteriores
+      agenda.forEach((agendamento, index) => {
+        const agendamentoDiv = document.createElement('div');
+        agendamentoDiv.className = 'grid my-2 gap-0 px-2';
+        agendamentoDiv.style = `grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); ${agenda.length - 1 !== index && 'border-bottom: 1px solid #333;'}`
+        agendamentoDiv.innerHTML = `
+          <div class="option vCenter">
+            <i class="bi bi-pin-angle"></i>
+            <p>${agendamento.servico.name}</p>
+          </div>
+          <div class="option vCenter">
+            <i class="bi bi-calendar2-event"></i>
+            <p>${agendamento.agendamento.diaName}, ${agendamento.agendamento.dia}/${agendamento.agendamento.mes}/${agendamento.agendamento.ano} - ${agendamento.agendamento.horario} as ${somarHoras(agendamento.agendamento.horario, agendamento.servico.time)}</p>
+          </div>
+          <div class="option vCenter">
+            <img src="./v1/getlogoprofissional/${agendamento.profissional.uuid}" class="img">
+            <p>${agendamento.profissional.name}</p>
+          </div>
+        `;
+        agendamentosContainer.appendChild(agendamentoDiv);
+      });
+    }
+  }
+
+  // ...existing code...
+
+  // Função para fechar o modal de contato
+  function closeModalContato() {
+    document.querySelector('#modalContato .content').style.animation = 'slideToButtom2 0.5s ease-in forwards';
+    setTimeout(() => {
+      document.getElementById('modalContato').style.display = 'none';
+    }, 500);
+  }
+
+  // Função para finalizar o agendamento
+  async function finalizarAgendamento() {
+    const userName = document.getElementById('userName').value;
+    const userWhatsapp = document.getElementById('userWhatsapp').value.replace(/\D/g, '');
+    console.log('userWhatsapp:', userWhatsapp);
+    if (!userName) {
+      aToast('Preencha o campo nome', {
+        type: 'warning'
+      })
+      return;
+    } else if (userWhatsapp.length < 10) {
+      aToast('Número de WhatsApp inválido', {
+        type: 'warning'
+      })
+      return;
+    }
+    localStorage.setItem('userName', userName);
+    localStorage.setItem('userWhatsapp', userWhatsapp);
+
+    if (!userName || !userWhatsapp) {
+      aToast('Preencha todos os campos', {
+        type: 'warning'
+      })
+      return;
+    }
+
+    // adicionar os dados de contato a todos os agendamentos
+    agenda.forEach(agendamento => {
+      agendamento.user.name = userName;
+      agendamento.user.whatsapp = userWhatsapp;
+    });
+
+
+    let req = await requestPost('/v1/finalizaragendamento', agenda);
+    console.log('finalizarAgendamento-req:', req);
+
+    if (req.success) {
+      aToast(req.res, {
+        type: 'success'
+      })
+      closeModalContato();
+      closeFinalizarReserva();
+      agenda.forEach(agendamento => {
+        const service_id = agendamento.servico.id;
+        btnDeixarDeSerReservado(service_id)
+      });
+      // limpar a agenda
+      agenda.length = 0;
+      localStorage.setItem('agenda', JSON.stringify(agenda));
+      setAgendamentos();
+    } else {
+      aToast(req.res, {
+        type: 'error'
+      })
+    }
+  }
+
+  document.getElementById('search').addEventListener('keyup', (event) => {
+    const search = event.target.value.toLowerCase();
+    const servicos = document.querySelectorAll('.servico');
+    servicos.forEach(servico => {
+      const name = servico.getAttribute('data-name').toLowerCase();
+      if (name.includes(search)) {
+        servico.classList.remove('hidden');
+      } else {
+        servico.classList.add('hidden');
+      }
+    });
+  });
+
+
+  // Inicializa o valor formatado anterior como uma string vazia
+  let valorFormatadoAnterior = '';
+  $('#userWhatsapp').on('input change', function () {
+    // Obtém o valor atual do campo de entrada
+    var valorAtual = $(this).val();
+    // Remove qualquer caractere que não seja um dígito numérico
+    var valorNumerico = valorAtual.replace(/\D/g, '');
+
+    // Aplica a formatação de telefone: (11) 90011-2233
+    var valorFormatado = formatPhoneNumber(valorNumerico);
+
+    // Atualiza o campo de entrada com o valor formatado apenas se for diferente do valor anterior
+    // Isso impede que a formatação interfira na remoção de caracteres
+    if (valorFormatado !== valorFormatadoAnterior) {
+      $(this).val(valorFormatado);
+      // Atualiza o valor formatado anterior
+      valorFormatadoAnterior = valorFormatado;
+    }
+  });
+
+
+  // Ajuste o botão "Finalizar agendamento" para abrir o novo modal
+  document.querySelector('.btnPositive.finalizar').addEventListener('click', () => {
+    closeFinalizarReserva();
+    const sleep = setTimeout(() => {
+      openModalContato();
+      clearTimeout(sleep);
+    }, 100);
+  });
+
+
+  window.src = ScrollReveal({ reset: true })
+  src.reveal('.servico', {
+    rotate: { x: 0, y: 80, z: 0 },
+    duration: 2000
+  });
+</script>

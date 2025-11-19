@@ -1,0 +1,471 @@
+body {
+    font-family: Arial, sans-serif;
+    height: auto;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-size: 30px 30px;
+    background-position: -5px -5px;
+    /* color: white; */
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 600;
+}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+.mycontainer {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    position: relative;
+}
+
+header {
+    position: fixed;
+    z-index: 9;
+    top: 0;
+    width: 100%;
+    height: 100px;
+}
+
+header img {
+    margin: 0 20px;
+    height: 95px;
+}
+
+main {
+    width: 100%;
+    position: absolute;
+    margin-top: 100px;
+    color: white;
+    padding-bottom: 10px;
+}
+
+main .servicoBG {
+    width: 100%;
+}
+
+main .servicoBG .servico {
+    position: relative;
+    justify-content: space-between;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 20px 20px 0 20px;
+}
+
+main ul {
+    margin: 0px;
+    padding: 0px;
+    list-style-type: none;
+}
+
+main ul li {
+    font-weight: 300;
+    margin: 5px 0;
+}
+
+main ul li i {
+    font-size: 25px;
+    margin-right: 5px;
+}
+
+main .servicoBG .agendamentosBG {
+    position: relative;
+    top: 10px;
+    right: 20px;
+    padding: 0px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    /* box-shadow: 0 0 8px #ffffff96; */
+    
+}
+main .servicoBG .activeAgendamento {
+    /* animation: activeAgendamento 2s linear infinite forwards; */
+    /* background-color: white; */
+    /* color: green; */
+    /* box-shadow: 0px 0px 4px 2px white; */
+}
+
+.tooltip {
+    font-size: 10px;
+    width: auto;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    transform-origin: bottom;
+    padding: 0.3em 0.6em;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s;
+    background: white;
+    border: 1px solid gray;
+    color: black;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tooltipShow {
+    z-index: 1;
+    top: 0%;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) scale(1);
+  }
+  .tooltip::before {
+    position: absolute;
+    content: "";
+    height: 0.6em;
+    width: 0.6em;
+    bottom: -0.5em;
+    border: 1px solid gray;
+    left: 50%;
+    transform: translate(-50%) rotate(45deg);
+    background: white;
+  }
+  
+@keyframes activeAgendamento {
+    0% {
+        box-shadow: 0px 0px 4px 2px white;
+    }
+
+    50% {
+        box-shadow: 0px 0px 10px 4px green;
+    }
+
+    100% {
+        box-shadow: 0px 0px 4px 2px white;
+    }
+}
+
+
+
+main .agendamentos {
+    position: relative;
+    margin-right: 3px;
+}
+
+main .searchBG {
+    margin-top: 20px;
+}
+
+main .searchBG .search {
+    position: relative;
+    background: white;
+    width: 50%;
+    border-radius: 5px;
+}
+
+main .searchBG .search .input {
+    width: 100%;
+    padding: 10px 5px;
+    /* padding-right: 150px; */
+    position: relative;
+    border-radius: 5px;
+    border: 1px solid gray;
+    background-color: transparent;
+}
+
+main .searchBG .search .input:focus {
+    outline: none;
+    border-color: gray;
+    box-shadow: 0 0 5px white;
+}
+
+main .searchBG .search .iconBG {
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    height: calc(100% - 2px);
+    width: 140px;
+    position: absolute;
+    right: 1px;
+    padding: 0px;
+    background-color: #1b70f9;
+    cursor: pointer;
+}
+
+main .searchBG .search .iconBG i {
+    font-weight: bolder;
+    color: white;
+    font-size: 25px;
+}
+
+main .searchBG .search .iconBG:hover {
+    background-color: #2577f9;
+}
+
+footer {}
+
+
+.modalBG {
+    display: none;
+    width: 100%;
+    top: 0;
+    z-index: 2;
+    position: absolute;
+}
+
+.modalBG .mycontainer {
+    position: relative;
+    /* height: calc(100vh - 100px); */
+    background-color: #222;
+    background-image: radial-gradient(#cecece0c 2px, transparent 0);
+    background-size: 30px 30px;
+    background-position: -5px -5px;
+}
+
+.modalBG .content {
+    flex-direction: column;
+}
+
+.modalBG .content .profissionalContainer {
+    border-radius: 5px;
+    box-shadow: 0 0 5px white;
+    width: 70%;
+    /* box-shadow: 0px -5px 5px -5px #ffffff; */
+    /* sombra somente na parte de cima */
+    /* gap: 20px; */
+    flex-direction: column;
+    overflow: hidden;
+    flex-wrap: wrap;
+    padding: 30px 10px 30px 10px;
+    margin: 10px;
+}
+
+.modalBG .content .profissionalBG {
+    border-radius: 5px;
+    /* box-shadow: 0 0 5px white; */
+    /* box-shadow: 0px -5px 5px -5px #ffffff; */
+    /* sombra somente na parte de cima */
+    gap: 20px;
+    overflow: hidden;
+    flex-wrap: wrap;
+    padding: 10px;
+    margin: 10px;
+}
+
+.modalBG .content .profissionalBG .profissional {
+    flex-direction: column;
+    position: relative;
+    padding: 10px;
+    white-space: noWrap;
+    width: auto;
+    height: auto;
+    overflow: hidden;
+    border-radius: 3px;
+    box-shadow: 0 0 5px white;
+    cursor: pointer;
+}
+
+.modalBG .content .profissionalBG .profissional:hover {
+    box-shadow: 0 0px 5px 2px white;
+}
+
+.modalBG .content .profissionalBG .profissional .img {
+    width: 70px;
+    height: 70px;
+}
+
+.modalBG .content .profissionalBG .profissional .name {
+    margin-bottom: 20px;
+    text-align: center;
+    white-space: wrap;
+}
+
+.modalBG .content .profissionalBG .profissional .info {
+    font-size: 15px;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    color: white;
+    background-color: green;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+}
+
+.modalBG .content .diasContainer {
+    display: none;
+}
+
+.modalBG .content .diasContainer .mes {}
+
+.modalBG .content .diasContainer .diasBG {}
+
+.modalBG .content .diasContainer .diasBG .diaBG {
+    box-shadow: 0 0 5px white;
+}
+
+.modalBG .content .diasContainer .diasBG .diaBG:hover {
+    box-shadow: 0 5px 10px white;
+}
+
+.modalBG .content .diasContainer .diasBG .diaBG .name {}
+
+.modalBG .content .diasContainer .diasBG .diaBG .dia {}
+
+.modalBG .content .horariosContainer {
+    display: none;
+}
+
+.modalBG .content .horariosContainer .horariosBG {
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+
+}
+
+.modalBG .content .horariosContainer .horariosBG * {
+    padding: 0px;
+    margin: 0px;
+}
+
+.modalBG .content .horariosContainer .horariosBG .horario {
+    flex-direction: column;
+    /* position: relative; */
+    /* padding: 5px; */
+    white-space: noWrap;
+    overflow: hidden;
+    border-radius: 3px;
+    box-shadow: 0 0 5px white;
+    cursor: pointer;
+
+}
+
+.modalBG .content .horariosContainer .horariosBG .horario h3 {
+    pointer-events: none;
+}
+
+.modalBG .content .horariosContainer .horariosBG .horario:hover {
+    box-shadow: 0 0px 5px 2px white;
+    font-weight: bolder;
+}
+
+.modalBG .content .horariosContainer .horariosBG .selected {
+    background-color: green;
+    box-shadow: 0 0px 5px 2px white;
+    font-weight: bolder;
+}
+
+
+
+
+#modalContato,
+#finalizarReserva {
+    background-color: #ffffff3b;
+    height: 100vh;
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+}
+
+#modalContato .content,
+#finalizarReserva .content {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    height: auto;
+    max-height: 100vh;
+    width: 95%;
+    background-color: #222;
+    background-image: radial-gradient(#cecece0c 2px, transparent 0);
+    background-size: 30px 30px;
+    background-position: -5px -5px;
+    overflow: auto;
+}
+
+#modalContato .content .title,
+#finalizarReserva .content .title {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    margin-bottom: 10px;
+    padding: 20px;
+    background-color: #333;
+}
+
+#modalContato .content .option,
+#finalizarReserva .content .option {
+    margin: 2.5px 0;
+    justify-content: flex-end;
+    flex-direction: column;
+}
+#modalContato .content .option img,
+#finalizarReserva .content .option img {
+    width: 50px;
+}
+#modalContato .content .option i,
+#finalizarReserva .content .option i {
+    text-align: center;
+    width: 50px;
+    font-size: 25px;
+}
+
+
+
+@media screen and (max-width: 600px) {
+
+    main .searchBG .search .input {
+        padding-right: 30px;
+    }
+
+    main .searchBG .search .iconBG {
+        width: 50px;
+    }
+
+    .modalBG .content .profissionalContainer {
+        width: 90%;
+    }
+
+    #modalContato .content .option,
+    #finalizarReserva .content .option {
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+    #modalContato .content .option img,
+    #finalizarReserva .content .option img,
+    #modalContato .content .option i,
+    #finalizarReserva .content .option i {
+        margin-right: 10px;
+    }
+
+    #modalContato .content .option img,
+    #finalizarReserva .content .option img {
+        width: 30px;
+    }
+    #modalContato .content .option i,
+    #finalizarReserva .content .option i {
+        text-align: center;
+        width: 30px;
+        font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 374px) {
+
+    header img {
+        margin: 0 10px;
+        height: 80px;
+    }
+    header .name {
+        font-size: 20px;
+    }
+    main .servicoBG .servico {
+        display: block;
+    }
+
+    main .searchBG .search .iconBG {
+        width: auto;
+    }
+    
+#modalContato,
+#finalizarReserva {
+    z-index: 9;
+}
+}

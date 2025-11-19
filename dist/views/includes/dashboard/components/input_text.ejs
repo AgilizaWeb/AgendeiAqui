@@ -1,0 +1,15 @@
+<div id="bg_<%= id %>" class="<%= typeof hidden !== 'undefined' && hidden ? 'hidden' : 'flex' %> flex-col w-full">
+  <label class="max-xs:text-xs max-sm:text-sm <%= typeof labelclass !== 'undefined' && labelclass ? labelclass : '' %>" for="<%= id %>">
+    <%= typeof labelText !== 'undefined' && labelText ? labelText : placeholder %>
+    <span class="text-xs text-red-500 font-medium opacity-0">test</span>
+  </label>
+  <div class="relative flex items-center mb-1">
+    <i class="<%= icon %> text-xl absolute translate-x-1/2 flex z-[1]"></i>
+    <input <%= typeof off !== 'undefined' && off ? 'readonly' : '' %>
+    <%= typeof data !== 'undefined' && data ? data : '' %>
+    <%= typeof click !== 'undefined' && click ? `onclick=${click}('${id}')` : '' %>
+    <%= typeof pattern !== 'undefined' && pattern ? `pattern=${pattern}` : '' %>
+      class="w-full max-xs:text-xs max-sm:text-sm drop-shadow-sm focus:drop-shadow focus:outline-none bg-zinc-50 dark:bg-zinc-700 p-1 pl-10 border-[1px] border-zinc-100 dark:border-zinc-600 rounded bg-transparent flex <%= typeof myclass !== 'undefined' && myclass ? myclass : '' %>"
+      type="<%= typeof type !== 'undefined' && type ? type : 'text' %>" id="<%= id %>" name="<%= id %>" placeholder="<%= placeholder %>" value="<%= typeof value !== 'undefined' && value ? value : '' %>" <%= typeof hidden !== 'undefined' && hidden ? '' : 'required' %>>
+  </div>
+</div>

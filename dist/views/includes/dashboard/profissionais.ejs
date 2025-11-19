@@ -1,0 +1,365 @@
+<div class="w-full my-3 px-2">
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Profissionais
+    <% if (user.admin) { %>
+      <div class="absolute right-0">
+        <div onclick="toggleAddProfissional(false, true)"
+          class="shadow-sm shadow-green-600 hover:shadow-green-700 cursor-pointer group relative bg-green-500 hover:bg-green-600 flex items-center px-2 py-1 rounded-[1px] transition-all duration-300 overflow-hidden">
+          <span class="mr-8 text-zinc-200 font-semibold max-xss:text-xs">Add</span>
+          <i
+            class="text-white transition-all duration-300 group-hover:rotate-180 group-hover:w-full w-8 absolute fi fi-rr-plus bg-green-600 h-full right-0 flex items-center justify-center px-1"></i>
+        </div>
+      </div>
+      <% } %>
+
+  </h1>
+
+  <script>
+    $(document).ready(function () {
+      $('#filter-profissionais').change(function () {
+        filtersAgendamentos()
+      });
+
+
+      function filtersAgendamentos() {
+        var fp = $('#filter-profissionais').children("option:selected").val();
+
+        document.querySelectorAll('.profissionais_').forEach(element => {
+          let p = $(element).data('profissional-name')
+          if (fp === 'all' || p === fp) {
+            $(element).removeClass('hidden')
+          } else {
+            $(element).addClass('hidden')
+          }
+        });
+      }
+    })
+  </script>
+  <div class="border-y pb-2 py-1 px-3 <%= user.admin ? '' : 'hidden' %>">
+    <h2 class="font-bold mb-1 flex items-center"><i class="fi fi-br-search mr-1 flex"></i>Filtros:</h2>
+    <div class="w-full flex items-center flex-wrap justify-between gap-2">
+      <select id="filter-profissionais"
+        class="cursor-pointer block max-sm:text-xss bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 py-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">
+
+        <option class="" value="all">Profissionais</option>
+        <% profissionais.forEach(profissional=> { %>
+          <%# for (const id in profissionais) { %>
+            <option>
+              <%= profissional?.nome %>
+            </option>
+            <% }) %>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="w-full p-2 flex flex-col items-center gap-5">
+  <% for (const id in profissionais) { %>
+    <div data-profissional-name="<%= profissionais[id].nome %>" data-profissional-id="<%= id %>"
+      id="profissional_<%= id %>"
+      class="profissionais_ scrollView w-full flex flex-wrap justify-between items-center py-1 px-2 bg-zinc-50 dark:bg-black drop-shadow shadow shadow-zinc-900 dark:shadow-zinc-300 rounded">
+      <div class="mygrid w-full sm:h-full">
+        <h1 class="font-bold">Nome</h1>
+        <h1 class="font-bold text-center">Admin</h1>
+        <h1 class="font-bold text-center">Ações</h1>
+      </div>
+      <div class="mygrid w-full sm:h-full">
+
+        <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+          <h2 class="font-light leading-tight">
+            <%= profissionais[id].nome %>
+          </h2>
+        </div>
+
+        <div class="flex justify-center items-end max-xss:text-xss text-xs sm:text-base my-auto">
+          <h2 class="font-light leading-tight">
+            <%= profissionais[id].admin ? 'Sim' : 'Não' %>
+          </h2>
+        </div>
+        <div class="flex justify-center gap-1">
+          <button id="edit_<%= id %>" onclick="edit_profissional('<%= profissionais[id].whatsapp %>')"
+            class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white relative group">
+            <i class="fi fi-rs-user-gear flex text-2xl"></i>
+            <span
+              class="absolute z-1 pointer-events-none bg-zinc-600 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+              Editar</span>
+          </button>
+          <button id="delete_<%= id %>" onclick="delete_Profissional('<%= profissionais[id].whatsapp %>')"
+            class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-red-600 hover:bg-red-500 text-white relative group">
+            <i class="fi fi-sr-trash-xmark flex text-2xl"></i>
+            <span
+              class="absolute z-1 pointer-events-none bg-red-500 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+              Excluir</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <% } %>
+</div>
+<script>
+
+  function formatNumber(number) {
+    var valorNumerico = number;
+
+    // Aplica a formatação de telefone: (11) 99000-1122
+    var valorFormatado = '';
+    if (valorNumerico.length > 10) {
+      valorFormatado = valorNumerico.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    } else if (valorNumerico.length > 5) {
+      valorFormatado = valorNumerico.replace(/(\d{2})(\d{4})(\d*)/, '($1) $2-$3');
+    } else if (valorNumerico.length > 2) {
+      valorFormatado = valorNumerico.replace(/(\d{2})(\d*)/, '($1) $2');
+    } else {
+      valorFormatado = valorNumerico; // Sem formatação para menos de 3 dígitos
+    }
+    return valorFormatado;
+  }
+  let get_profissional = () => {
+
+    let inputs = ['profissional_input-name', 'profissional_input-contato', 'email_input-contato', 'pass_input-contato']
+    let foto = $('#pro-foto_prev_id').attr('src')
+    let adm = $('#isAdm_id').is(':checked') ? true : false;
+    let username = $('#' + inputs[0]).val();
+    let whatsapp = clearNumberZap($('#' + inputs[1]).val());
+    let email = $('#' + inputs[2]).val();
+    let password = $('#' + inputs[3]).val();
+
+    let atendimento = JSON.stringify({
+      empresa: $('#horario_empresa_id').is(':checked') ? true : false,
+      seg: {
+        disponivel: $('#pro-seg_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-seg_inicio_id').val(),
+        close: $('#pro-seg_fim_id').val()
+      },
+      ter: {
+        disponivel: $('#pro-ter_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-ter_inicio_id').val(),
+        close: $('#pro-ter_fim_id').val()
+      },
+      qua: {
+        disponivel: $('#pro-qua_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-qua_inicio_id').val(),
+        close: $('#pro-qua_fim_id').val()
+      },
+      qui: {
+        disponivel: $('#pro-qui_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-qui_inicio_id').val(),
+        close: $('#pro-qui_fim_id').val()
+      },
+      sex: {
+        disponivel: $('#pro-sex_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-sex_inicio_id').val(),
+        close: $('#pro-sex_fim_id').val()
+      },
+      sab: {
+        disponivel: $('#pro-sab_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-sab_inicio_id').val(),
+        close: $('#pro-sab_fim_id').val()
+      },
+      dom: {
+        disponivel: $('#pro-dom_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-dom_inicio_id').val(),
+        close: $('#pro-dom_fim_id').val()
+      }
+    })
+
+    console.log(atendimento)
+
+    let body = {
+      foto,
+      adm,
+      username,
+      whatsapp,
+      email,
+      password,
+      services,
+      atendimento
+    }
+
+    return body
+  }
+
+  let inputs = ['profissional_input-name', 'profissional_input-contato', 'email_input-contato', 'pass_input-contato']
+  async function edit_profissional(whatsapp) {
+    let req = await requestPost('/v1/get_profissional', { whatsapp })
+    whatsapp = whatsapp.substring(2)
+    console.log('req: ', req)
+    if (req?.success) {
+      let pro_ = req.profissional
+      let login_ = req.login
+      let atendimento = pro_.atendimento.map(a => {
+        return {
+          [a.dia]: {
+            disponivel: a.disponivel,
+            open: a.open,
+            close: a.close
+          }
+        }
+      }).reduce((acc, cur) => {
+        return { ...acc, ...cur }
+      }, {})
+      console.log('atendimento:', atendimento)
+
+
+      pro_.services.forEach((service) => {
+        // for (const id in pro_.services) {
+        const id = service.id
+        services.push(id)
+        $(`#${id}-service_id`).prop('checked', true)
+      })
+
+      let foto = $('#pro-foto_prev_id').attr('src', 'v1/getlogoprofissional/' + pro_.uuid)
+      let adm = $('#isAdm_id').prop('checked', pro_.admin)
+      $('#profissional_input-comissao').val(pro_.comissao)
+      let username = $('#' + inputs[0]).val(pro_.nome);
+      // $('#' + inputs[1]).attr('data-old_zap', (whatsapp));
+      $('#' + inputs[1]).data('old_zap', (whatsapp));
+      // console.log(`$('#' + inputs[1]).data('old_zap');`, $('#' + inputs[1]).data('old_zap'))
+      $('#' + inputs[1]).val(formatNumber(whatsapp));
+      const permission = login_.permission; // 1 para o dono e se for o dono não pode editar o email, senha e whatsapp
+      $('#' + inputs[2]).prop('readonly', permission === 1);
+      $('#' + inputs[3]).prop('readonly', permission === 1);
+      $('#' + inputs[1]).prop('readonly', permission === 1); 
+      function clickInput() {
+        if (permission === 1) {
+          aToast('Você esta logado como dono e não pode editar o email, senha e whatsapp apartir do profissional, acesse a area de perfil para editar esses dados.', {
+            type: 'error',
+            progress: true,
+            duration: 10000
+          })
+        }
+      }
+      // definir clickInput como o evento de clique para o elemento com o ID 'email_input-contato'
+      document.getElementById(inputs[2]).onclick = clickInput;
+      document.getElementById(inputs[3]).onclick = clickInput;
+      document.getElementById(inputs[1]).onclick = clickInput;
+       
+      let email = $('#' + inputs[2]).val(login_.email);
+      // let password = $('#' + inputs[3]).val(login_.password);
+      // $('#' + inputs[3]).data('old_password', (login_.password));
+
+      if (!pro_?.atendimento_empresa) {
+        $('#horarios_empresa_id_add_pro').removeClass('pointer-events-none')
+      } else {
+        $('#horarios_empresa_id_add_pro').addClass('pointer-events-none')
+      }
+      $('#horario_empresa_id').prop('checked', pro_?.atendimento_empresa)
+      $('#pro-seg_aberto_id').prop('checked', atendimento?.seg?.disponivel)
+      $('#pro-seg_inicio_id').val(atendimento?.seg?.open)
+      $('#pro-seg_fim_id').val(atendimento?.seg?.close)
+
+      $('#pro-ter_aberto_id').prop('checked', atendimento?.ter?.disponivel)
+      $('#pro-ter_inicio_id').val(atendimento?.ter?.open)
+      $('#pro-ter_fim_id').val(atendimento?.ter?.close)
+
+      $('#pro-qua_aberto_id').prop('checked', atendimento?.qua?.disponivel)
+      $('#pro-qua_inicio_id').val(atendimento?.qua?.open)
+      $('#pro-qua_fim_id').val(atendimento?.qua?.close)
+
+      $('#pro-qui_aberto_id').prop('checked', atendimento?.qui?.disponivel)
+      $('#pro-qui_inicio_id').val(atendimento?.qui?.open)
+      $('#pro-qui_fim_id').val(atendimento?.qui?.close)
+
+      $('#pro-sex_aberto_id').prop('checked', atendimento?.sex?.disponivel)
+      $('#pro-sex_inicio_id').val(atendimento?.sex?.open)
+      $('#pro-sex_fim_id').val(atendimento?.sex?.close)
+
+      $('#pro-sab_aberto_id').prop('checked', atendimento?.sab?.disponivel)
+      $('#pro-sab_inicio_id').val(atendimento?.sab?.open)
+      $('#pro-sab_fim_id').val(atendimento?.sab?.close)
+
+      $('#pro-dom_aberto_id').prop('checked', atendimento?.dom?.disponivel)
+      $('#pro-dom_inicio_id').val(atendimento?.dom?.open)
+      $('#pro-dom_fim_id').val(atendimento?.dom?.close)
+      toggleAddProfissional(false)
+      return
+    }
+    aToast(req.message, {
+      type: 'error'
+    })
+  }
+
+  async function delete_Profissional(whatsapp) {
+    let confirm = await showConfirm('Tem certeza que deseja deletar este profissional', { type: 'error', btn_yes: 'Deletar', btn_no: 'Cancelar' })
+    if (!confirm) {
+      return
+    }
+
+    let req = await requestPost('/v1/delete_profissional', { whatsapp })
+    console.log('req: ', req)
+    if (req?.success) {
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+      aToast(req.message, {
+        type: 'success'
+      })
+      return
+    }
+    aToast(req.message, {
+      type: 'error'
+    })
+  }
+
+  let agendamento_editado = {
+    service: Number,
+    service_id: Number,
+    profissional: '',
+    data: '',
+    inicio: ''
+  }
+  async function showEditAgendamentos(service, service_id, profissional, data, inicio) {
+    agendamento_editado = {
+      service,
+      service_id,
+      profissional,
+      data,
+      inicio
+    }
+
+    console.log(service, service_id, profissional, data, inicio)
+    toggleEditAgendamento(false)
+    $('#edit_data_agendamento').val(data)
+    $('#edittext_inicio_agendamento').val(inicio)
+    $('#edit_inicio_agendamento').html('')
+    // $('#edit_inicio_agendamento').html(`<h1 onclick="getHorarios()" class="w-full flex justify-center items-center">Inicio: ${inicio}
+    //         <i class="fi fi-rs-edit ml-1 flex text-green-500"></i> </h1>`)
+    $('#edit_inicio_agendamento').addClass('flex justify-center bg-zinc-600 hover:bg-zinc-500')
+    $('#edit_inicio_agendamento').removeClass('mygrid')
+
+    let req = await requestPost('../v1/getdatasdisponiveis', { profissional })
+    console.log('req success ag: ', req)
+    setDatapicker('edit_data_agendamento', req.res)
+  }
+
+  async function alterarStatus(status = Number(status), index = Number(index), service = String) {
+
+    const body = {
+      "status": Number(status),
+      "service": service,
+      "service_id": Number(index)
+    }
+    // alert(body)
+    console.log('body:', body)
+    let req = await requestPost('/v1/alterarstatus', body)
+    console.log('req: ', req)
+    if (req?.success) {
+      $(`#0_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      $(`#1_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      $(`#2_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      $(`#3_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+
+      $(`#${status}_${service}_${index}`).find('i').removeClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      console.log('remove:', status === 2)
+      if (Number(status) === 2) {
+        console.log('element_remove:', `#agendamento_${service}_${index}`)
+        $(`#agendamento_${service}_${index}`).remove()
+      }
+      toastr.success(req.message)
+      return
+    }
+    toastr.error(req.message)
+    console.log(status, index, service)
+  }
+</script>

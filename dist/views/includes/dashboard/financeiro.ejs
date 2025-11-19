@@ -1,0 +1,416 @@
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/datatables/css/jquery.dataTables.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/select2/css/select2.min.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/select2.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/css/slim.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/slim.css" />
+
+<div class="w-full max-sm:px-2 px-5 md:px-14 my-3">
+  <!-- <h1 class="mb-4 text-center text-2xl font-bold">Clientes</h1> -->
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Controle Financeiro
+
+    <!-- <div class="absolute right-0">
+      <div onclick="toggleAddCliente(false, true)"
+        class="shadow-sm shadow-green-600 hover:shadow-green-700 cursor-pointer group relative bg-green-500 hover:bg-green-600 flex items-center px-2 py-1 rounded-[1px] transition-all duration-300 overflow-hidden">
+        <span class="mr-8 text-zinc-200 font-semibold max-xss:text-xs">Add</span>
+        <i
+          class="text-white transition-all duration-300 group-hover:rotate-180 group-hover:w-full w-8 absolute fi fi-rr-plus bg-green-600 h-full right-0 flex items-center justify-center px-1"></i>
+      </div>
+    </div> -->
+
+  </h1>
+  <form id="searchForm" class="mb-4 mt-5 flex justify-end max-sm:justify-center items-center flex-wrap gap-2">
+    <!-- <span class="">Filtrar</span> -->
+    <!-- <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-2 items-center flex-wrap"> -->
+      <div class="flex justify-center items-center flex-wrap gap-2">
+        <div class="relative">
+          <label for="startDate" class="absolute -top-1/2">Data de Início</label>
+          <input type="date" class="px-2 py-3 max-sm:px-1 max-sm:py-2 max-sm:text-xs text-sm border border-zinc-500 dark:border-zinc-200 bg-zinc-100 dark:bg-zinc-700 text-black dark:text-white rounded" id="startDate" name="startDate">
+        </div>
+        <div class="relative">
+          <label for="endDate" class="absolute -top-1/2">Data de Fim</label>
+          <input type="date" class="px-2 py-3 max-sm:px-1 max-sm:py-2 max-sm:text-xs text-sm border border-zinc-500 dark:border-zinc-200 bg-zinc-100 dark:bg-zinc-700 text-black dark:text-white rounded" id="endDate" name="endDate">
+        </div>
+      </div>
+      <div class="h-full">
+        <button type="button" class="flex items-center justify-center px-2 py-3 max-sm:px-1 max-sm:py-2 max-sm:text-xs text-sm border border-zinc-500 dark:border-zinc-200 rounded bg-blue-500" onclick="filterByDate()">
+          Pesquisar<i class="fi fi-bs-search flex ml-1"></i>
+        </button>
+      </div>
+    <!-- </div> -->
+  </form>
+
+
+
+  <div class="table-wrapper table-responsive">
+    <!-- <div class="overflow-auto"> -->
+    <table id="datatableFinanceiro"
+      class="text-gray-400 border-separate space-y-6 text-sm table display responsive nowrap dataTable no-footer dtr-inline collapsed"
+      style="width: 100%;">
+      <thead class="bg-zinc-700 text-white">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3 text-center">Data</th>
+          <th class="p-3 text-center">Serviço</th>
+          <th class="p-3 text-center">Preço</th>
+          <th class="p-3 text-center">Profissional</th>
+          <th class="p-3 text-center">comissão</th>
+          <th class="p-3 text-center">Lucro</th>
+        </tr>
+      </thead>
+      <tbody id="faturasTable">
+        <% let services = {};
+        let lucroTotal=0; 
+        let lucroTotalProfissional=0; %>
+          <% agendamentos.forEach(agendamento=> { services[agendamento.service.id] ? services[agendamento.service.id].total += 1 : services[agendamento.service.id] = { name: agendamento.service.name, value: agendamento.service.value, comissao: agendamento.profissional.comissao, total: 1} %>
+            <% const lucroProfissional=parseFloat(agendamento.service.value) * (agendamento.profissional.comissao /
+              100); const lucro=parseFloat(agendamento.service.value) - lucroProfissional; lucroTotal +=lucro
+              lucroTotalProfissional +=lucroProfissional %>
+              <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+                <td class="p-3 text-center font-medium">
+                  <%= agendamento.id %>
+                </td>
+                <td class="p-3 text-center font-medium">
+                  <%= agendamento.data %>
+                </td>
+                <td class="p-3 text-center font-medium">
+                  <%= agendamento.service.name %>
+                </td>
+                <td class="p-3 text-center font-medium capitalize"> R$
+                  <%= new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2
+                    }).format(parseFloat(agendamento.service.value)) %>
+                </td>
+                <td class="p-3 text-center font-medium">
+                  <%= agendamento.profissional.nome %>
+                </td>
+                <td class="p-3 text-center font-medium">
+                  <%= agendamento.profissional.comissao %>%
+                </td>
+                <td class="p-3 text-center font-medium capitalize"> R$
+                  <%= new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2
+                    }).format(lucro) %>
+                </td>
+              </tr>
+              <% }) %>
+                <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+                  <td class="p-3 text-center">Lucro Total</td>
+                  <td class="p-3"></td>
+                  <td class="p-3"></td>
+                  <td class="p-3"></td>
+                  <td class="p-3"></td>
+                  <td class="p-3"></td>
+                  <td class="p-3 text-center font-medium capitalize"> R$
+                    <%= new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2
+                      }).format(lucroTotal) %>
+                  </td>
+      </tbody>
+    </table>
+    <div class="grid grid-cols-2 max-sm:grid-cols-1 gap-4 mt-4 bg-zinc-50 dark:bg-zinc-900 rounded">
+      <div class="flex flex-col items-center justify-start">
+        <h1>Lucro Empresa x Profissionais</h1>
+        <div id="chartLucros"></div>
+      </div>
+      <div class="flex flex-col items-center justify-start">
+        <h1>Lucro por serviço</h1>
+        <div id="chartServices"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+  
+  <%- include('../script_tables/js.ejs') %>
+
+<script>
+  const startDate = document.querySelector('#startDate');
+  const endDate = document.querySelector('#endDate');
+  const currentDate = new Date();
+  const currentDateString = currentDate.toISOString().split('T')[0];
+  const inicioMes = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0];
+  const fimMes = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0];
+  startDate.value = inicioMes;
+  endDate.value = fimMes;
+
+  function filterByDate() {
+    const datainicial = startDate.value;
+    const datafinal = endDate.value;
+    let toast = aToast("Aguarde...", {
+      type: 'promise',
+      position: 'center',
+      animation: 'bottom-to-top',
+      breakWindow: true,
+    });
+
+    $.ajax({
+      url: '/v1/getagendamntos',
+      method: 'POST',
+      data: { datainicial, datafinal },
+      success: function (data) {
+        const { success, message, response } = data;
+        console.log('response:', response);
+        const { agendamentos, services, lucroTotal, lucroTotalProfissional } = response;
+        if (success) {
+          // atualizar tabela
+          let table = '';
+          agendamentos.forEach(agendamento => {
+            const lucroProfissional = parseFloat(agendamento.service.value) * (agendamento.profissional.comissao / 100);
+            const lucro = parseFloat(agendamento.service.value) - lucroProfissional;
+            table += `
+              <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+                <td class="p-3 text-center font-medium">
+                  ${agendamento.id}
+                </td>
+                <td class="p-3 text-center font-medium">
+                  ${agendamento.data}
+                </td>
+                <td class="p-3 text-center font-medium">
+                  ${agendamento.service.name}
+                </td>
+                <td class="p-3 text-center font-medium capitalize"> R$
+                  ${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseFloat(agendamento.service.value))}
+                </td>
+                <td class="p-3 text-center font-medium">
+                  ${agendamento.profissional.nome}
+                </td>
+                <td class="p-3 text-center font-medium">
+                  ${agendamento.profissional.comissao}%
+                </td>
+                <td class="p-3 text-center font-medium capitalize"> R$
+                  ${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(lucro)}
+                </td>
+              </tr>
+            `;
+          });
+          table += `
+            <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+              <td class="p-3 text-center">Lucro Total</td>
+              <td class="p-3"></td>
+              <td class="p-3"></td>
+              <td class="p-3"></td>
+              <td class="p-3"></td>
+              <td class="p-3"></td>
+              <td class="p-3 text-center font-medium capitalize"> R$
+                ${new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(lucroTotal)}
+              </td>
+            </tr>
+          `;
+          $('#datatableFinanceiro').DataTable().destroy();
+          document.querySelector('#faturasTable').innerHTML = table;
+          $('#datatableFinanceiro').DataTable({
+            "order": [[1, "desc"]],
+            responsive: true,
+            language: {
+              searchPlaceholder: 'Buscar...',
+              sSearch: '',
+              lengthMenu: '_MENU_ ítens',
+            }
+          });
+          $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+          // Atualizar gráficos
+          showChartLucros(lucroTotal, lucroTotalProfissional);
+          showChartServices(services);
+        } else {
+        }
+        aToastUpdate(toast, success ? 'success' : 'error',  message, success ? 1000 : 5000);
+
+      },
+      error: function (error) {
+        console.error('Erro ao buscar estatísticas:', error);
+      }
+    });
+  }
+  
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  let chartLucros;
+  showChartLucros(<%= lucroTotal %>, <%= lucroTotalProfissional %>);
+  function showChartLucros(totalEmpresa, totalProfissional) {
+    const total = totalEmpresa + totalProfissional;
+    const series = [totalEmpresa, totalProfissional];
+    const labels = ["Empresa", "Profissionais"];
+
+    // verifica se ja existe um chart, se sim, destruir
+    if (chartLucros) {
+      chartLucros.destroy();
+    }
+    const options = {
+      series,
+      chart: {
+        width: 390,
+        type: 'donut',
+      },
+      plotOptions: {
+        pie: {
+          startAngle: -90,
+          endAngle: 270,
+        },
+      },
+      dataLabels: {
+        formatter(val, opts) {
+          const lucro = opts.w.globals.series[opts.seriesIndex];
+          const name = opts.w.globals.labels[opts.seriesIndex]
+          console.log('lucro:', lucro)
+          return 'R$' + new Intl.NumberFormat('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }).format(lucro)
+        }
+      },
+      fill: {
+        type: 'gradient',
+      },
+      labels,
+      // title: {
+      //   text: 'Lucro Empresa x Profissionais',
+      //   style: {
+      //     color: 'gray',
+      //   }
+      // },
+  legend: {
+    show: true,
+    position: 'top',
+  },
+  tooltip: {
+    y: {
+      formatter: function (val) {
+        const porcentagem = (val * 100) / total;
+        return porcentagem.toFixed(2) + '%'
+      }
+    }
+  },
+      // responsive: [{
+      //   breakpoint: 480,
+      //   options: {
+      //     chart: {
+      //       width: 200
+      //     },
+      //     legend: {
+      //       show: true
+      //     }
+      //   }
+      // }]
+    };
+
+    chartLucros = new ApexCharts(document.querySelector("#chartLucros"), options);
+    chartLucros.render();
+  }
+</script>
+
+<script>
+  function calcularPorcentagem(total, valor) {
+    return ((valor * 100) / total).toFixed(2);
+  }
+  const services = <%- JSON.stringify(services) %>;
+  console.log('services:', services)
+  let chartServices;
+  showChartServices(services);
+  function showChartServices(services) {
+
+    if (chartServices) {
+      chartServices.destroy();
+    }
+    const series = Object.values(services).map(service => service.total);
+    const labels = Object.values(services).map(service => service.name);
+    const valores = Object.values(services).map(service => (service.value * service.total) - (service.value * service.comissao / 100));
+
+    const valorTotal = valores.reduce((acc, cur) => acc + cur, 0);
+    const seriesPorcentagem = valores.map(valor => calcularPorcentagem(valorTotal, valor));
+    // console.log('seriesPorcentagem:', seriesPorcentagem)
+
+
+
+
+    const options = {
+          series: seriesPorcentagem,
+          chart: {
+          width: 390,
+          type: 'radialBar',
+        },
+        plotOptions: {
+          radialBar: {
+            offsetY: 0,
+            startAngle: 0,
+            endAngle: 270,
+            hollow: {
+              margin: 5,
+              size: '50%',
+              background: 'transparent',
+              image: undefined,
+            },
+            dataLabels: {
+              name: {
+                show: false,
+              },
+              value: {
+                show: true,
+              },
+            },
+            barLabels: {
+              enabled: true,
+              useSeriesColors: true,
+              offsetX: -8,
+              fontSize: '16px',
+              formatter: function(seriesName, opts) {
+                return seriesName+' R$'+ new Intl.NumberFormat('pt-BR', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                }).format(valores[opts.seriesIndex])
+              },
+            },
+          }
+        },
+        // colors: ['#1ab7ea', '#0084ff', '#39539E', '#0077B5'],
+        labels,
+      // title: {
+      //   text: 'Lucro por serviço',
+      //   align: 'center',
+      //   style: {
+      //     color: 'gray',
+      //   }
+      // },
+        // responsive: [{
+        //   breakpoint: 480,
+        //   options: {
+        //   chart: {
+        //     width: 300
+        //   },
+        //     legend: {
+        //         show: false
+        //     }
+        //   }
+        // }]
+        };
+
+       chartServices = new ApexCharts(document.querySelector("#chartServices"), options);
+        chartServices.render();
+  }
+</script>
+
+
+<script>
+  document.querySelectorAll('.contact').forEach(contact => {
+    let text = contact.innerText;
+    contact.innerText = formatPhoneNumber(text);
+  });
+  $(function () {
+    'use strict';
+
+    $('#datatableFinanceiro').DataTable({
+      "order": [[1, "desc"]],
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Buscar...',
+        sSearch: '',
+        lengthMenu: '_MENU_ ítens',
+      }
+    });
+
+    // Select2
+    $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+  });
+</script>

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Empresa</title>
+
+  <link rel="stylesheet" type="text/css" href="../css/utils/input.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/calendario.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/buttons.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/btn_close.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/form.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/grid.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/switch.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/card.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/animations.css">
+  <link rel="stylesheet" type="text/css" href="../css/utils/utils.css">
+  <link rel="stylesheet" type="text/css" href="../css/empresa.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://unpkg.com/scrollreveal"></script>
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
+
+</head>
+
+<body>
+
+  <div class="container">
+    <header class="vCenter card">
+      <div class="vCenter">
+        <img src="../images/logo.jpeg" alt="logo">
+        <h2 class="name">Barbarus Barbearia</h2>
+      </div>
+    </header>
+
+    <main>
+
+      <div id="finalizarReserva" class="vBottom hCenter">
+        <div class="card content">
+          <div class="fullH displayCenter title">
+            <h3>Serviço adicionado</h3>
+            <div style="width: 90%; position: absolute;" class="hRight">
+              <div onclick="closeFinalizarReserva()" class="close-container hCenter">
+                <div class="leftright"></div>
+                <div class="rightleft"></div>
+                <label class="close">fechar</label>
+              </div>
+            </div>
+
+          </div>
+          <div class="displayCenter fullH">
+            <div style="width: 100%;">
+              <h4 style="color: gray; border-bottom: 1px solid #333; padding: 0px 0px 5px 10px; width: auto;">
+                Agendamento atual</h4>
+              <div class="grid" style="
+              margin: 10px 0;
+              gap: 0;
+              padding: 0 10px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+
+                <div class="option vCenter">
+                  <i class="bi bi-pin-angle"></i>
+                  <p id="svName"></p>
+                </div>
+                <!-- <div class="option vCenter">
+                  <i class="bi bi-stopwatch"></i>
+                  <p id="svTime"></p>
+                </div>
+                <div class="option vCenter">
+                  <i class="bi bi-currency-dollar"></i>
+                  <p id="svValue"></p>
+                </div> -->
+                <div class="option vCenter">
+                  <i class="bi bi-calendar2-event"></i>
+                  <p id="svData"></p>
+                </div>
+                <div class="option vCenter">
+                  <img class="img" src="../images/m.png" alt="ico2">
+                  <p id="svProf"></p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="displayCenter">
+            <div style="width: 100%; padding: 20px; border-top: 1px solid #333; flex-direction: column; display: grid; grid-template-columns: minmax(50px, 1fr);">
+              <button class="btnPositive" style="margin: 3px 0;" type="button">Finalizar agendamento</button>
+              <button onclick="closeFinalizarReserva()" class="btnYellow" style="margin: 3px 0;" type="button">Agendar novo serviço</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="servicoBG">
+
+
+        <div id="modalBG" class="modalBG">
+          <div class="container">
+            <div style="width: 90%;" class="hRight">
+              <div onclick="openModal()" class="close-container hCenter">
+                <div class="leftright"></div>
+                <div class="rightleft"></div>
+                <label class="close">fechar</label>
+              </div>
+            </div>
+
+            <div class="content displayCenter">
+
+              <h3>Serviço selecionado: barba</h3>
+
+              <div class="profissionalContainer">
+                <h3>Selecione o profissional</h3>
+                <div class="profissionalBG grid">
+
+                  <div onclick="selectProfissional('Francisco santos')" class="profissional vCenter">
+                    <img class="img" src="../images/h.png" alt="ico">
+                    <p class="name">Francisco santos</p>
+                    <p class="info">Ver Horários</p>
+                  </div>
+
+                  <div onclick="selectProfissional('joana')" class="profissional vCenter">
+                    <img class="img" src="../images/m.png" alt="ico2">
+                    <p class="name">Joana</p>
+                    <p class="info">Ver Horários</p>
+                  </div>
+
+                </div>
+                <!-- </div> -->
+
+                <div id="dias" class="diasContainer">
+                  <h3>Selecione o dia</h3>
+
+                  <div class="diasBG grid">
+
+                    <div id="calendar">
+                      <div id="calendar-header">
+                        <span id="month-prev" class="changeLeft">&lt;</span>
+                        <h3 id="month"></h3>
+                        <span id="month-next" class="changeRight">&gt;</span>
+                      </div>
+                      <div id="days"></div>
+                      <div id="calendar-body"></div>
+                    </div>
+
+                  </div>
+                </div>
+
+
+                <div id="horarios" class="horariosContainer">
+                  <h4>Selecione o horario de incio</h4>
+                  <div class="horariosBG grid">
+
+                    <div onclick="selectHorario('09:00', event)" class="horario displayCenter">
+                      <h3>09:00</h3>
+                    </div>
+
+                    <div onclick="selectHorario('10:00', event)" class="horario displayCenter">
+                      <h3>10:00</h3>
+                    </div>
+
+                    <div onclick="selectHorario('11:00', event)" class="horario displayCenter">
+                      <h3>11:00</h3>
+                    </div>
+
+                    <div onclick="selectHorario('12:00', event)" class="horario displayCenter">
+                      <h3>12:00</h3>
+                    </div>
+
+                    <div onclick="selectHorario('13:00', event)" class="horario displayCenter">
+                      <h3>13:00</h3>
+                    </div>
+
+                    <div onclick="selectHorario('14:00', event)" class="horario displayCenter">
+                      <h3>14:00</h3>
+                    </div>
+
+                    <div onclick="selectHorario('15:00', event)" class="horario displayCenter">
+                      <h3>15:00</h3>
+                    </div>
+
+                  </div>
+                </div>
+
+
+
+
+
+
+
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+        <div class="vCenter hRight">
+
+          <div class="vCenter agendamentosBG">
+            <div class="displayCenter agendamentos">
+              <i style="font-size: 40px;" class="bi bi-calendar4"></i>
+              <span class="tooltip">AGENDAMENTOS</span>
+              <p id="totalAgendamentos" style="font-weight: bolder; height: 20px; width: 20px; text-align: center; position: absolute; margin-top: 8px; border-radius: 50%; background-color: white;">0</p>
+            </div>
+            <p>Finalizar agendamentos</p>
+          </div>
+
+        </div>
+
+        <div class="fullH hCenter searchBG">
+          <div class="vCenter search">
+            <input class="input" type="text" id="search" name="search" placeholder="Pesquisar serviço">
+            <span class="displayCenter iconBG"><i class="bi bi-search"></i></span>
+          </div>
+        </div>
+
+
+        <div class="servico vCenter">
+          <ul>
+            <li><i class="bi bi-pin-angle"></i>Barba</li>
+            <li><i class="bi bi-stopwatch"></i>30min</li>
+            <li><i class="bi bi-currency-dollar"></i>Apartir de R$ 300,00</li>
+          </ul>
+          <button onclick="reservar()" class="btnPositive"><i class="bi bi-calendar-check"></i>Reservar</button>
+        </div>
+
+
+
+      </div>
+    </main>
+
+    <footer>
+
+    </footer>
+
+  </div>
+
+</body>
+
+</html>
+<script src="../js/utils.js"></script>
+<script src="../js/utils/calendario.js"></script>
+<script>
+
+  const meuAgendamento = {
+    user: {
+      name: "",
+      whatsapp: ""
+    },
+    servico: {
+      name: "",
+      time: "",
+      value: "",
+    },
+    profissional: {
+      id: "",
+      name: ""
+    },
+    agendamento: {
+      dia: "",
+      mes: "",
+      ano: "",
+      diaName: "",
+      horario: "",
+    }
+  }
+  const agenda = []
+  setAgendamentos()
+
+  function reservar(id) {
+    let name = 'barba';
+    let time = '30 minutos';
+    let value = 'Apartir de R$ 300,00';
+
+    meuAgendamento.servico.name = name;
+    meuAgendamento.servico.time = time;
+    meuAgendamento.servico.value = value;
+    openModal()
+    console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+  }
+
+  function openModal() {
+
+    let display = getID('modalBG').style.display
+    if (!display || display === 'none') {
+      getID('modalBG').style.display = 'block'
+      document.querySelector('#modalBG .container').style.animation = 'slideToButtom 1s ease-in forwards'
+    } else {
+      document.querySelector('#modalBG .container').style.animation = 'slideToTop 0.5s ease-in forwards'
+      setTimeout(() => {
+        getID('modalBG').style.display = 'none'
+      }, 500);
+    }
+
+  }
+
+
+  function selectedDate(dia, mes, ano, diaName) {
+    meuAgendamento.agendamento.dia = dia;
+    meuAgendamento.agendamento.mes = mes;
+    meuAgendamento.agendamento.ano = ano;
+    meuAgendamento.agendamento.diaName = diaName;
+    document.getElementById('horarios').style.display = 'block'
+    window.location.href = '#horarios'
+    console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+  }
+  function selectProfissional(id) {
+
+    meuAgendamento.profissional.id = id;
+    meuAgendamento.profissional.name = id;
+    document.getElementById('dias').style.display = 'block'
+    window.location.href = '#dias'
+    renderCalendar(selectedDate);
+    console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+  }
+
+
+
+  function selectHorario(hr, event) {
+
+    let elements = document.querySelectorAll('.modalBG .content .horariosContainer .horariosBG .horario');
+
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].classList.remove('selected')
+    }
+
+    event.target.classList.add('selected')
+
+    meuAgendamento.agendamento.horario = hr;
+    console.log('meuAgendamento: ', JSON.stringify(meuAgendamento))
+
+    let data = () => {
+      let dia = meuAgendamento.agendamento.dia
+      let mes = meuAgendamento.agendamento.mes
+      let ano = meuAgendamento.agendamento.ano
+      let diaName = meuAgendamento.agendamento.diaName
+      let horario = meuAgendamento.agendamento.horario
+      let r = `${diaName}, ${dia}/${mes}/${ano} - ${horario}`
+      return r
+    }
+
+    getID('svName').textContent = 'Serviço: ' + meuAgendamento.servico.name
+    // getID('svTime').textContent = 'Tempo: ' + meuAgendamento.servico.time
+    // getID('svValue').textContent = 'Valor: ' + meuAgendamento.servico.value
+    getID('svProf').textContent = 'Profissional: ' + meuAgendamento.profissional.name
+    getID('svData').innerHTML = data()
+    // openModal()
+    getID('modalBG').style.display = 'none'
+
+    let display = getID('finalizarReserva').style.display
+    if (!display || display === 'none') {
+      getID('finalizarReserva').style.display = 'flex'
+      document.querySelector('#finalizarReserva .content').style.animation = 'slideToTop2 1s ease-in forwards'
+    }
+
+    agenda.push(meuAgendamento)
+    console.log(agenda)
+    setAgendamentos()
+  }
+
+  function setAgendamentos(){
+    let number = +agenda.length
+    if (number > 0){
+      getID('totalAgendamentos').style.color = 'green'
+      document.querySelector('.agendamentosBG .agendamentos  .tooltip').classList.add('tooltipShow')
+      document.querySelector('main .servicoBG .agendamentosBG').classList.add('activeAgendamento')
+    }else{
+      getID('totalAgendamentos').style.color = 'black'
+      document.querySelector('.agendamentosBG .agendamentos .tooltip').classList.remove('tooltipShow')
+      document.querySelector('main .servicoBG .agendamentosBG').classList.remove('activeAgendamento')
+    }
+    getID('totalAgendamentos').textContent = number
+  }
+
+
+  function closeFinalizarReserva() {
+
+    let display = getID('finalizarReserva').style.display
+    if (display || display !== 'none') {
+      document.querySelector('#finalizarReserva .content').style.animation = 'slideToButtom2 0.5s ease-in forwards'
+      setTimeout(() => {
+        getID('finalizarReserva').style.display = 'none'
+      }, 500);
+    }
+
+  }
+
+
+
+
+  window.src = ScrollReveal({ reset: true })
+  src.reveal('.servico', {
+    rotate: { x: 0, y: 80, z: 0 },
+    duration: 2000
+  });
+</script>

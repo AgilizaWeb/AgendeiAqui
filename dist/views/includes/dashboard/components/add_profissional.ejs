@@ -1,0 +1,387 @@
+<form onsubmit="addProfissional(event)" id="add_profissional_bg"
+  class="fixed z-50 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full h-full relative flex justify-center items-center">
+    <div
+      class="bg-zinc-100 dark:bg-black p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[99vh] overflow-auto animate-slideBottomToTop">
+      <h1 id="title_addProfissional" class="w-full mb-3 font-bold">Adicionar profissional</h1>
+
+      <div id="bg-test">
+        <div class="w-full flex flex-col items-center">
+          <img id="pro-foto_prev_id" src="images/person.png" class="w-16 mb-2" alt="foto do profissional">
+          <div class="mb-4">
+            <label for="foto_upload_id"
+              class="text-white text-center flex items-center px-4 py-1 rounded-sm cursor-pointer bg-blue-500 hover:bg-blue-600">
+              <i class="fi fi-br-picture mr-1 flex text-green-500"></i>Definir foto do profissional
+            </label>
+            <input id="foto_upload_id" type="file" accept="image/*" class="hidden">
+          </div>
+        </div>
+        <div
+          class="<%=user.admin ? '' : 'hidden'%> flex gap-1 items-center mt-2 relative bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+          <%- include('./checkbox.ejs', {id: `isAdm_id`}) %>
+            <span>Administrador</span>
+        </div>
+        <%- include('./input_text.ejs', { id: 'profissional_input-name' , icon: 'fi fi-rs-user-pen' ,
+          placeholder: 'Nome' }) %>
+          <%- include('./input_text.ejs', { id: 'profissional_input-contato' , icon: 'fi fi-brands-whatsapp' ,
+            placeholder: 'Whatsapp ex: (11) 99900-1122' , type: 'tel' , pattern: `(\\(\\d{2}\\)\\s?)?\\d{4,5}-\\d{4}` })
+            %>
+            <%- include('./input_text.ejs', { id: 'email_input-contato' , icon: 'fi fi-rs-at' , placeholder: 'E-mail' ,
+              type: 'email' , pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$' }) %>
+              <%- include('./input_text.ejs', { id: 'pass_input-contato' , icon: 'fi fi-rs-lock' , placeholder: 'Senha'
+                , type: 'password' }) %>
+                <div>
+                  <h1>Atribuir Serviços</h1>
+                  <div class="mygrid bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+                    <% services.forEach((service)=> { %>
+                      <%# for (const id in services) { %>
+                        <div class="flex gap-1 items-center relative">
+                          <%- include('./checkbox.ejs', {verify: false, id: `${service.id}-service_id`,
+                            classes: 'services_check' }) %>
+                            <span class="text-nowrap">
+                              <%= service.name %>
+                            </span>
+                        </div>
+                        <% }) %>
+                  </div>
+                </div>
+                <%- include('./input_text.ejs', { id: 'profissional_input-comissao' , icon: 'fi fi-rs-badge-percent', placeholder: 'Comissão'
+                  , type: 'number', hidden: !user.admin }) %>
+
+      </div>
+      <div class="gap-1 flex flex-col w-full mt-2">
+        <div class="flex gap-1 items-center mt-2 relative bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+          <%- include('./checkbox.ejs', {verify: true, id: `horario_empresa_id`}) %>
+            <span>Usar horario da empresa</span>
+        </div>
+        <div class="drop-shadow w-full flex flex-col items-center relative overflow-hidden">
+          <div id="define_hr" onclick="openHorariosEmpresaAddProfissional(this)"
+            class="z-[1] w-full px-2 py-1 rounded-tl rounded-tr flex justify-between items-center bg-zinc-100 dark:bg-zinc-600 cursor-pointer">
+            <h1 class="flex items-center text-zinc-500 dark:text-zinc-300 max-xs:text-xs max-sm:text-sm"><span
+                class="fi fi-bs-calendar-clock mr-2 flex dark:text-white text-black"></span>Definir horarios de
+              atendimento</h1>
+            <i class="fi fi-br-angle-double-right flex transition-all transform duration-1000 ease-in-out"></i>
+          </div>
+          <div id="horarios_empresa_id_add_pro"
+            class="flex w-full pointer-events-none transition-all transform duration-1000 ease-in-out opacity-0 max-h-0 translate-y-[-100%] px-2 flex-col justify-between items-center bg-zinc-50 dark:bg-zinc-500">
+            <div class="w-full mygrid border-b border-black dark:border-white">
+              <div class="flex gap-1 items-center justify-center">
+                <i class="fi fi-br-calendar-day flex"></i>
+                <span>Dia</span>
+              </div>
+              <div class="flex gap-1 items-center justify-center">
+                <i class="fi fi-br-time-check flex"></i>
+                <span>Aberto</span>
+              </div>
+              <div class="flex gap-1 items-center justify-center">
+                <i class="fi fi-br-brightness flex text-yellow-500"></i>
+                <span>Inicio</span>
+              </div>
+              <div class="flex gap-1 items-center justify-center">
+                <i class="fi fi-br-moon-stars flex text-blue-500"></i>
+                <span>Fim</span>
+              </div>
+            </div>
+            <% empresa.atendimento.forEach(atendimento=> { if (!atendimento.isEmpresa) return %>
+              <%# for (const dia in empresa.atendimento) { %>
+                <%- include('../components/horario_dia.ejs', { id: 'pro-' +atendimento.dia, name: atendimento.dia ,
+                  disponivel: atendimento.disponivel, open: atendimento.open, close: atendimento.close, }) %>
+                  <% }) %>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="w-full flex items-center gap-2 mt-3">
+        <button id="cancelar_agendamento" type="button" onclick="toggleAddProfissional(true)"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-x mr-1 sm:text-xl flex transition-all duration-1000 transform text-red-500"></i>
+          Cancelar
+        </button>
+        <button type="submit"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-check mr-1 sm:text-xl flex transition-all duration-1000 transform text-green-500"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+</form>
+
+<script>
+  $('#foto_upload_id').change(function () {
+    var file = this.files[0];
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        let r = e.target.result
+        // console.log('result_img:', r)
+        newLogo = true;
+        $('#pro-foto_prev_id').attr('src', r);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  let pattern_zap = /(\(\d{2}\)\s?)?\d{4,5}-\d{4}/
+  let pattern_email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  $('#email_input-contato').on('input', function () {
+    let span = $('#bg_' + this.id).find('label').find('span')
+    if (pattern_email.test($(this).val()) && !span.hasClass('opacity-0')) span.addClass('opacity-0');
+  })
+  // Inicializa o valor formatado anterior como uma string vazia
+  let valorFormatadoAnteriorProfissional = '';
+  $('#profissional_input-contato').on('input', function () {
+    // Obtém o valor atual do campo de entrada
+    var valorAtual = $(this).val();
+    // Remove qualquer caractere que não seja um dígito numérico
+    var valorNumerico = valorAtual.replace(/\D/g, '');
+
+    // Aplica a formatação de telefone: (11) 99000-1122
+    var valorFormatado = formatNumber(valorNumerico)
+
+    // Atualiza o campo de entrada com o valor formatado apenas se for diferente do valor anterior
+    // Isso impede que a formatação interfira na remoção de caracteres
+    if (valorFormatado !== valorFormatadoAnteriorProfissional) {
+      $(this).val(valorFormatado.replace(/[a-zA-Z]/g, ''));
+      let span = $('#bg_' + this.id).find('label').find('span')
+      if (pattern_zap.test($(this).val()) && !span.hasClass('opacity-0')) span.addClass('opacity-0');
+      // Atualiza o valor formatado anterior
+      valorFormatadoAnteriorProfissional = valorFormatado;
+    }
+  });
+
+  function toggleRequired(bol = Boolean) {
+    console.log('toggleRequired', bol)
+    $("#profissional_input-name").prop("required", bol);
+    $("#profissional_input-contato").prop("required", bol);
+    if (bol) {
+      $("#profissional_input-contato").prop("pattern", '(\\(\\d{2}\\)\\s?)?\\d{4,5}-\\d{4}');
+      $("#email_input-contato").prop("pattern", '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$')
+    } else {
+      $("#profissional_input-contato").removeAttr("pattern");
+      $("#email_input-contato").removeAttr("pattern")
+    }
+    $("#email_input-contato").prop("required", bol);
+    if (adicionar) {
+      $("#pass_input-contato").prop("required", bol);
+    }
+  }
+  let id_services = `<% for (const id in services) { %><%= services[id].id %>,<% } %>`
+  id_services.split(',').forEach(id => {
+    if (id) $(`#${id}-service_id`).change(function () {
+      let check = $(this).is(':checked')
+      if (check) {
+        services.push(id)
+      } else {
+        services.splice(services.indexOf(id), 1);
+      }
+      console.log(id, services)
+    });
+  });
+  let services = []
+
+  $('#horario_empresa_id').change(function () {
+    let check = $(this).is(':checked')
+    if (!check) {
+      $('#horarios_empresa_id_add_pro').removeClass('pointer-events-none')
+    } else {
+      $('#horarios_empresa_id_add_pro').addClass('pointer-events-none')
+    }
+    console.log()
+  });
+
+  let adicionar = true;
+  async function addProfissional(event) {
+    event.preventDefault();
+
+    let inputs = ['profissional_input-name', 'profissional_input-contato', 'email_input-contato', 'pass_input-contato']
+    let check = (id) => $('#' + inputs[id]).val()
+    console.log('test number:', !pattern_zap.test(check(1)))
+    console.log('test email:', !pattern_email.test(check(2)))
+    if (!check(0) || !check(1) || !pattern_zap.test(check(1)) || !check(2) || !pattern_email.test(check(2)) || (!check(3) && adicionar)) {
+      if (!pattern_zap.test(check(1))) {
+        $('#bg_' + inputs[1]).find('label').find('span').removeClass('opacity-0');
+        $('#bg_' + inputs[1]).find('label').find('span').text('Formato incorreto')
+      }
+      if (!pattern_email.test(check(2))) {
+        $('#bg_' + inputs[2]).find('label').find('span').removeClass('opacity-0');
+        $('#bg_' + inputs[2]).find('label').find('span').text('Formato incorreto')
+      }
+      openHorariosEmpresaAddProfissional(getID('define_hr'))
+      inputs.forEach(id => {
+        var input = $('#' + id);
+        console.log(id, input[0].checkValidity())
+        if (!input[0].checkValidity()) {
+          input.attr('placeholder', 'Campo obrigatório');
+          input.addClass('placeholder-red-500');
+        }
+      });
+      return
+    }
+
+    let foto = $('#pro-foto_prev_id').attr('src')
+    let adm = $('#isAdm_id').is(':checked') ? true : false;
+    let username = $('#' + inputs[0]).val();
+    let comissao = Number($('#profissional_input-comissao').val());
+    // console.log('zappp:', $('#' + inputs[1]).val())
+    // console.log('OLD zappp:', $('#' + inputs[1]).data('old_zap').toString())
+    let whatsapp = clearNumberZap($('#' + inputs[1]).val());
+    let old_whatsapp = $('#' + inputs[1]).data('old_zap') ? clearNumberZap($('#' + inputs[1]).data('old_zap').toString()) : '';
+
+    console.log('whatsapp:', whatsapp)
+    console.log('old_whatsapp:', old_whatsapp)
+    // return
+    if (!adicionar && !old_whatsapp) {
+      aToast('Numero antigo não encontrado.', {
+        type: 'error',
+        progress: true,
+      })
+      return
+    }
+    let email = $('#' + inputs[2]).val();
+    let password = $('#' + inputs[3]).val();
+
+    let atendimento = JSON.stringify({
+      empresa: $('#horario_empresa_id').is(':checked') ? true : false,
+      seg: {
+        disponivel: $('#pro-seg_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-seg_inicio_id').val(),
+        close: $('#pro-seg_fim_id').val()
+      },
+      ter: {
+        disponivel: $('#pro-ter_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-ter_inicio_id').val(),
+        close: $('#pro-ter_fim_id').val()
+      },
+      qua: {
+        disponivel: $('#pro-qua_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-qua_inicio_id').val(),
+        close: $('#pro-qua_fim_id').val()
+      },
+      qui: {
+        disponivel: $('#pro-qui_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-qui_inicio_id').val(),
+        close: $('#pro-qui_fim_id').val()
+      },
+      sex: {
+        disponivel: $('#pro-sex_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-sex_inicio_id').val(),
+        close: $('#pro-sex_fim_id').val()
+      },
+      sab: {
+        disponivel: $('#pro-sab_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-sab_inicio_id').val(),
+        close: $('#pro-sab_fim_id').val()
+      },
+      dom: {
+        disponivel: $('#pro-dom_aberto_id').is(':checked') ? true : false,
+        open: $('#pro-dom_inicio_id').val(),
+        close: $('#pro-dom_fim_id').val()
+      }
+    })
+
+    console.log(atendimento)
+
+    let body = {
+      foto,
+      adm,
+      username,
+      whatsapp,
+      email,
+      password,
+      services,
+      comissao,
+      atendimento,
+      add: adicionar,
+      old_whatsapp
+    }
+
+    let req = await requestPost('/v1/add_profissional', body)
+    console.log('req: ', req)
+    if (req?.success) {
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+      aToast(req.message, {
+        type: 'success',
+        progress: true,
+      })
+      return
+    }
+    aToast(req.message, {
+      type: 'error',
+      progress: true,
+    })
+  }
+
+  function openHorariosEmpresaAddProfissional(e) {
+    toggleRequired($('#bg-test').hasClass('hidden') === true)
+    $(e).find('i').toggleClass('rotate-90')
+    setTimeout(() => {
+      $('#bg-test').toggleClass('hidden')
+    }, $('#bg-test').hasClass('hidden') ? 1500 : 0);
+    $('#horarios_empresa_id_add_pro').toggleClass('opacity-0 max-h-0 max-h-full translate-y-[-100%]')
+  }
+  function toggleAddProfissional(close = Boolean, add) {
+    adicionar = add ? true : false
+    if (!close) {
+      if (add) {
+        $("#pass_input-contato").prop("required", true);
+        $('#title_addProfissional').text('Adicionar profissional')
+        $('#pro-foto_prev_id').attr('src', 'v1/getlogoprofissional/person')
+        $('#isAdm_id').prop('checked', false)
+        $('#' + inputs[0]).val('');
+        $('#' + inputs[1]).val('');
+        $('#' + inputs[2]).val('');
+        $('#' + inputs[3]).val('');
+
+        $('#horario_empresa_id').prop('checked', true)
+        $('#pro-seg_aberto_id').prop('checked', $('#pro-seg_aberto_id').data('default-checked') ? true : false)
+        $('#pro-seg_inicio_id').val($('#pro-seg_inicio_id').data('default-time'))
+        $('#pro-seg_fim_id').val($('#pro-seg_fim_id').data('default-time'))
+
+        $('#pro-ter_aberto_id').prop('checked', $('#pro-ter_aberto_id').data('default-checked') ? true : false)
+        $('#pro-ter_inicio_id').val($('#pro-ter_inicio_id').data('default-time'))
+        $('#pro-ter_fim_id').val($('#pro-ter_fim_id').data('default-time'))
+
+        $('#pro-qua_aberto_id').prop('checked', $('#pro-qua_aberto_id').data('default-checked') ? true : false)
+        $('#pro-qua_inicio_id').val($('#pro-qua_inicio_id').data('default-time'))
+        $('#pro-qua_fim_id').val($('#pro-qua_fim_id').data('default-time'))
+
+        $('#pro-qui_aberto_id').prop('checked', $('#pro-qui_aberto_id').data('default-checked') ? true : false)
+        $('#pro-qui_inicio_id').val($('#pro-qui_inicio_id').data('default-time'))
+        $('#pro-qui_fim_id').val($('#pro-qui_fim_id').data('default-time'))
+
+        $('#pro-sex_aberto_id').prop('checked', $('#pro-sex_aberto_id').data('default-checked') ? true : false)
+        $('#pro-sex_inicio_id').val($('#pro-sex_inicio_id').data('default-time'))
+        $('#pro-sex_fim_id').val($('#pro-sex_fim_id').data('default-time'))
+
+        $('#pro-sab_aberto_id').prop('checked', $('#pro-sab_aberto_id').data('default-checked') ? true : false)
+        $('#pro-sab_inicio_id').val($('#pro-sab_inicio_id').data('default-time'))
+        $('#pro-sab_fim_id').val($('#pro-sab_fim_id').data('default-time'))
+
+        $('#pro-dom_aberto_id').prop('checked', $('#pro-dom_aberto_id').data('default-checked') ? true : false)
+        $('#pro-dom_inicio_id').val($('#pro-dom_inicio_id').data('default-time'))
+        $('#pro-dom_fim_id').val($('#pro-dom_fim_id').data('default-time'))
+      } else {
+        $("#pass_input-contato").prop("required", false);
+        $('#title_addProfissional').text('Editar profissional')
+      }
+      $('#add_profissional_bg').toggleClass('hidden flex')
+      return
+    }
+    document.querySelectorAll('.services_check').forEach(element => {
+      $(element).prop('checked', false)
+    });
+
+
+    $('#add_profissional_bg').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#add_profissional_bg').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#add_profissional_bg').toggleClass('hidden flex')
+    }, 500);
+  }
+</script>

@@ -1,0 +1,97 @@
+<style>
+  .mygrid {
+    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+</style>
+<form onsubmit="salvarPerfil(event)" class="p-1 w-full h-full flex justify-center items-center flex-col">
+  <div class="flex items-center flex-col max-sm:w-full sm:w-[60%]">
+    <h1 id="title_addProfissional" class="mb-10 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">Editar perfil</h1>
+
+    <%- include('./components/input_text.ejs', { id: 'user_name_id' , icon: 'fi fi-rs-user' , placeholder: 'Nome do usuário'
+      , value: user.name }) %>
+    <%- include('./components/input_text.ejs', { id: 'user_email_id' , icon: 'fi fi-rs-envelope' , placeholder: 'Email do usuário'
+      , value: user.email }) %>
+    <%- include('./components/input_text.ejs', { id: 'user_whatsapp_id' , icon: 'fi fi-brands-whatsapp' , placeholder: 'Whatsapp do usuário'
+      , value: user.whatsapp }) %>
+    
+    <div class="flex gap-1 items-center mt-2 relative bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+      <%- include('./components/checkbox.ejs', {id: `change_password_checkbox`}) %>
+        <span>Alterar senha</span>
+    </div>
+    <script>
+      $('#change_password_checkbox').click(function () {
+        togglePasswordFields();
+      });
+    </script>
+    <!-- <div class="flex gap-1 items-center mt-2">
+      <input type="checkbox" id="change_password_checkbox" onclick="togglePasswordFields()">
+      <span>Alterar senha</span>
+    </div> -->
+    <div id="password_fields" class="hidden flex-col w-full">
+      <%- include('./components/input_text.ejs', { id: 'user_password_id' , icon: 'fi fi-rs-lock' , placeholder: 'Nova senha' }) %>
+      <%- include('./components/input_text.ejs', { id: 'user_confirm_password_id' , icon: 'fi fi-rs-lock' , placeholder: 'Confirmar nova senha' }) %>
+    </div>
+  </div>
+  <div class="w-full flex justify-center mt-4">
+    <button class="app_buttons bg-green-500 hover:bg-green-600 text-white" type="submit">
+      <i class="fi fi-rr-disk"></i>
+      Salvar alterações
+    </button>
+  </div>
+</form>
+<script>
+  async function salvarPerfil(event) {
+    if (event) event.preventDefault();
+    let name = $('#user_name_id').val();
+    let email = $('#user_email_id').val();
+    let whatsapp = $('#user_whatsapp_id').val();
+    let password = $('#change_password_checkbox').is(':checked') ? $('#user_password_id').val() : null;
+    let confirmPassword = $('#change_password_checkbox').is(':checked') ? $('#user_confirm_password_id').val() : null;
+    const alterar_password = document.getElementById('change_password_checkbox').checked;
+    console.log('alterar_password', alterar_password);
+
+    if (password && password !== confirmPassword) {
+      toastr.warning('As senhas não coincidem');
+      return;
+    }
+    let req = await requestPost(`v1/editar_perfil/<%= user.id %>`, {
+      name,
+      email,
+      whatsapp,
+      password,
+      confirm_password: confirmPassword,
+      alterar_password: alterar_password
+    });
+    console.log('salvarPerfil-req:', req);
+      if (req.success) {
+        toastr.success(req.message);
+        return;
+      }
+      toastr.warning(req.message);
+
+  }
+
+
+  // function togglePasswordFields() {
+  //   $('#password_fields').toggleClass('hidden');
+  // }
+  function togglePasswordFields() {
+    $('#password_fields').toggleClass('hidden');
+    if ($('#password_fields').hasClass('hidden')) {
+      $('#user_password_id').removeAttr('required');
+      $('#user_confirm_password_id').removeAttr('required');
+    } else {
+      $('#user_password_id').attr('required', 'required');
+      $('#user_confirm_password_id').attr('required', 'required');
+    }
+  }
+  if ($('#password_fields').hasClass('hidden')) {
+      $('#user_password_id').removeAttr('required');
+      $('#user_confirm_password_id').removeAttr('required');
+    } else {
+      $('#user_password_id').attr('required', 'required');
+      $('#user_confirm_password_id').attr('required', 'required');
+    }
+</script>

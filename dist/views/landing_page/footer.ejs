@@ -1,0 +1,108 @@
+
+<footer class="bg-zinc-950 text-white py-12">
+  <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+              <h3 class="text-xl font-semibold mb-4">Sobre</h3>
+              <p class="text-gray-400">
+                  <%= nomeApp %> é a solução completa para agendamentos online, ideal para barbearias, salões, SPAs...
+              </p>
+          </div>
+          <!-- <div>
+              <h3 class="text-xl font-semibold mb-4">Links Rápidos</h3>
+              <ul class="space-y-2">
+                  <li><a href="/" class="text-gray-400 hover:text-white transition-colors">Início</a></li>
+                  <li><a href="/termos" class="text-gray-400 hover:text-white transition-colors">Termos</a></li>
+                  <li><a href="/privacidade" class="text-gray-400 hover:text-white transition-colors">Privacidade</a></li>
+                  <li><a href="/cookies" class="text-gray-400 hover:text-white transition-colors">Cookies</a></li>
+              </ul>
+          </div> -->
+          <div>
+              <h3 class="text-xl font-semibold mb-4">Termos e Politicas</h3>
+              <ul class="space-y-2">
+                  <li><a href="/termos" class="text-gray-400 hover:text-white transition-colors">Termos de Uso</a></li>
+                  <li><a href="/privacidade" class="text-gray-400 hover:text-white transition-colors">Política de Privacidade</a></li>
+                  <li><a href="/cookies" class="text-gray-400 hover:text-white transition-colors">Política de Cookies</a></li>
+              </ul>
+          </div>
+          <div>
+              <h3 class="text-xl font-semibold mb-4">Contato</h3>
+              <ul class="space-y-2">
+                  <li class="text-gray-400">
+                    <a href="https://wa.me/5567999048375" target="_blank"><i class="fa-brands fa-whatsapp mr-1" style="color: #63E6BE;"></i>Whatsapp</a>
+                  </li>
+              </ul>
+          </div>
+      </div>
+      <div class="mt-12 pt-8 border-t border-gray-800 text-center text-gray-400">
+          <p>&copy; <%= new Date().getFullYear() %> <%= nomeApp %>. Todos os direitos reservados.</p>
+      </div>
+  </div>
+</footer>
+<div class="scroll-to-top bg-zinc-950" id="scrollToTopBtn">
+  <i class="fas fa-arrow-up"></i>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.js"></script>
+<script>
+    window.addEventListener('scroll', scrollTrigger);
+
+    const elementsReveal = document.querySelectorAll('.section');
+    scrollTrigger();
+    function scrollTrigger() {
+        elementsReveal.forEach(element => {
+            if (isElementInViewport(element)) {
+                $(element).addClass('visible')
+            } else {
+                // $(element).removeClass('visible')
+            }
+        });
+
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+        if (window.scrollY > 200) {
+            scrollToTopBtn.classList.add('visible');
+        } else {
+            scrollToTopBtn.classList.remove('visible');
+        }
+    }
+
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom - rect.height <= (window.innerHeight + 50 || document.documentElement.clientHeight + 50) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+
+    document.getElementById('scrollToTopBtn').addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    document.getElementById('menu-toggle').addEventListener('click', function () {
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenu.classList.toggle('open');
+    });
+    window.addEventListener('click', function (e) {
+        const classes = e.target.classList;
+        const isFabars = classes.contains('fa-bars');
+        if (e.target.id !== 'menu-toggle' && !isFabars) {
+            console.log('fechando');
+            document.getElementById('mobile-menu').classList.remove('open');
+        }
+    });
+    function handleAfiliado(afiliado = false) {
+        const divAfiliado = document.getElementById('afiliado');
+        document.querySelectorAll('.section').forEach(section => section.style.display = afiliado ? 'none' : 'block');
+        divAfiliado.style.display = !afiliado ? 'none' : 'block';
+        // abrir section de afiliado
+        divAfiliado.querySelector('.section').style.display = !afiliado ? 'none' : 'block';
+    }
+
+// document.getElementById('mobile-afiliado-link').addEventListener('click', function (e) {
+//     e.preventDefault();
+//     document.getElementById('mobile-menu').classList.remove('open');
+// });
+</script>

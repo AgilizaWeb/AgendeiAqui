@@ -1,0 +1,175 @@
+.formBG {
+    transition: transform 0.01s ease-in;
+    animation: fadeIn .5s ease-in forwards;
+    width: 40%;
+    margin: 5px;
+}
+
+.formBG .header {
+    text-align: center;
+    margin-bottom: 20px;
+    color: white;
+    width: 100%;
+}
+
+.formBG .header img {
+    max-height: 150px;
+    max-width: 90%;
+    margin: 0;
+}
+
+.formBG.header h2 {
+    color: #333;
+}
+
+.formBG .form {
+    position: relative;
+}
+
+.formBG .form input[type="text"],
+.formBG .form input[type="password"] {
+    width: calc(100% - 40px);
+    /* Ajusta a largura para acomodar os ícones */
+    padding: 10px 10px 10px 40px;
+    /* Adiciona espaço à esquerda para o ícone */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.formBG .form input[type="text"]::placeholder,
+.formBG .form input[type="password"]::placeholder {
+    color: #999;
+    /* Cor do texto de espaço reservado */
+}
+
+.formBG .form input[type="text"]+.bi,
+.formBG .form input[type="password"]+.bi {
+    position: absolute;
+    left: 10px;
+    /* Posiciona o ícone à esquerda */
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    /* Cor do ícone */
+}
+
+.formBG .form input[type="text"]:focus,
+.formBG .form input[type="password"]:focus {
+    outline: none;
+    border-color: gray;
+    box-shadow: 0 0 5px gray;
+}
+
+.formBG .input-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.formBG .input-icon input[type="password"],
+.formBG .input-icon input[type="text"] {
+    width: 100%;
+}
+.result {
+    display: none;
+    width: 0px;
+    max-width: 300px;
+    overflow: hidden;
+}
+.formBG .input-icon #subdomain:focus~.result {
+    /* display: block; */
+    position: absolute;
+    color: white;
+    background-color: #222;
+    /* margin-top: 10px; */
+    font-weight: 300;
+    padding: 3px;
+    top: -25px;
+    border-radius: 3px;
+    border: solid 1px white;
+    left: 40px;
+    width: auto;
+}
+
+.formBG .input-icon .subdomainExample {
+    position: absolute;
+    background-color: #1B7BCE;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: white;
+    font-weight: 300;
+    right: 0;
+    padding-left: 1px;
+    width: 130px;
+}
+
+.formBG .input-icon i {
+    left: 10px;
+    font-size: 20px;
+    position: absolute;
+}
+
+.formBG .buttonOrange,
+.formBG .buttonGreen {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 3px;
+    border: 0px;
+    background-color: darkgreen;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    letter-spacing: .7px;
+    transition: transform 0.01s ease-in;
+}
+
+.formBG .buttonOrange i,
+.formBG .buttonGreen i {
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+.formBG .buttonOrange {
+    margin: 0;
+    background-color: darkblue;
+}
+
+.formBG .buttonOrange:hover {
+    background-color: blue;
+}
+
+.formBG .buttonGreen:hover {
+    background-color: green;
+    /* Cor de fundo do botão ao passar o mouse */
+}
+
+.formBG .forgot {
+    text-decoration: none;
+    color: lightblue;
+}
+
+.formBG .forgot:hover {
+    text-decoration: underline;
+    color: lightskyblue;
+}
+
+
+
+
+
+
+@media screen and (max-width: 1000px) {
+    .formBG {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .formBG {
+        width: 90%;
+    }
+}

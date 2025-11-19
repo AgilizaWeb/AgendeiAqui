@@ -1,0 +1,374 @@
+<style>
+
+  .horario {
+    flex-direction: column;
+    background-color: #52525b;
+    /* position: relative; */
+    /* padding: 5px; */
+    display: flex;
+    justify-content: center;
+    white-space: noWrap;
+    overflow: hidden;
+    border-radius: 3px;
+    box-shadow: 0 0 5px #3f3f46;
+    cursor: pointer;
+
+  }
+
+  .horario h3 {
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .horario:hover {
+    box-shadow: 0 0px 5px 2px white;
+    font-weight: bolder;
+  }
+
+  .selected {
+    background-color: green;
+    box-shadow: 0 0px 5px 2px white;
+    font-weight: bolder;
+  }
+</style>
+
+<div id="criar_agendamentos_bg"
+  class="fixed z-10 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full h-full relative flex justify-center items-center">
+    <div
+      class="bg-zinc-100 dark:bg-black p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[80vh] overflow-auto animate-slideBottomToTop">
+      <h1 class="w-full mb-3 font-bold">Criar agendamento</h1>
+
+      <select id="select-profissionais" class="w-full mb-2 cursor-pointer bg-zinc-50 dark:bg-zinc-700 drop-shadow-sm shadow-zinc-500 dark:shadow-zinc-300 
+        text-gray-400 border-[1px] border-zinc-100 dark:border-zinc-600
+        py-1 rounded leading-tight focus:outline-none">
+
+        <option class="text-zinc-400" value="all">Selecionar Profissional</option>
+        <% for (const id in profissionais) { %>
+          <option class="text-gray-700 dark:text-zinc-50" data-profissional_id="<%= profissionais[id]?.id %>">
+            <%= profissionais[id]?.nome %>
+          </option>
+          <% } %>
+      </select>
+
+      <select id="select-services" class="w-full mb-2 cursor-pointer hidden bg-zinc-50 dark:bg-zinc-700 drop-shadow-sm shadow-zinc-500 dark:shadow-zinc-300 
+                    text-gray-400 border-[1px] border-zinc-100 dark:border-zinc-600
+                    py-1 rounded leading-tight focus:outline-none">
+
+        <option class="text-gray-400" value="all">Selecionar Serviço</option>
+        <% services.forEach(service=> { %>
+
+          <%# for (const service in services) { %>
+            <% let pro=[]; const id=service.id %>
+              <% service?.profissionais?.forEach(element=> { %>
+                <%= pro.push(element.nome) %>
+                  <% }) %>
+                    <option class="text-gray-700 dark:text-zinc-50" data-service_id="<%= id %>"
+                      data-profissionais_service="<%= pro %>">
+                      <%= service?.name %>
+                    </option>
+                    <% }) %>
+      </select>
+      <%#- include('./input_text.ejs', { id: 'criar_name_agendamento' , icon: 'fi fi-rs-edit' ,
+        placeholder: 'Nome do cliente' }) %>
+        <%#- include('./input_text.ejs', { id: 'criar_contato_agendamento' , icon: 'fi fi-brands-whatsapp' ,
+          placeholder: 'Whatsapp do cliente' }) %>
+          <style>
+            #ui-datepicker-div {
+              width: auto;
+            }
+          </style>
+          <%- include('./input_text.ejs', { id: 'criar_data_agendamento' , icon: 'fi fi-rs-calendar-day' ,
+            placeholder: 'Definir data' , off: true, myclass: 'cursor-pointer' , hidden: true }) %>
+
+            <%- include('./input_text.ejs', { id: 'criar_text_inicio_agendamento' , icon: 'fi fi-rs-calendar-clock' ,
+              placeholder: 'Selecionar inicio' , off: true, myclass: 'cursor-pointer' , hidden: true }) %>
+              <script>
+                $('#criar_text_inicio_agendamento').click(function () {
+                  getHorarios()
+                })
+              </script>
+
+              <div id="criar_inicio_agendamento"
+                class="flex justify-center gap-4 px-0.5 sm:px-1 py-px cursor-pointer items-center rounded-sm text-white">
+
+              </div>
+              <div id="criar_horarios_agendamento" class="w-full mygrid">
+
+              </div>
+              <label for="select-clientes">Selecione o cliente</label>
+              <div class="flex gap-20 items-center bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+                <select id="select-clientes"
+                  class="cursor-pointer mb-1 block bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 py-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">
+
+                  <% clientes.forEach(cliente=> { %>
+                    <option data-name="<%= cliente.name %>" data-contato="<%= cliente.contato %>">
+                      <%= cliente.name %>
+                    </option>
+                    <% }) %>
+                </select>
+                <div class="flex gap-1 items-centerrelative">
+                  <%- include('./checkbox.ejs', {id: `novo_cliente_checkbox`}) %>
+                    <span>Adicionar novo</span>
+                </div>
+              </div>
+
+              <div id="user_fields" class="hidden">
+                <%- include('./input_text.ejs', { id: 'criar_user_name' , icon: 'fi fi-rs-user-pen' ,
+                  placeholder: 'Nome do cliente' }) %>
+                  <%- include('./input_text.ejs', { id: 'criar_user_contato' , icon: 'fi fi-brands-whatsapp' ,
+                    placeholder: 'Whatsapp do cliente' }) %>
+              </div>
+
+              <script>
+                // Inicializa o valor formatado anterior como uma string vazia
+                let valorFormatadoAnteriorCriarAgendamento = '';
+                $('#criar_user_contato').on('input change', function () {
+                  // Obtém o valor atual do campo de entrada
+                  var valorAtual = $(this).val();
+                  // Remove qualquer caractere que não seja um dígito numérico
+                  var valorNumerico = valorAtual.replace(/\D/g, '');
+
+                  // Aplica a formatação de telefone: (11) 90011-2233
+                  var valorFormatado = formatPhoneNumber(valorNumerico);
+
+                  // Atualiza o campo de entrada com o valor formatado apenas se for diferente do valor anterior
+                  // Isso impede que a formatação interfira na remoção de caracteres
+                  if (valorFormatado !== valorFormatadoAnteriorCriarAgendamento) {
+                    $(this).val(valorFormatado);
+                    // Atualiza o valor formatado anterior
+                    valorFormatadoAnteriorCriarAgendamento = valorFormatado;
+                  }
+                });
+                $('#select-clientes').change(function () {
+                  let selected = $(this).find('option:selected').val();
+                  let name = $(this).find('option:selected').data('name');
+                  let contato = $(this).find('option:selected').data('contato');
+                  $('#criar_user_name').val(name)
+                  $('#criar_user_contato').val(contato)
+                  criar_agendamentoBody.cliente.name = name
+                  criar_agendamentoBody.cliente.contato = contato+''
+                });
+                $('#novo_cliente_checkbox').click(function (e) {
+                  if (e.target.checked) {
+                    $('#select-clientes').addClass('hidden')
+                    $('#user_fields').removeClass('hidden')
+                    return
+                  }
+                  $('#select-clientes').removeClass('hidden')
+                  $('#user_fields').addClass('hidden')
+
+                });
+              </script>
+
+              <label for="select-status">Definir status</label>
+              <select id="select-status" class="w-full mb-2 cursor-pointer bg-zinc-50 dark:bg-zinc-700 drop-shadow-sm shadow-zinc-500 dark:shadow-zinc-300 
+                    text-gray-400 border-[1px] border-zinc-100 dark:border-zinc-600
+                    py-1 rounded leading-tight focus:outline-none">
+
+                <option class="text-gray-400" value="null">Definir status</option>
+                <option class="text-gray-700 dark:text-zinc-50" value="0">Agendado</option>
+                <option class="text-gray-700 dark:text-zinc-50" value="1">Confirmado</option>
+                <option class="text-gray-700 dark:text-zinc-50" value="3">Finalizado</option>
+
+              </select>
+
+
+              <div class="w-full flex items-center gap-2 mt-3">
+                <button id="cancelar_agendamento" onclick="toggleCriarAgendamento(true)"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+                  <i class="fi fi-br-x mr-1 sm:text-xl flex transition-all duration-1000 transform text-red-500"></i>
+                  Cancelar
+                </button>
+                <button onclick="criarAgendamento()"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+                  <i
+                    class="fi fi-br-check mr-1 sm:text-xl flex transition-all duration-1000 transform text-green-500"></i>
+                  Criar
+                </button>
+              </div>
+    </div>
+  </div>
+
+
+</div>
+<script>
+  const criar_agendamentoBody = {
+    profissional: '',
+    service: '',
+    data: '',
+    horario: '',
+    cliente: {
+      name: '',
+      contato: ''
+    },
+    status: ''
+  }
+
+  async function criarAgendamento() {
+    console.log('criar_agendamentoBody: ', criar_agendamentoBody)
+    let checkBody = Object.keys(criar_agendamentoBody).find(key => {
+      if (key === 'cliente') {
+        if (criar_agendamentoBody[key].name === '' || criar_agendamentoBody[key].contato === '') {
+          return true
+        } else {
+          return false
+        }
+      } else {
+        return criar_agendamentoBody[key] === '' || criar_agendamentoBody[key] === undefined || criar_agendamentoBody[key] === null;
+      }
+    })
+    console.log('criar_agendamentoBody: ', criar_agendamentoBody)
+    if (checkBody || checkBody !== undefined) {
+      toastr.warning('Selecione/preencha todos os campos')
+      return
+    }
+
+    let req = await requestPost('/v1/agendar', criar_agendamentoBody)
+    console.log('req: ', req)
+    if (req?.success) {
+      toastr.success(req.message)
+      toggleCriarAgendamento(true)
+      setTimeout(() => {
+        window.location.reload()
+      }, 500);
+      $('#cancelar_agendamento').click(function () {
+        window.location.reload()
+      })
+      return
+    }
+    toastr.error(req.message)
+  }
+  $(document).ready(function () {
+    $('#criar_data_agendamento').on('change', async function () {
+      criar_agendamentoBody.data = $(this).val()
+      getHorarios()
+    });
+    $('#select-status').on('change', async function () {
+      let statusSelected = Number($(this).find('option:selected').val());
+      statusSelected < 5 ? $(this).removeClass('text-gray-400') : $(this).hasClass('text-gray-400') ? '' : $(this).addClass('text-gray-400')
+      console.log(statusSelected)
+      criar_agendamentoBody.status = statusSelected < 5 ? statusSelected : ''
+    });
+    $('#criar_user_name').on('change', async function () {
+      let name = $(this).val();
+      console.log('name: ', name)
+      criar_agendamentoBody.cliente.name = name
+    });
+    $('#criar_user_contato').on('change', async function () {
+      let zap = $(this).val();
+      console.log('zap: ', zap)
+      criar_agendamentoBody.cliente.contato = zap
+    });
+
+    async function getHorarios() {
+      let req = await requestPost('/v1/gethorariosdisponiveis', criar_agendamentoBody)
+      console.log('req: ', req)
+      if (req?.success) {
+        let html = ''
+        req.horas.forEach(hr => {
+          html += `<div onclick="selectHorarioCriar('${hr}', event)" class="horario displayCenter">
+        <h3>${hr}</h3>
+      </div>`
+        });
+        $('#criar_inicio_agendamento').html(html)
+        $('#criar_inicio_agendamento').removeClass('flex justify-center bg-zinc-600 hover:bg-zinc-500')
+        $('#criar_inicio_agendamento').addClass('mygrid')
+        return
+      }
+      $('#criar_inicio_agendamento').html('')
+      toastr.error(req.res)
+    }
+
+
+    $('#select-profissionais').change(async function () {
+      let selectedP = $(this).find('option:selected').val();
+      let selectedID = $(this).find('option:selected').data('profissional_id');
+      $(this).removeClass('text-gray-400')
+      let optionsS = $('#select-services option');
+      if (selectedP !== 'all') {
+        $(this).removeClass('text-gray-400')
+        for (let i = 0; i < optionsS.length; i++) {
+          const element = $(optionsS[i])
+          let optionService_pro = $(element).data('profissionais_service');
+          console.log('optionService_pro: ', optionService_pro)
+          if (!optionService_pro || optionService_pro.includes(selectedP)) {
+            element.removeClass('hidden')
+            continue
+          }
+          element.addClass('hidden')
+        }
+        $('#select-services').removeClass('hidden');
+        criar_agendamentoBody.profissional = selectedID
+        let req = await requestPost('../v1/getdatasdisponiveis', { profissional: selectedID })
+        console.log('req success -criar_data_agendamento: ', req)
+        setDatapicker('criar_data_agendamento', req.res)
+      } else {
+        $(this).hasClass('text-gray-400') ? '' : $(this).addClass('text-gray-400')
+        $('#select-services').addClass('hidden');
+        optionsS.show();
+      }
+
+      // Selecionar a primeira opção
+      $('#select-services').val($('#select-services option:first').val());
+      if (!$('#bg_criar_data_agendamento').hasClass('hidden') && $('#select-services').find('option:selected').val() === 'all') {
+        $('#bg_criar_data_agendamento').toggleClass('hidden flex');
+        $('#criar_inicio_agendamento').html('');
+        $('#criar_data_agendamento').val('')
+      }
+    });
+
+
+    $('#select-services').change(async function () {
+      let selectedService = $(this).find('option:selected').val();
+      let selectedID = $(this).find('option:selected').data('service_id');
+      selectedService === 'all' ? $(this).hasClass('text-gray-400') ? '' : $(this).addClass('text-gray-400') : $(this).removeClass('text-gray-400')
+
+      console.log($('#bg_criar_data_agendamento').hasClass('hidden'))
+      if ($('#bg_criar_data_agendamento').hasClass('hidden') && selectedService !== 'all') {
+        $('#bg_criar_data_agendamento').toggleClass('hidden flex');
+        criar_agendamentoBody.service = selectedID
+        // let req = await requestPost('../v1/getdatasdisponiveis', { profissional })
+        // console.log('req success ag: ', req)
+        // setDatapicker('edit_data_agendamento', req.res)
+      } else {
+        if (!$('#bg_criar_data_agendamento').hasClass('hidden') && selectedService === 'all') {
+          $('#bg_criar_data_agendamento').toggleClass('hidden flex');
+          $('#criar_inicio_agendamento').html('');
+          $('#criar_data_agendamento').val('')
+        }
+        // $('#bg_criar_text_inicio_agendamento').toggleClass('hidden flex')
+      }
+    });
+  });
+  function selectHorarioCriar(hr, event) {
+    console.log('selectHorario')
+    $('#criar_text_inicio_agendamento').val(hr)
+    let elements = document.querySelectorAll('.horario');
+
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].classList.remove('selected')
+    }
+
+    event.target.classList.add('selected')
+
+    criar_agendamentoBody.horario = hr;
+    console.log('criar_agendamentoBody:', criar_agendamentoBody)
+  }
+  function toggleCriarAgendamento(close = Boolean) {
+    if (!close) {
+      $('#criar_agendamentos_bg').toggleClass('hidden flex')
+      $('#select-clientes').trigger('change')
+      $('#criar_user_contato').trigger('change')
+      $('#criar_user_name').trigger('change')
+      return
+    }
+
+    $('#criar_agendamentos_bg').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#criar_agendamentos_bg').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#criar_agendamentos_bg').toggleClass('hidden flex')
+    }, 500);
+  }
+</script>

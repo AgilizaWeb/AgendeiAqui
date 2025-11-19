@@ -1,0 +1,132 @@
+<form onsubmit="addCliente(event)" id="add_cliente_bg"
+  class="fixed z-50 w-full h-screen hidden flex-col justify-center items-center gap-1 bg-[#00000096]">
+
+  <div class="w-full h-full relative flex justify-center items-center">
+    <div
+      class="bg-zinc-100 dark:bg-black p-4 rounded max-xss:w-full w-[90%] sm:w-[60%] max-h-[99vh] overflow-auto animate-slideBottomToTop">
+      <h1 id="title_addCliente" class="w-full mb-3 font-bold">Adicionar Cliente</h1>
+
+      <div id="bg-test">
+        <%- include('./input_text.ejs', { id: 'cliente_input-name' , icon: 'fi fi-rs-user-pen' , placeholder: 'Nome' })
+          %>
+          <%- include('./input_text.ejs', { id: 'cliente_input-contato' , icon: 'fi fi-brands-whatsapp' ,
+            placeholder: 'Whatsapp' , type: 'text' }) %>
+
+            <div class="mygrid bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300 mb-1">
+              <div class="flex gap-1 items-center relative">
+                <%- include('./checkbox.ejs', {verify: false, id: 'cobrarConfirmacao_cliente' , classes: 'services_check' }) %>
+                  <span class="text-nowrap max-xs:text-xs max-sm:text-sm">Cobrar confirmação de agendamento</span>
+              </div>
+            </div>
+            <div class="mygrid bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+              <div class="flex gap-1 items-center relative">
+                <%- include('./checkbox.ejs', {verify: false, id: 'chatbotAtivo' , classes: 'services_check' }) %>
+                  <span class="text-nowrap max-xs:text-xs max-sm:text-sm">Ativar/Desativar ChatBot</span>
+              </div>
+            </div>
+      </div>
+
+
+      <div class="w-full flex items-center gap-2 mt-3">
+        <button id="cancelar_cliente" type="button" onclick="toggleAddCliente(true)"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-x mr-1 sm:text-xl flex transition-all duration-1000 transform text-red-500"></i>
+          Cancelar
+        </button>
+        <button id="save_cliente" data-id_cliente="" type="submit"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+          <i class="fi fi-br-check mr-1 sm:text-xl flex transition-all duration-1000 transform text-green-500"></i>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+</form>
+<script>
+
+  let add_cliente = true;
+  async function addCliente(event) {
+    event.preventDefault();
+
+    let val = (id) => $('#' + id).val()
+    let name = val('cliente_input-name')
+    let contato = val('cliente_input-contato')
+    let cobrarConfirmacao = $('#cobrarConfirmacao_cliente').prop('checked')
+    let chatbot = $('#chatbotAtivo').prop('checked')
+    let id_cliente = $('#save_cliente').data('id_cliente')
+    let body = {
+      name,
+      contato,
+      cobrarConfirmacao,
+      chatbot,
+      add: add_cliente,
+      id_cliente
+    }
+
+    console.log('body: ', body)
+    // return
+    let req = await requestPost('/v1/add_cliente', body)
+    console.log('req: ', req)
+    if (req?.success) {
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+      aToast(req.message, {
+        type: 'success',
+        progress: true,
+      })
+      return
+    }
+    aToast(req.message, {
+      type: 'error',
+      progress: true,
+    })
+  }
+
+  function toggleAddCliente(close = Boolean, add) {
+    add_cliente = add ? true : false
+    if (!close) {
+      if (add) {
+        $('#title_addCliente').text('Adicionar Cliente')
+        // definir os checkbox como true
+        $('#cobrarConfirmacao_cliente').prop('checked', true)
+        $('#chatbotAtivo').prop('checked', true)
+      } else {
+        $('#title_addCliente').text('Editar Cliente')
+      }
+      $('#add_cliente_bg').toggleClass('hidden flex')
+      return
+    }
+    $('#cliente_input-name').val('');
+    $('#cliente_input-contato').val('');
+
+
+    $('#add_cliente_bg').find('.animate-slideBottomToTop').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+    setTimeout(() => {
+      $('#add_cliente_bg').find('.animate-slideTopToBottom').toggleClass('animate-slideBottomToTop animate-slideTopToBottom')
+      if (close) $('#add_cliente_bg').toggleClass('hidden flex')
+    }, 500);
+  }
+
+  // Inicializa o valor formatado anterior como uma string vazia
+  let valorFormatadoAnteriorCliente = '';
+  $('#cliente_input-contato').on('input change', function () {
+    // Obtém o valor atual do campo de entrada
+    var valorAtual = $(this).val();
+    // Remove qualquer caractere que não seja um dígito numérico
+    var valorNumerico = valorAtual.replace(/\D/g, '');
+
+    // Aplica a formatação de telefone: (11) 90011-2233
+    var valorFormatado = formatPhoneNumber(valorNumerico);
+
+    // Atualiza o campo de entrada com o valor formatado apenas se for diferente do valor anterior
+    // Isso impede que a formatação interfira na remoção de caracteres
+    if (valorFormatado !== valorFormatadoAnteriorCliente) {
+      $(this).val(valorFormatado);
+      // Atualiza o valor formatado anterior
+      valorFormatadoAnteriorCliente = valorFormatado;
+    }
+  });
+</script>

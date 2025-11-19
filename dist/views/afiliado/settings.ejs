@@ -1,0 +1,128 @@
+<div class="container mx-auto my-3">
+  <h1 class="mb-4 text-center text-2xl font-bold">Configurações</h1>
+
+  <form onsubmit="saveSettings(event)">
+    <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-nome', icon: 'fi fi-rs-pen-field', placeholder: 'Nome', value: user.nome, myclass: '' }) %>
+    <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-email', icon: 'fi fi-rs-pen-field', placeholder: 'Email', value: user.email }) %>
+    <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-whatsapp', icon: 'fi fi-rs-pen-field', placeholder: 'WhatsApp', value: user.whatsapp }) %>
+    <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-codigo', icon: 'fi fi-rs-pen-field', placeholder: 'Código de indicação', value: user.codigo }) %>
+    <div class="flex gap-1 items-center mb-2">
+      <span>Seu link de indicação: </span>
+      <span class="text-green-500 cursor-pointer relative group" onclick="copiarTexto(event)"><%= `https://${superAdmin.domain}/cadastro?afiliado=${user.codigo}` %>
+      <div class="w-full absolute top-0 justify-center items-center hidden group-hover:flex rounded backdrop-blur-[1px] text-white bg-black bg-opacity-50">
+        <i class="fi fi-rs-copy"></i>
+      </div>
+      </span>
+      <script>
+        function copiarTexto(e) {
+          try {
+            let input = document.createElement('input');
+            input.value = e.target.innerText;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            aToast('Link copiado', {
+              type: 'success',
+              progress: true,
+            });
+          } catch (err) {
+            aToast('Erro ao copiar link', {
+              type: 'error',
+              progress: true,
+            });
+          }
+        }
+      </script>
+    </div>
+    
+
+    <div class="flex gap-1 items-center mt-2 relative bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+      <%- include('../includes/dashboard/components/checkbox.ejs', {id: 'change_password_checkbox'}) %>
+      <span>Alterar senha</span>
+    </div>
+    <script>
+      $('#change_password_checkbox').click(function () {
+        togglePasswordFields();
+      });
+    </script>
+    <div id="password_fields" class="hidden flex-col w-full">
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'user_password_id' , icon: 'fi fi-rs-lock' , placeholder: 'Nova senha' }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'user_confirm_password_id' , icon: 'fi fi-rs-lock' , placeholder: 'Confirmar nova senha' }) %>
+    </div>
+
+    <div class="w-full flex justify-center mt-5">
+      <button type="submit" class="flex justify-center items-center px-6 py-3 font-bold bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 rounded sm:text-2xl">
+        <i class="fi fi-sr-floppy-disk-circle-arrow-right flex text-green-700 hover:text-green-800 mr-1 sm:text-2xl"></i>
+        Salvar
+      </button>
+    </div>
+  </form>
+</div>
+<script>
+  function togglePasswordFields(active = true) {
+    if (active) $('#password_fields').toggleClass('hidden');
+    if ($('#password_fields').hasClass('hidden')) {
+      $('#user_password_id').removeAttr('required');
+      $('#user_confirm_password_id').removeAttr('required');
+    } else {
+      $('#user_password_id').attr('required', 'required');
+      $('#user_confirm_password_id').attr('required', 'required');
+    }
+  }
+  togglePasswordFields(false);
+
+  async function saveSettings(event) {
+    event.preventDefault();
+    let password = $('#change_password_checkbox').is(':checked') ? $('#user_password_id').val() : null;
+    let confirmPassword = $('#change_password_checkbox').is(':checked') ? $('#user_confirm_password_id').val() : null;
+    const alterar_password = document.getElementById('change_password_checkbox').checked;
+
+    if (password && password !== confirmPassword) {
+      toastr.warning('As senhas não coincidem');
+      return;
+    }
+    const nome = $('#settings-nome').val();
+    const email = $('#settings-email').val();
+    const whatsapp = $('#settings-whatsapp').val();
+    const codigo = $('#settings-codigo').val();
+    // validar campos
+    if (!nome || !email || !whatsapp || !codigo || (alterar_password && !password)) {
+      toastr.warning('Preencha todos os campos');
+      return;
+    }
+
+    const body = { nome, email, whatsapp, codigo, password, confirm_password: confirmPassword, alterar_password };
+
+    const req = await requestPost('/afiliado/settings', body);
+    if (req?.success) {
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    }
+    aToast(req.message, {
+      type: req?.success ? 'success' : 'error',
+      progress: true,
+    });
+  }
+  // Inicializa o valor formatado anterior como uma string vazia
+  let valorFormatadoAnteriorWhatsapp_settings = '';
+  $('#settings-whatsapp').on('input change', function () {
+    // Obtém o valor atual do campo de entrada
+    var valorAtual = $(this).val();
+    // Remove qualquer caractere que não seja um dígito numérico
+    var valorNumerico = valorAtual.replace(/\D/g, '');
+
+    // Aplica a formatação de telefone: (11) 90011-2233
+    var valorFormatado = formatPhoneNumber(valorNumerico);
+
+    // Atualiza o campo de entrada com o valor formatado apenas se for diferente do valor anterior
+    // Isso impede que a formatação interfira na remoção de caracteres
+    if (valorFormatado !== valorFormatadoAnteriorWhatsapp_settings) {
+      $(this).val(valorFormatado);
+      // Atualiza o valor formatado anterior
+      valorFormatadoAnteriorWhatsapp_settings = valorFormatado;
+    }
+  });
+  $('#settings-whatsapp').trigger('change');
+</script>

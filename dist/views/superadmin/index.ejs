@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <%- include('../includes/head.ejs') %>
+    <title>Painel</title>
+    <link href="css/tailwind.css" rel="stylesheet">
+    <link href="css/darkmode.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/radio.css">
+    <link rel="stylesheet" href="css/checkbox.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="js/utils.js"></script>
+    <!-- <link href="css/radios_bottom.css" rel="stylesheet"> -->
+</head>
+<style>
+  .mygrid {
+    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+  :root {
+    --textcolor: black;
+    --bgcolor: oklch(0.967 0.001 286.375);
+  }
+    /* verrifica se o thema atual é dark atraves do data-mode="dark" e definir o input date para dark */
+    body[data-mode="dark"] {
+      --textcolor: white;
+      --bgcolor: oklch(0.141 0.005 285.823);
+      
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #ffffff4f transparent; /* Firefox */
+    /* Para navegadores baseados em WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #ffffff4f;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #ffffff4f;
+        border: 3px solid #ffffff4f;
+    }
+      & input[type="date"] {
+        color-scheme: dark;
+      }
+    }
+    body[data-mode="light"] {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #0000004f transparent; /* Firefox */
+    /* Para navegadores baseados em WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #0000004f;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #0000004f;
+        border: 3px solid #0000004f;
+    }
+    }
+    
+</style>
+
+<body data-mode="<%= user.darkMode ? 'dark' : 'light' %>" class="min-h-screen bg-zinc-100 dark:text-white relative flex flex-col overflow-hidden">
+  <%- include('../includes/components/custom_confirm.ejs') %>
+  
+  <%- include('../includes/header.ejs') %>
+    <div class="h-full pt-16 z-0 absolute w-full">
+      <div class=" flex relative h-full w-full overflow-hidden">
+        <%- include('../includes/sidbar.ejs', { route }) %>
+          <div id="main"
+            class="dark:bg-zinc-950 dark:text-white flex flex-col h-full w-full transition-colors ease-in duration-500 overflow-auto scroll-smooth">
+            <main class="mb-auto relative">
+              <!-- rotas -->
+              <% if (route==='planos' ){ %>
+                <%- include('./planos.ejs') %>
+              <% } else if (route==='settings' ){ %>
+                <%- include('./settings.ejs') %>
+              <% } else if (route==='empresas' ){ %>
+                <%- include('./empresas.ejs') %>
+              <% } else if (route==='faturas' ){ %>
+                <%- include('./faturas.ejs') %>
+              <% } else if (route==='afiliados' ){ %>
+                <%- include('./afiliados.ejs') %>
+              <% } else {  %>
+                <%- include('./home.ejs') %>
+              <% } %>
+
+            </main>
+            <%- include('../includes/footer.ejs') %>
+          </div>
+      </div>
+    </div>
+</body>
+
+<script src="/js/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+</html>
+
+
+<script>
+  let nomeDaEmpresa = '<%#= empresa?.empresa %>'
+  const socket = io();
+
+  async function route(route, rota = '/dashboard') {
+    await requestPost(rota, { route: route })
+    window.location.reload()
+  }
+
+
+  function showModal_(id_bg, title, msg, id_btn, btn_text) {
+    let textElements = `<%- include('../includes/components/modal.ejs') %>`
+    textElements.replace(/id_bg/g, id_bg).replace(/title/g, title).replace(/btn_text/g, btn_text).replace(/id_btn/g, id_btn)
+    appendInElement(id, textElements)
+  }
+
+</script>

@@ -1,0 +1,331 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model SuperAdmin {
+  id                                Int      @id @default(autoincrement())
+  email                             String   @unique
+  password                          String
+  permission                        Int?     @default(0)
+  maintenance                       Boolean? @default(false)
+  diasTeste                         Int?     @default(15)
+  authorizationBotZap               String?
+  sessionBotZap                     String?
+  applicationName                   String?  @default("AgendeiAqui")
+  domain                            String?  @default("agendeiaqui.com")
+  cloudflareEmail                   String?
+  cloudflareApiKey                  String?
+  payment_gateway                   String?  @default("MercadoPago")
+  porcentagemAfiliado               Float?   @default(15)
+  porcentagemAfiliadoPrimeiraCompra Float?   @default(50)
+  darkMode                          Boolean? @default(false)
+}
+
+model Empresa {
+  id                     Int                   @id @default(autoincrement())
+  uuid                   String                @unique @default(uuid())
+  nome                   String
+  subdomain              String                @unique
+  teste                  Boolean
+  vencimentoSistema      String? //YYYY-MM-DD
+  vencimentoChatbot      String? //YYYY-MM-DD
+  cobrarConfirmacao      Boolean?              @default(false)
+  confirmacaoPorcentagem Boolean?              @default(true)
+  valorConfirmacao       Float?                @default(50)
+  logo                   String?
+  createdAt              DateTime              @default(now())
+  timezone               String                @default("America/Sao_Paulo")
+  themeColor             String?               @default("#000000")
+  bgColor                String?               @default("#222222")
+  textColor              String?               @default("#ffffff")
+  atendimento            Atendimento[]
+  chatbot                ChatbotConfig?
+  clientes               Cliente[]
+  agendamentos           Agendamento[]
+  users                  User[]
+  profissionais          Profissional[]
+  services               Service[]
+  chatbots               Chatbot[]
+  faturas                Faturas[]
+  gatewayPayments        GatewayPayment[]
+  chatbotMessages        chatbotMessages[]
+  CobrancaAgendamento    CobrancaAgendamento[]
+  afiliadoId             Int?
+  afiliado               Afiliados?            @relation(fields: [afiliadoId], references: [id], onDelete: SetNull)
+}
+
+model Atendimento {
+  id             Int           @id @default(autoincrement())
+  dia            String
+  disponivel     Boolean
+  open           String
+  close          String
+  isEmpresa      Boolean       @default(false)
+  profissionalId Int?
+  profissional   Profissional? @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+  empresaId      Int
+  empresa        Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
+
+model ChatbotConfig {
+  id         Int     @id @default(autoincrement())
+  disponivel Boolean
+  ativo      Boolean
+  vencimento String?
+  empresaId  Int     @unique
+  empresa    Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
+
+// 0 - dono do sistema
+// 1 - dono da empresa
+// 2 - funcionário/profissional
+// 3 - cliente
+model PermissionsUser {
+  id         Int     @id @default(autoincrement())
+  permission Int
+  name       String? @default("Sem nome")
+  comentario String  @default("Sem comentários")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  uuid         String        @unique @default(uuid())
+  whatsapp     String //@unique
+  user         String
+  password     String
+  email        String        @unique
+  subdomain    String
+  adm          Boolean       @default(false)
+  permission   Int           @default(2)
+  darkMode     Boolean       @default(false)
+  empresaId    Int
+  empresa      Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  profissional Profissional?
+}
+
+model Cliente {
+  id                  Int                   @id @default(autoincrement())
+  uuid                String                @unique @default(uuid())
+  name                String
+  contato             String
+  cobrarConfirmacao   Boolean?              @default(true)
+  chatbot             Boolean?              @default(true)
+  empresaId           Int
+  empresa             Empresa               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  agendamentos        Agendamento[]
+  chatbotMessages     chatbotMessages[]
+  CobrancaAgendamento CobrancaAgendamento[]
+
+  @@unique([contato, empresaId])
+}
+
+model Agendamento {
+  id                  Int                   @id @default(autoincrement())
+  uuid                String                @unique @default(uuid())
+  data_global         String // YYYY-MM-DD
+  data                String // DD/MM/YYYY
+  inicio              String //00:00
+  fim                 String //00:00
+  clienteUuid         String
+  status              Int // 0 = agendado, 1 = confirmado, 2 = cancelado, 3 = finalizado
+  cliente             Cliente               @relation(fields: [clienteUuid], references: [uuid], onDelete: Cascade)
+  empresaId           Int
+  empresa             Empresa               @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  profissionalId      Int
+  profissional        Profissional          @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+  serviceUuid         String
+  service             Service               @relation(fields: [serviceUuid], references: [uuid], onDelete: Cascade)
+  CobrancaAgendamento CobrancaAgendamento[]
+}
+
+model CobrancaAgendamento {
+  id               Int            @id @default(autoincrement())
+  uuid             String         @unique @default(uuid())
+  status           Int?           @default(0) // 0 = pending, 1 = approved, 2 = cancelado
+  paymentId        String?
+  agendamentoId    Int
+  agendamento      Agendamento    @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  gatewayPaymentId Int
+  gatewayPayment   GatewayPayment @relation(fields: [gatewayPaymentId], references: [id], onDelete: Cascade)
+  empresaId        Int
+  empresa          Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  clienteId        Int
+  cliente          Cliente        @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+}
+
+model Profissional {
+  id                  Int               @id @default(autoincrement())
+  uuid                String            @unique @default(uuid())
+  nome                String
+  whatsapp            String //@unique
+  admin               Boolean           @default(false)
+  atendimento_empresa Boolean           @default(true)
+  comissao            Float?            @default(30)
+  empresaId           Int
+  empresa             Empresa           @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  atendimento         Atendimento[]
+  agendamentos        Agendamento[]
+  services            Service[]
+  chatbot             Chatbot?
+  chatbotMessages     chatbotMessages[]
+  userId              Int?              @unique
+  user                User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Service {
+  id            Int            @id @default(autoincrement())
+  uuid          String         @unique @default(uuid())
+  name          String
+  time          String
+  value         Float
+  empresaId     Int
+  empresa       Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  profissionais Profissional[]
+  agendamentos  Agendamento[]
+}
+
+model Chatbot {
+  id                      Int           @id @default(autoincrement())
+  uuid                    String        @unique @default(uuid())
+  ativo                   Boolean?      @default(false)
+  isEmpresa               Boolean?      @default(false)
+  saudacao                String?       @db.Text
+  criado                  String?       @db.Text
+  confirmado              String?       @db.Text
+  cancelado               String?       @db.Text
+  aguardarHumano          String?       @db.Text
+  cobrarConfirmacao       String?       @db.Text
+  informativa             String?       @db.Text
+  informativaProfissional String?       @db.Text
+  profissionalId          Int?          @unique
+  profissional            Profissional? @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+  empresaId               Int
+  empresa                 Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
+
+model Planos {
+  id        Int       @id @default(autoincrement())
+  nome      String
+  descricao String
+  valor     Float
+  desconto  Float?    @default(0)
+  duracao   Int // em meses
+  chatbot   Boolean?  @default(false)
+  sistema   Boolean   @default(true)
+  modulos   Json?
+  fatura    Faturas[]
+}
+
+model Faturas {
+  id                  Int            @id @default(autoincrement())
+  pagoEm              String? // Formato yyyy-mm-dd
+  status              Int?           @default(0) // 0 - pendente, 1 - pago, 2 - cancelado
+  valor               Float?
+  porcentagemAfiliado Float          @default(15)
+  paymentId           String?
+  prefId              String?
+  chatbot             Boolean?       @default(false)
+  sistema             Boolean        @default(true)
+  createdAt           DateTime       @default(now())
+  planoId             Int
+  plano               Planos         @relation(fields: [planoId], references: [id], onDelete: Cascade)
+  empresaId           Int
+  empresa             Empresa        @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  gatewayId           Int
+  gateway             GatewayPayment @relation(fields: [gatewayId], references: [id], onDelete: Cascade)
+}
+
+model GatewayPayment {
+  id                  Int                   @id @default(autoincrement())
+  nome                String
+  ativo               Boolean               @default(false)
+  dados               Json
+  empresaId           Int?
+  empresa             Empresa?              @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  faturas             Faturas[]
+  CobrancaAgendamento CobrancaAgendamento[]
+}
+
+model chatbotMessages {
+  id                Int           @id @default(autoincrement())
+  // oldMessageIsCliente Boolean? @default(false)
+  // oldMessageBot String? 
+  oldMessageCliente String?
+  oldStage          String?
+  clienteWhatsapp   String
+  empresaId         Int
+  cliente           Cliente       @relation(fields: [clienteWhatsapp, empresaId], references: [contato, empresaId], onDelete: Cascade)
+  empresa           Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  profissionalId    Int?
+  profissional      Profissional? @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+
+  // @@unique([clienteWhatsapp, empresaId, profissionalId])
+}
+
+model agendamentoChatbot {
+  id                Int      @id @default(autoincrement())
+  clienteId         Int
+  empresaId         Int
+  serviceId         Int?
+  profissionalId    Int?
+  data              String?
+  hora              String?
+  oldMessageCliente String?
+  oldStage          String?
+  createdAt         DateTime @default(now())
+}
+
+model ativarEmpresa {
+  id             Int     @id @default(autoincrement())
+  uuid           String  @unique @default(uuid())
+  nome           String
+  subdomain      String  @unique
+  email          String  @unique
+  whatsapp       String  @unique
+  user           String
+  password       String
+  codigoAfiliado String?
+}
+
+model resetPassword {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique @default(uuid())
+  email     String   @unique
+  token     String?
+  createdAt DateTime @default(now())
+}
+
+model Afiliados {
+  id                    Int                 @id @default(autoincrement())
+  codigo                String              @unique
+  nome                  String
+  email                 String              @unique
+  whatsapp              String              @unique
+  password              String
+  autorizado            Boolean?            @default(false)
+  darkMode              Boolean?            @default(false)
+  porcentagem           Float?              @default(0)
+  empresas              Empresa[]
+  afiliadoCredentialsId Int                 @unique
+  afiliadoCredentials   AfiliadoCredentials @relation(fields: [afiliadoCredentialsId], references: [id], onDelete: Cascade)
+  createdAt             DateTime            @default(now())
+}
+
+model AfiliadoCredentials {
+  id            Int        @id @default(autoincrement())
+  uuid          String     @unique @default(uuid())
+  access_token  String
+  public_key    String
+  refresh_token String
+  expires_in    String
+  scope         String
+  token_type    String
+  user_id       String
+  live_mode     Boolean
+  afiliado      Afiliados?
+}

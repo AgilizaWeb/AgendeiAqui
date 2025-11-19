@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <% const dominio = `https://${typeof superAdmin !== 'undefined' && superAdmin.domain ? superAdmin.domain : 'agendeiaqui.com'}` %>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro - Afiliado</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/utils/input.css">
+    <link rel="stylesheet" type="text/css" href="../css/utils/form.css">
+    <link rel="stylesheet" type="text/css" href="../css/utils/switch.css">
+    <link rel="stylesheet" type="text/css" href="../css/utils/card.css">
+    <link rel="stylesheet" type="text/css" href="../css/utils/animations.css">
+    <link rel="stylesheet" type="text/css" href="../css/utils/utils.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <meta property="og:image" content="<%= dominio %>/icons/logo.png">
+
+    <meta property="og:url" content="<%= dominio %>/cadastro" />
+    <meta property="og:type" content="website">
+    
+    
+    <link rel="shortcut icon" type="image/png" href="<%= dominio %>/icons/logo.png">
+    <link rel="apple-touch-icon" href="<%= dominio %>/icons/logo.png">
+    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="stylesheet" href="https://agilizaweb.com/atoast.css">
+<script src="https://agilizaweb.com/atoast.js"></script>
+
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #09090b;
+
+            font-family: 'Roboto', sans-serif;
+            font-style: normal;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="displayCenter fullScreen">
+
+        <div class="formBG">
+            <div class="header">
+                <img class="cursor-pointer" onclick="window.location.href = '/'" src="../icons/logo.png" alt="Logo">
+                <h2>Cadastrar como afiliado</h2>
+            </div>
+            <form class="form"  onsubmit="cadastrar(event)" method="post">
+                <div class="input-icon">
+                    <i class="bi bi-person-fill"></i>
+                    <input type="text" id="nome" name="nome" placeholder="Seu nome" required>
+                </div>
+                <div class="input-icon">
+                    <i class="bi bi-envelope-at-fill"></i>
+                    <input type="text" id="email" name="email" placeholder="E-mail" required>
+                </div>
+                <div class="input-icon">
+                    <i class="bi bi-whatsapp"></i>
+                    <input type="text" id="whatsapp" name="whatsapp" placeholder="Whatsapp" required>
+                </div>
+                <div class="input-icon">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" id="password" name="password" placeholder="Senha" required>
+                </div>
+                <div class="input-icon" style="margin-bottom: 0px;">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirmar senha"
+                        required>
+                </div>
+                <p style="margin: 0;" id="notify"></p>
+                <div class="fullH hRight">
+                    <a class="forgot" href="/afiliado/login"><i class="bi bi-person"></i> Já tenho uma conta</a>
+                </div>
+                <div class="fullH hCenter">
+                    <button class="buttonGreen" type="submit"><i class="bi bi-door-open"></i>Cadastrar</button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>
+
+<script src="../js/utils.js"></script>
+
+<script>
+    getID('confirm_password').addEventListener('input', function () {
+        const confir = getID('confirm_password').value
+        const notify = getID('notify')
+        if (!confir) {
+            notify.textContent = ''
+            return
+        }
+
+        if (getID('password').value !== confir) {
+            notify.style.color = 'red'
+            notify.textContent = 'Invalida!'
+            return
+        }
+        notify.style.color = 'green'
+        notify.textContent = 'Correta!'
+
+    });
+    async function cadastrar(event) {
+        event.preventDefault();
+        let nome = getID('nome').value
+        let email = getID('email').value
+        let whatsapp = getID('whatsapp').value
+        let password = getID('password').value
+        let confirm_password = getID('confirm_password').value
+
+        if (!email) {
+            toastr.warning('Insira o e-mail')
+        }else if (!nome) {
+            toastr.warning('Insira o nome')
+        }else if (!whatsapp) {
+            toastr.warning('Insira o numero do whatsapp')
+        }else if (!password) {
+            toastr.warning('Insira a senha de acesso!')
+        }else if (!confirm_password) {
+            toastr.warning('Insira a senha de acesso!')
+        }else if (password !== confirm_password) {
+            toastr.warning('Senhas incorretas')
+        }
+
+        let res = await requestPost('/afiliado/register', { 
+            nome, whatsapp, email, password, confirm_password
+         })
+         aToast(res.message, {
+            type: res.success ? 'success' : 'error'
+         })
+        if (res.success) {
+            setTimeout(() => {
+                window.location.href = '/afiliado/dashboard'
+            }, 2000);
+        }
+    }
+
+  // Inicializa o valor formatado anterior como uma string vazia
+  let valorFormatadoAnteriorWhatsapp = '';
+  $('#whatsapp').on('input change', function () {
+    // Obtém o valor atual do campo de entrada
+    var valorAtual = $(this).val();
+    // Remove qualquer caractere que não seja um dígito numérico
+    var valorNumerico = valorAtual.replace(/\D/g, '');
+
+    // Aplica a formatação de telefone: (11) 90011-2233
+    var valorFormatado = formatPhoneNumber(valorNumerico);
+
+    // Atualiza o campo de entrada com o valor formatado apenas se for diferente do valor anterior
+    // Isso impede que a formatação interfira na remoção de caracteres
+    if (valorFormatado !== valorFormatadoAnteriorWhatsapp) {
+      $(this).val(valorFormatado);
+      // Atualiza o valor formatado anterior
+      valorFormatadoAnteriorWhatsapp = valorFormatado;
+    }
+  });
+</script>

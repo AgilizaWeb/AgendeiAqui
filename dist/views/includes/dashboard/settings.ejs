@@ -1,0 +1,351 @@
+<style>
+  .mygrid {
+    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+
+  /* Para navegadores WebKit (Chrome, Safari, Edge) */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Para Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+</style>
+<form onsubmit="salvarHome(event)" class="p-1 w-full h-full flex justify-center items-center flex-col">
+  <div class="flex items-center flex-col max-sm:w-full sm:w-[60%]">
+    <img id="logo_prev_id" class="w-28 mb-2" src="<%= empresa.logo %>" alt="Logo da empresa">
+    <div class="mb-4">
+      <label for="logo_upload_id"
+        class="text-white text-center flex items-center px-4 py-1 rounded-sm cursor-pointer bg-blue-500 hover:bg-blue-600">
+        <i class="fi fi-br-picture mr-1 flex text-green-500"></i>Definir logo da empresa
+      </label>
+      <input id="logo_upload_id" type="file" accept="image/*" class="hidden">
+    </div>
+
+    <%- include('./components/input_text.ejs', { id: 'empresa_id' , icon: 'fi fi-rs-blog-pencil' ,
+      placeholder: 'Nome da empresa' , value: empresa.nome }) %>
+      <%- include('./components/input_subdomain.ejs', { id: 'subdomain_id' , icon: 'bi bi-globe' ,
+        placeholder: 'Subdominio da empresa' , value: empresa.subdomain }) %>
+
+        <!-- Adicionando opções de cores -->
+        <div class="mt-4 w-full flex items-center justify-between bg-zinc-50 dark:bg-zinc-700 rounded px-2 pb-2">
+          <div class="flex flex-col items-center">
+            <label for="themeColor">Cor do Tema</label>
+            <input id="themeColor" type="color" value="<%= empresa.themeColor %>">
+          </div>
+
+          <div class="flex flex-col items-center">
+            <label for="bgColor">Cor de Fundo</label>
+            <input id="bgColor" type="color" value="<%= empresa.bgColor %>">
+          </div>
+
+          <div class="flex flex-col items-center">
+            <label for="textColor">Cor dos Textos</label>
+            <input id="textColor" type="color" value="<%= empresa.textColor %>">
+          </div>
+        </div>
+
+        <!-- Adicionando opções para cobrar confirmação de agendamento -->
+        <div class="mt-4 w-full flex flex-col justify-center gap-5 bg-zinc-50 dark:bg-zinc-700 rounded p-4">
+          <div class="flex items-center gap-2">
+            <%- include('./components/checkbox.ejs', {verify: empresa.cobrarConfirmacao, id: 'cobrarConfirmacao' }) %>
+              <span class="text-sm max-sm:text-xs text-gray-900 dark:text-white">Cobrar confirmação de
+                agendamento</span>
+          </div>
+          <script src="https://cdn.jsdelivr.net/npm/flowbite@3.0.0/dist/flowbite.min.js"></script>
+          <div id="cobrarConfirmacao_container"
+            class="flex flex-wrap gap-4 <%= empresa.cobrarConfirmacao ? '' : 'hidden' %>">
+            <div class="flex flex-col items-start">
+              <label data-tooltip-target="tooltip-default" for="tipoCobranca"
+                class="text-sm font-medium text-gray-900 dark:text-white flex items-center">Tipo
+                de cobrança
+                <i class="fi fi-rs-info flex items-center ml-1 text-blue-400"></i>
+                <div id="tooltip-default" role="tooltip"
+                  class="absolute z-10 max-w-xs invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-xs opacity-0 tooltip dark:bg-gray-700">
+                  <ul class="flex flex-col gap-2">
+                    <li class="text-xs max-sm:text-xss"><strong>Porcentagem:</strong> será cobrado uma porcentagem sobre
+                      o valor do serviço para que o agendamento seja confirmado e o horario seja reservado ao cliente
+                    </li>
+                    <li class="text-xs max-sm:text-xss"><strong>Valor fixo:</strong> em qualquer serviço será cobrado o
+                      valor definido para que o agendamento seja confirmado e o horario seja reservado ao cliente</li>
+                  </ul>
+                  <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
+              </label>
+              <select id="tipoCobranca"
+                class="mt-1  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-transparent dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option class="bg-zinc-100 dark:bg-zinc-800" <%=empresa.confirmacaoPorcentagem ? 'selected' : '' %>
+                  value="porcentagem">Porcentagem</option>
+                <option class="bg-zinc-100 dark:bg-zinc-800" <%=!empresa.confirmacaoPorcentagem ? 'selected' : '' %>
+                  value="fixo">Fixo</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col items-start">
+              <label for="valorConfirmacao" class="text-sm font-medium text-gray-900 dark:text-white">Valor
+                cobrado</label>
+              <div class="relative mt-1">
+                <input id="valorConfirmacao" value="<%= empresa.valorConfirmacao %>" type="number"
+                  class=" border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-[100px] p-2.5 <%= empresa.confirmacaoPorcentagem ? 'pr-10' : 'pl-10' %> bg-transparent dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 appearance-none"
+                  autocomplete="off">
+                <span
+                  class="absolute inset-y-0 <%= empresa.confirmacaoPorcentagem ? 'right-0 pr-3' : 'left-0 pl-3' %> flex items-center text-gray-500 dark:text-gray-400">
+                  <i class="fas fa-percent <%= empresa.confirmacaoPorcentagem ? '' : 'hidden' %>"></i>
+                  <i class="<%= !empresa.confirmacaoPorcentagem ? '' : 'hidden' %>">R$</i>
+                </span>
+              </div>
+            </div>
+          </div>
+        <!-- </div> -->
+
+        <script>
+          // onclick data-tooltip-target="tooltip-default"
+          $('[data-tooltip-target="tooltip-default"]').on('click', function () {
+            $('#tooltip-default').toggleClass('invisible opacity-0')
+          });
+          
+          // esperar que o DOM esteja pronto
+          $(document).ready(function () {
+              const gatewaySelected = $('#gateways').val().toLowerCase();
+              const gatewaysContainer = document.querySelectorAll('.gateway_container');
+              console.log('gatewaySelected:', gatewaySelected);
+              gatewaysContainer.forEach(gateway_container => {
+                if (!gateway_container.classList.contains('hidden')) {
+                  gateway_container.classList.add('hidden'); 
+                }
+              });
+              document.getElementById(`${gatewaySelected}_container`).classList.remove('hidden'); // adicionar classe hidden ao gateway_container com o id igual ao gatewaySelected
+          });
+
+          $('#cobrarConfirmacao').change(function () {
+            if ($(this).is(':checked')) {
+              $('#cobrarConfirmacao_container').removeClass('hidden');
+            } else {
+              $('#cobrarConfirmacao_container').addClass('hidden');
+            }
+          });
+          $('#tipoCobranca').change(function () {
+            if ($(this).val() === 'porcentagem') {
+              $('#valorConfirmacao').next().find('i').removeClass('hidden');
+              $('#valorConfirmacao').next().find('i').next().addClass('hidden');
+              // mudar lado do simbolo para a direita
+              $('#valorConfirmacao').next().removeClass('pl-3').addClass('pr-3');
+              $('#valorConfirmacao').next().removeClass('left-0').addClass('right-0');
+
+              $('#valorConfirmacao').removeClass('pl-10').addClass('pr-10');
+            } else {
+              $('#valorConfirmacao').next().find('i').addClass('hidden');
+              $('#valorConfirmacao').next().find('i').next().removeClass('hidden');
+              $('#valorConfirmacao').next().removeClass('pr-3').addClass('pl-3');
+              $('#valorConfirmacao').next().removeClass('right-0').addClass('left-0');
+
+              $('#valorConfirmacao').removeClass('pr-10').addClass('pl-10');
+            }
+          });
+        </script>
+        <!-- Adicionando opções para cobrar confirmação de agendamento -->
+
+
+        <div class="w-full grid grid-cols-2 gap-5 ">
+
+          <div>
+            <label for="gateways"
+              class="mt-1 text-sm font-medium text-gray-900 dark:text-white flex items-center">Método de
+              cobrança</label>
+            <select id="gateways"
+              class="mt-1  border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 bg-transparent dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+              <option class="bg-zinc-100 dark:bg-zinc-800" <%= empresa.gateways?.PixManual?.ativo ? 'selected' : '' %>
+                value="PixManual">Pix Manual</option>
+              <option class="bg-zinc-100 dark:bg-zinc-800" <%= empresa.gateways?.MercadoPago?.ativo ? 'selected' : '' %>
+                value="MercadoPago">Marcado Pago</option>
+            </select>
+          </div>
+          <div id="pixmanual_container" class="<%= empresa.gateways?.PixManual?.ativo ? '' : 'hidden' %> gateway_container">
+            <label for="pixmanual_id"
+              class="mt-1 text-sm font-medium text-gray-900 dark:text-white flex items-center w-full">Chave Pix</label>
+            <input id="pixmanual_id" value="<%= empresa.gateways?.PixManual?.dados?.chave_pix %>" type="text" placeholder="Chave Pix"
+              class="mt-1 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 bg-transparent dark:border-gray-600 dark:placeholder-gray-400 dark:text-white appearance-none w-full">
+          </div>
+          <div id="mercadopago_container" class="<%= empresa.gateways?.MercadoPago?.ativo ? '' : 'hidden' %> gateway_container">
+            <label for="mercadopago_id"
+              class="mt-1 text-sm font-medium text-gray-900 dark:text-white flex items-center w-full">Access Token</label>
+            <input id="mercadopago_id" value="<%= empresa.gateways?.MercadoPago?.dados?.access_token %>" type="text" placeholder="Access Token"
+              class="mt-1 border border-gray-300 text-gray-900 text-sm rounded-lg block p-2.5 bg-transparent dark:border-gray-600 dark:placeholder-gray-400 dark:text-white appearance-none w-full">
+          </div>
+
+        </div>
+        <script>
+          $('#gateways').change(function () {
+            if ($(this).val() === 'PixManual') {
+              $('#pixmanual_container').removeClass('hidden');
+              $('#mercadopago_container').addClass('hidden');
+            } else {
+              $('#pixmanual_container').addClass('hidden');
+              $('#mercadopago_container').removeClass('hidden');
+            }
+          });
+        </script>
+
+
+  </div>
+  <div class="mt-5 w-full">
+    <div class="drop-shadow w-full flex flex-col items-center relative overflow-hidden">
+      <div onclick="openHorariosEmpresa(this)"
+        class="z-[1] w-full px-2 py-1 rounded-tl rounded-tr flex justify-between items-center bg-zinc-100 dark:bg-zinc-600 cursor-pointer">
+        <h1 class="flex items-center text-zinc-500 dark:text-zinc-300 max-xs:text-xs max-sm:text-sm"><span
+            class="fi fi-bs-calendar-clock mr-2 flex dark:text-white text-black"></span>Definir horarios de atendimento
+        </h1>
+        <i class="fi fi-br-angle-double-right flex transition-all transform duration-1000 ease-in-out"></i>
+      </div>
+      <div id="horarios_empresa_id"
+        class="flex w-full transition-all transform duration-1000 ease-in-out opacity-0 max-h-0 translate-y-[-100%] px-2 flex-col justify-between items-center bg-zinc-50 dark:bg-zinc-500">
+        <div class="w-full mygrid border-b border-black dark:border-white">
+
+          <div class="flex gap-1 items-center justify-center">
+            <i class="fi fi-br-calendar-day flex"></i>
+            <span>Dia</span>
+          </div>
+
+          <div class="flex gap-1 items-center justify-center">
+            <i class="fi fi-br-time-check flex"></i>
+            <span>Aberto</span>
+          </div>
+
+          <div class="flex gap-1 items-center justify-center">
+            <i class="fi fi-br-brightness flex text-yellow-500"></i>
+            <span>Inicio</span>
+          </div>
+
+          <div class="flex gap-1 items-center justify-center">
+            <i class="fi fi-br-moon-stars flex text-blue-500"></i>
+            <span>Fim</span>
+          </div>
+
+        </div>
+        <% for (const dia in empresa.atendimento) { if (!empresa.atendimento[dia].isEmpresa) continue; %>
+          <%- include('./components/horario_dia.ejs', { name: empresa.atendimento[dia].dia , disponivel:
+            empresa.atendimento[dia].disponivel, open: empresa.atendimento[dia].open, close:
+            empresa.atendimento[dia].close, }) %>
+            <% } %>
+      </div>
+    </div>
+    <div class="w-full flex justify-center mt-4 mb-10">
+      <button class="app_buttons bg-green-500 hover:bg-green-600 text-white" type="submit">
+        <i class="fi fi-rr-disk"></i>
+        Salvar alterações
+      </button>
+    </div>
+  </div>
+</form>
+<script>
+  let newLogo = false
+  async function salvarHome(event) {
+    if (event) event.preventDefault();
+    let empresa = $('#empresa_id').val()
+    let subdomain = $('#subdomain_id').val()
+    let themeColor = $('#themeColor').val();
+    let bgColor = $('#bgColor').val();
+    let textColor = $('#textColor').val();
+
+    const cobrarConfirmacao = $('#cobrarConfirmacao').is(':checked');
+    console.log('cobrarConfirmacao:', cobrarConfirmacao)
+    const tipoCobranca = $('#tipoCobranca').val();
+    const valorConfirmacao = $('#valorConfirmacao').val();
+
+    console.log('diso_seg:', $('#seg_inicio_id').val())
+    let atendimento = JSON.stringify({
+      seg: {
+        disponivel: $('#seg_aberto_id').is(':checked') ? true : false,
+        open: $('#seg_inicio_id').val(),
+        close: $('#seg_fim_id').val()
+      },
+      ter: {
+        disponivel: $('#ter_aberto_id').is(':checked') ? true : false,
+        open: $('#ter_inicio_id').val(),
+        close: $('#ter_fim_id').val()
+      },
+      qua: {
+        disponivel: $('#qua_aberto_id').is(':checked') ? true : false,
+        open: $('#qua_inicio_id').val(),
+        close: $('#qua_fim_id').val()
+      },
+      qui: {
+        disponivel: $('#qui_aberto_id').is(':checked') ? true : false,
+        open: $('#qui_inicio_id').val(),
+        close: $('#qui_fim_id').val()
+      },
+      sex: {
+        disponivel: $('#sex_aberto_id').is(':checked') ? true : false,
+        open: $('#sex_inicio_id').val(),
+        close: $('#sex_fim_id').val()
+      },
+      sab: {
+        disponivel: $('#sab_aberto_id').is(':checked') ? true : false,
+        open: $('#sab_inicio_id').val(),
+        close: $('#sab_fim_id').val()
+      },
+      dom: {
+        disponivel: $('#dom_aberto_id').is(':checked') ? true : false,
+        open: $('#dom_inicio_id').val(),
+        close: $('#dom_fim_id').val()
+      }
+    })
+
+    console.log('atendimento:', atendimento)
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const gateway = $('#gateways').val();
+    console.log('gateway:', gateway)
+    const pixmanual = $('#pixmanual_id').val();
+    const access_token = $('#mercadopago_id').val();
+
+    let req = await requestPost('/v1/setempresa', {
+      empresa,
+      subdomain,
+      atendimento,
+      timeZone,
+      themeColor,
+      bgColor,
+      textColor,
+      cobrarConfirmacao,
+      tipoCobranca,
+      valorConfirmacao,
+      gateway,
+      pixmanual,
+      access_token,
+      logo: newLogo ? $('#logo_prev_id').attr('src') : ''
+    })
+    if (req?.success) {
+      toastr.success(req.message)
+    } else {
+      toastr.warning(req.message)
+    }
+
+
+
+
+
+  }
+  $('#logo_upload_id').change(function () {
+    var file = this.files[0];
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        let r = e.target.result
+        newLogo = true;
+        $('#logo_prev_id').attr('src', r);
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  function openHorariosEmpresa(e) {
+    $(e).find('i').toggleClass('rotate-90')
+    $('#horarios_empresa_id').toggleClass('opacity-0 max-h-0 max-h-full translate-y-[-100%]')
+  }
+</script>

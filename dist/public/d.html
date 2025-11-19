@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Empresa</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ["corechart"] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Task', 'Hours per Day'],
+                ['Work', 11],
+                ['Eat', 2],
+                ['Commute', 2],
+                ['Watch TV', 2],
+                ['Sleep', 7]
+            ]);
+
+            var options = {
+                title: 'My Daily Activities',
+                backgroundColor: 'transparent',
+                is3D: true,
+                titleTextStyle: { color: 'gray' },
+
+                legendTextStyle: {
+                    color: 'gray', // Cor do texto da legenda
+                    fontSize: 14,
+                    bold: false     // Tamanho da fonte da legenda
+                }, // Cor de fundo
+                slices: {
+                    0: { color: '#FF5733' },
+                    1: { color: '#33FF57' },
+                    2: { color: '#5733FF' },
+                    3: { color: '#FFC933' }
+                }
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+<style>
+    body {
+        background-color: aqua;
+    }
+</style>
+
+<body>
+    <div id="piechart_3d" style="width: 400px; height: 250px; background-color: transparent; border: 3px solid red; padding: 0; margin: 0;"></div>
+</body>
+
+</html>

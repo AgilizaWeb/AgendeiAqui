@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <%- include('./includes/head.ejs', { domain: superAdmin.domain }) %>
+    <title>Painel</title>
+    <link href="css/tailwind.css" rel="stylesheet">
+    <link href="css/darkmode.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/radio.css">
+    <link rel="stylesheet" href="css/checkbox.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="js/utils.js"></script>
+    <!-- <link href="css/radios_bottom.css" rel="stylesheet"> -->
+</head>
+<style>
+  .mygrid {
+    gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+  
+  :root {
+    --textcolor: black;
+    --bgcolor: oklch(0.967 0.001 286.375);
+  }
+    /* verrifica se o thema atual é dark atraves do data-mode="dark" e definir o input date para dark */
+    body[data-mode="dark"] {
+      --textcolor: white;
+      --bgcolor: oklch(0.141 0.005 285.823);
+      & input[type="date"] {
+        color-scheme: dark;
+      }
+      
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #ffffff4f transparent; /* Firefox */
+    /* Para navegadores baseados em WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #ffffff4f;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #ffffff4f;
+        border: 3px solid #ffffff4f;
+    }
+      & input[type="date"] {
+        color-scheme: dark;
+      }
+    }
+    body[data-mode="light"] {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #0000004f transparent; /* Firefox */
+    /* Para navegadores baseados em WebKit (Chrome, Safari) */
+    &::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #0000004f;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: #0000004f;
+        border: 3px solid #0000004f;
+    }
+    }
+    @media (max-width: 640px) {
+  .max-sm\:min-h-auto {
+    /* min-height: 93.5vh; */
+  }
+  .max-sm\:pb-\[6\.5vh\] {
+    padding-bottom: 7.5vh;
+  }
+}
+</style>
+
+<body data-mode="<%= user.darkMode ? 'dark' : 'light' %>" class="min-h-screen max-sm:min-h-auto bg-zinc-100 dark:text-white relative flex flex-col overflow-hidden">
+  <% if (route==='profissionais' ){ %>
+    <%- include('./includes/dashboard/components/add_profissional.ejs') %>
+  <% } else if (route==='services' ){ %>
+    <%- include('./includes/dashboard/components/add_services.ejs') %>
+  <% } else if (route==='chatbot' ){ %>
+    <%- include('./includes/dashboard/teste_fluxo.ejs') %>
+  <% } else if (route==='clientes' ){ %>
+    <%- include('./includes/dashboard/components/add_clientes.ejs') %>
+  <% } else if (route!=='perfil' && route!=='faturas' && route!=='suporte' && route!=='planos' && route!=='home' && route!=='financeiro' && route!=='settings') { %>
+    <%- include('./includes/dashboard/components/criar_agendamento.ejs') %>
+    <%- include('./includes/dashboard/components/edit_agendamento.ejs') %>
+  <% } %>
+  <%- include('./includes/components/custom_confirm.ejs') %>
+  
+  <%- include('includes/header.ejs', { applicationName: superAdmin.applicationName }) %>
+    <div class="h-full pt-16 z-0 absolute w-full">
+      <div class=" flex relative h-full w-full overflow-hidden">
+        <%- include('includes/sidbar.ejs', { route }) %>
+          <div id="main"
+            class="dark:bg-zinc-950 dark:text-white flex flex-col h-full w-full transition-colors ease-in duration-500 overflow-auto scroll-smooth">
+            <main class="mb-auto relative">
+              <div class="ml-1 mt-1">
+                <p class="text-xs">Vencimentos</p>
+                <div class="block gap-5 max-sm:gap-1">
+                  <% const [anoChatBot, mesChatBot, diaChatBot] = (empresa?.vencimentoChatbot).split('-'); const [anoSistema, mesSistema, diaSistema] = (empresa?.vencimentoSistema).split('-');  %>
+                  <span class="flex items-end gap-1 text-sm text-<%= empresa.permissions.chatbot ? 'green' : 'red' %>-500"><strong class="text-sm flex items-center"><i class="pr-1 text-xs flex fi fi-rs-<%= empresa.permissions.chatbot ? 'check-circle text-green-500' : 'circle-xmark text-red-500' %>"></i> ChatBot:</strong> <%= `${diaChatBot}/${mesChatBot}/${anoChatBot}` %></span>
+                  <span class="flex items-end gap-1 text-sm text-<%= empresa.permissions.sistema ? 'green' : 'red' %>-500"><strong class="text-sm flex items-center"><i class="pr-1 text-xs flex fi fi-rs-<%= empresa.permissions.sistema ? 'check-circle text-green-500' : 'circle-xmark text-red-500' %>"></i> Site:</strong> <%= `${diaSistema}/${mesSistema}/${anoSistema}` %></span>
+                </div>
+              </div>
+
+              <% if (route==='settings' ) { %>
+                <%- include('includes/dashboard/settings.ejs') %>
+                  <% } else if (route==='profissionais' ){ %>
+                    <%- include('includes/dashboard/profissionais.ejs') %>
+                      <% } else if (route==='services' ){ %>
+                        <%- include('includes/dashboard/services.ejs') %>
+                        <% } else if (route==='chatbot' ){ %>
+                          <%- include('includes/dashboard/chatbot.ejs') %>
+                          <% } else if (route==='perfil' ){ %>
+                          <%- include('includes/dashboard/perfil.ejs') %>
+                          <% } else if (route==='faturas' ){ %>
+                            <%- include('includes/dashboard/faturas.ejs') %>
+                            <% } else if (route==='suporte' ){ %>
+                              <%- include('includes/dashboard/suporte.ejs') %>
+                            <% } else if (route==='planos' ){ %>
+                              <%- include('includes/dashboard/planos.ejs') %>
+                            <% } else if (route==='clientes' ){ %>
+                              <%- include('includes/dashboard/clientes.ejs') %>
+                            <% } else if (route==='home' ){ %>
+                              <%- include('includes/dashboard/home.ejs') %>
+                            <% } else if (route==='financeiro' ){ %>
+                              <%- include('includes/dashboard/financeiro.ejs') %>
+                          <% } else { %>
+                            <%- include('includes/dashboard/agendamentos.ejs') %>
+                              <% } %>
+            </main>
+            <%- include('includes/footer.ejs') %>
+          </div>
+      </div>
+    </div>
+</body>
+
+<script src="/js/index.js"></script>
+<!-- <script src="/js/utils.js"></script> -->
+<!-- <script src="/js/radio.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+
+</html>
+
+
+<script>
+  let nomeDaEmpresa = '<%= empresa.empresa %>'
+  const socket = io();
+  //   socket.on('<%#= db_user.authorization %>', function (update) {
+  //     console.log('update:', update)
+
+  //     if (update?.paid) {
+  //       $('#qrcode_pay_bg').addClass('hidden')
+  //       infoBtn('Pagamento Aprovado', 'Créditos adicionados +' + update?.credits, '', document.getElementById('credits_user'))
+  //       setTimeout(() => {
+  //         $('#credits_user').text((+$('#credits_user').text() + update?.credits))
+  //         $('#credits_user').addClass('animate-fadeIn').delay(1000).queue(function (next) {
+  //           $('#credits_user').removeClass('animate-fadeIn');
+  //           next();
+  //         });
+  //       }, 1000);
+  //     }else if (update?.qr) {
+  //       if (update?.session) $('#btn_qrcode_' + update?.session).removeClass('hidden');
+  //       $('#src_qrcode').attr('src', update.qr)
+  //       $('#qrcode_bg').removeClass('hidden')
+  //     }else if (update?.scanned) {
+  //       $('#qr_success').removeClass('hidden');
+  //       if (!$('#qr_success').hasClass('hidden')) {
+  //         // setTimeout(() => {
+  //         //   window.location.reload()
+  //         // }, 5000);
+  //       }
+  //     }
+  //   });
+
+  async function route(route) {
+    await requestPost('/dashboard', { route: route })
+    window.location.reload()
+  }
+
+
+  function showModal_(id_bg, title, msg, id_btn, btn_text) {
+    let textElements = `<%- include('includes/components/modal.ejs') %>`
+    textElements.replace(/id_bg/g, id_bg).replace(/title/g, title).replace(/btn_text/g, btn_text).replace(/id_btn/g, id_btn)
+    appendInElement(id, textElements)
+  }
+
+
+
+    // $('#dataInput').on('change', function () {
+    //   console.log($(this).val())
+    // });
+    // Definição manual das opções de localização para português
+
+    function configDataPicker() {
+      function formatDayName() {
+        var windowWidth = $(window).width();
+        var names;
+
+        if (windowWidth < 350) {
+          names = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
+        } else if (windowWidth >= 350 && windowWidth < 500) {
+          names = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        } else {
+          names = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+        }
+
+        return names;
+      }
+      $.datepicker.regional['pt-BR'] = {
+        closeText: 'Fechar',
+        prevText: '&#x3C;Anterior',
+        nextText: 'Próximo&#x3E;',
+        currentText: 'Hoje',
+        monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+        monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+          'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+        dayNames: formatDayName(),
+        dayNamesShort: formatDayName(),
+        dayNamesMin: formatDayName(),
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 0,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+      };
+
+      // Configura a localização para o Brasil
+      $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+    }
+
+    // Chama a função de configuração inicialmente
+    configDataPicker();
+
+    // Chama a função de configuração sempre que a janela é redimensionada
+    $(window).resize(function () {
+      configDataPicker();
+    });
+
+    // let dias_ativos = {
+    //   seg: true,
+    //   ter: true,
+    //   qua: false,
+    //   qui: true,
+    //   sex: true,
+    //   sab: true,
+    //   dom: false
+    // }
+    let converter_day_name = (day) => day === 0 ? 'dom' : day === 1 ? 'seg' : day === 2 ? 'ter' : day === 3 ? 'qua' : day === 4 ? 'qui' : day === 5 ? 'sex' : 'sab'
+    // Configura o Datepicker
+    function setDatapicker(id, dias_ativos) {
+      dias_ativos ? dias_ativos : dias_ativos = {
+      seg: true,
+      ter: true,
+      qua: false,
+      qui: true,
+      sex: true,
+      sab: true,
+      dom: false
+    }
+
+      $('#' + id).datepicker({
+        minDate: 0, // Data mínima como hoje
+        beforeShowDay: function (date) {
+          // Desabilita domingos
+          var day = date.getDay();
+          return [dias_ativos[converter_day_name(day)], ''];
+        }
+      });
+
+    }
+
+</script>

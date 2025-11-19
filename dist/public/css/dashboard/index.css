@@ -1,0 +1,52 @@
+
+:root {
+    --corOficial: #127ED8;
+    --letter: white;
+    --header: #;
+    --main: #;
+    --footer: #;
+}
+
+body {
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #222;
+    background-image: radial-gradient(#cecece0c 2px, transparent 0);
+    background-size: 30px 30px;
+    background-position: -5px -5px;
+    /* color: white; */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: var(--letter);
+    font-family: 'Roboto', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+}
+
+.container {
+    display: flex;
+    min-height: 100%;
+}
+
+.reveal{
+    
+}
+
+@media screen and (max-width: 1000px) {
+    main .container #sidbar {
+        display: none;
+        position: absolute;
+        height: 100%;
+    }
+}
+
+
+@media screen and (max-width: 600px) {
+}
+
+@media screen and (max-width: 374px) {
+}

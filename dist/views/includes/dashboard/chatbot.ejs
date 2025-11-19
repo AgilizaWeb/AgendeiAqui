@@ -1,0 +1,452 @@
+<div class="modal hidden fixed inset-0 z-[999999] bg-gray-800 bg-opacity-75 flex items-center justify-center" style="padding-top: 5vh;"
+  id="qr-code-modal">
+  <div class="modal__content bg-white dark:bg-zinc-800 p-5 rounded-lg shadow-lg overflow-auto" style="max-height: 90vh;">
+    <div class="flex items-center px-5 py-5 sm:py-3 border-b border-zinc-700 dark:border-zinc-100">
+      <h2 class="font-medium text-base mr-auto text-black dark:text-zinc-50">Leitura do QR Code</h2>
+      <button class="button border items-center text-zinc-700 dark:text-zinc-100" onclick="toggleQrCodeModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+          class="feather feather-x w-4 h-4">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="p-5 sm:py-3">
+      <div class="text-center">
+        <img src="" alt="qr-code" class="w-64 mx-auto">
+        <h3 class="text-lg font-medium">Código de emparelhamento</h3>
+        <h3 id="pairingCode" class="text-lg font-bold"></h3>
+        <p class="text-zinc-600 dark:text-zinc-100 mt-2">Escaneie o QR Code com seu celular para conectar</p>
+        <div class="mt-4">
+          <h3 class="text-lg font-medium">Como conectar?</h3>
+          <ol class="list-decimal list-inside text-left mt-2 text-zinc-700 dark:text-zinc-100">
+            <li>Abra o WhatsApp no seu telefone.</li>
+            <li>Toque em <span class="flex items-center inline-flex">Mais opções <svg xmlns="http://www.w3.org/2000/svg"
+                  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical mx-1">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg> no Android ou em Configurações
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                  class="feather feather-settings mx-1">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path
+                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                  </path>
+                </svg> no iPhone.</span></li>
+            <li>Toque em Dispositivos conectados e, em seguida em, Conectar dispositivo.</li>
+            <li>Toque em "Conectar com número de telefone" e digite o <strong>codigo de emparelhamento</strong> ou Aponte seu celular para esta tela para escanear o código QR o</li>
+          </ol>
+        </div>
+        <div class="mt-4">
+          <h3 class="text-lg font-medium">Problemas para escanear?</h3>
+          <p class="text-zinc-600 dark:text-zinc-100">Certifique-se de que sua câmera esteja funcionando corretamente e
+            que o
+            código QR esteja visível na tela.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<div class="w-full my-3 px-2">
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    ChatBot
+    <div class="absolute right-0">
+      <div onclick="toggleFluxoBot()"
+        class="shadow-sm shadow-green-600 hover:shadow-green-700 cursor-pointer group relative bg-green-500 hover:bg-green-600 flex items-center px-2 py-1 rounded-[1px] transition-all duration-300 overflow-hidden">
+        <span class="mr-8 text-zinc-200 font-semibold max-xss:text-xs">Testar fluxo</span>
+        <i
+          class="text-white transition-all duration-300 group-hover:w-full w-8 absolute fi fi-rr-play bg-green-600 h-full right-0 flex items-center justify-center px-1"></i>
+      </div>
+    </div>
+
+  </h1>
+
+  <div
+    class="services_ scrollView w-full flex flex-wrap justify-between items-center py-1 px-2 bg-zinc-50 dark:bg-black drop-shadow shadow shadow-zinc-900 dark:shadow-zinc-300 rounded">
+    <div class="mygrid w-full sm:h-full">
+      <h1 class="font-bold text-center max-xss:text-xss text-xs sm:text-base ">Status</h1>
+      <!-- <h1 class="font-bold text-center max-xss:text-xss text-xs sm:text-base ">Vencimento</h1> -->
+      <h1 class="font-bold text-center max-xss:text-xss text-xs sm:text-base ">Ações</h1>
+    </div>
+    <div class="mygrid w-full sm:h-full">
+
+      <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto justify-center">
+        <i id="status_testee"
+          class="fi fi-rs-circle-small <%= user.chatbot?.on ? 'text-green-500 flex' : 'text-red-500 flex' %>  "></i>
+      </div>
+
+      <!-- <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto justify-center">
+        <h2 class="font-light leading-tight">
+          8
+        </h2>
+      </div> -->
+      <!-- <div class="flex justify-center items-end max-xss:text-xss text-xs sm:text-base my-auto">
+      <h2 class="font-light leading-tight">
+        <%#= services[id].admin ? 'Sim' : 'Não' %>
+      </h2>
+    </div> -->
+      <div class="flex justify-center gap-2 sm:gap-1">
+        <button id="edit_1651" onclick="actionHandlerBot('start')"
+          class="px-0.5 sm:px-1 py-px <%= user.chatbot?.on ? 'hidden' : 'flex' %> justify-center items-center rounded-sm text-green-500 relative group">
+          <i class="bi bi-play-fill border-green-500 border-2 rounded flex text-xl"></i>
+          <span
+            class="absolute z-1 pointer-events-none bg-green-500 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+            Iniciar</span>
+        </button>
+        <button id="delete_1651" onclick="actionHandlerBot('pause')"
+          class="px-0.5 sm:px-1 py-px <%= !user.chatbot?.on ? 'hidden' : 'flex' %> justify-center items-center rounded-sm text-red-500 relative group">
+          <i class="bi bi-pause-fill border-red-500 border-2 rounded flex text-xl"></i>
+          <span
+            class="absolute z-1 pointer-events-none bg-red-500 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+            Pausar</span>
+        </button>
+        <button id="delete_1651" onclick="actionHandlerBot('reload')"
+          class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm dark:text-white relative group">
+          <i class="bi bi-arrow-repeat border-black dark:border-white border-2 rounded flex text-xl"></i>
+          <span
+            class="absolute z-1 pointer-events-none bg-zinc-600 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+            Reiniciar</span>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+
+
+  <h1 class="mb-2 mt-4 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Fluxo de mensagens
+  </h1>
+
+  <div class="w-full grid sm:grid-cols-2 gap-2">
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'msg_saudacao' , value: chatbot.saudacao,
+        icon: 'fi fi-rs-comment' , placeholder: 'Saudação' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'agendamentoCriado' , value: chatbot.criado,
+        icon: 'fi fi-rs-comment' , placeholder: 'Agendamento criado' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'confirmAgendamento' , value: chatbot.confirmado,
+        icon: 'fi fi-rs-comment' , placeholder: 'Agendamento confirmado' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'cancelAgendamento' , value: chatbot.cancelado,
+        icon: 'fi fi-rs-comment' , placeholder: 'Agendamento cancelado' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'aguardarHumano' , value: chatbot.aguardarHumano,
+        icon: 'fi fi-rs-comment' , placeholder: 'Aguardar Humano' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'cobrarConfirmacao' , value: chatbot.cobrarConfirmacao,
+        icon: 'fi fi-rs-comment' , placeholder: 'Cobrar Confirmação' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'informativa' , value: chatbot?.informativa,
+        icon: 'fi fi-rs-comment' , placeholder: 'Notificar cliente sobre angendamento' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+    <div class="scrollView">
+      <%- include('./components/input_text.ejs', { id: 'informativaProfissional' , value: chatbot?.informativaProfissional,
+        icon: 'fi fi-rs-comment' , placeholder: 'Notificar profissional sobre angendamento' , off: true,
+        myclass: 'cursor-pointer text-zinc-500 dark:text-zinc-300' , click: 'edit_msg' }) %>
+    </div>
+
+  </div>
+
+
+
+
+
+</div>
+<script>
+  function insertVar(v) {
+    let text = $('#modal-text-bg').find('textarea').val()
+    let cursorPos = $('#modal-text-bg').find('textarea')[0].selectionStart;
+    let textBefore = text.substring(0, cursorPos);
+    let textAfter = text.substring(cursorPos, text.length);
+    $('#modal-text-bg').find('textarea').val(textBefore + v + textAfter)
+  }
+  async function actionHandlerBot(action) {
+    let toast = aToast("Aguarde...", {
+      type: 'promise',
+      position: 'center',
+      animation: 'bottom-to-top',
+      breakWindow: true,
+    });
+    // await new Promise((resolve, reject) => {
+    //   setTimeout(() => {
+    //     resolve()
+    //   }, 5000)
+    // })
+    let req = await requestPost('v1/bot/handler', { action })
+    console.log('req: ', req)
+    if (req?.success) {
+      // if (action === 'start') {
+      //   const qr = req.qr;
+      //   if (qr) {
+      //     document.querySelector('#qr-code-modal img').src = qr;
+      //     toggleQrCodeModal()
+      //     showQrCodeModal('<%#= user.profissional ? user.profissional.uuid : empresa.uuid  %>');
+      //   }
+      // } else {
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+      // }
+      aToastUpdate(toast, 'success', req.message);
+      return
+    }
+    aToastUpdate(toast, 'error', req.message);
+  }
+  async function edit_msg(id) {
+    console.log('id: ', id)
+    let replaceID = {
+      msg_saudacao: "saudacao",
+      confirmAgendamento: "confirmado",
+      cancelAgendamento: "cancelado",
+      aguardarHumano: 'aguardarhumano',
+      cobrarConfirmacao: 'cobrarConfirmacao',
+      agendamentoCriado: 'criado',
+      informativa: 'informativa',
+      informativaProfissional: 'informativaProfissional',
+    }[id]
+    console.log("fluxo: ", fluxo)
+    let msgAtual = fluxo[id === 'aguardarHumano' ? 'aguardar_humano' : replaceID].message || 'Seu texto aqui'//getID(id).value;
+    console.log('msgAtual: ', msgAtual)
+    // return;
+    const variaveis = [
+      '{nomeCliente}',
+      '{nomeEmpresa}',
+      '{status}',
+      '{valorCobranca}',
+      '{chavePix_manual}',
+      '{nomeProfissional}',
+      '{nomeServico}',
+      '{data}',
+      '{inicio}',
+      '{fim}',
+      '{copiaCola}',
+      '{tempoParaServico}',
+    ];
+    const titleVariaveis = {
+      '{nomeCliente}': 'Nome do cliente',
+      '{nomeEmpresa}': 'Nome da empresa',
+      '{status}': 'Status do agendamento',
+      '{valorCobranca}': 'Valor da cobrança',
+      '{chavePix_manual}': 'Sua Chave Pix manual',
+      '{nomeProfissional}': 'Nome do profissional',
+      '{nomeServico}': 'Nome do serviço',
+      '{data}': 'Data do agendamento',
+      '{inicio}': 'Horário de início do agendamento',
+      '{fim}': 'Horário de término do agendamento',
+      '{copiaCola}': 'Copia e cola gerado para a cobrança',
+      '{tempoParaServico}': 'Tempo para o serviço, opções: amanhã, 1 hora, 30 minutos',
+    }
+    if (id === 'msg_saudacao' || id === 'aguardarHumano') {
+      // remover data, inicio, fim, nomeservico, nomeprofissional
+      variaveis.splice(5, 6)
+    }
+    if (id !== 'informativa') {
+      // remover a variavel tempoParaServico
+      variaveis.pop()
+    }
+    // criar um layout para as variaveis e inserir em modal-insert_html cada opção de variavel precisa ter um botão que insira a variavel no textarea do modal de confirmação de edição na posição do cursor
+    let html = `
+    <p class="font-bold text-lg text-center pt-1">Variáveis</p>
+    <span class="text-xs w-full flex justify-center pb-1">Clique em uma para inserir no texto</span>
+      <div class="flex flex-wrap gap-1 px-6">
+        ${variaveis.map(v => `
+          <button title='${titleVariaveis[v]}' onclick="insertVar('${v}')" class="bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-300 px-1 rounded">${v}</button>
+        `).join('')}
+      </div>
+    `
+    $('#modal-insert_html').html(html);
+
+    let confirm = await showConfirm('Defina a msg de ' + (replaceID !== 'aguardar_humano' ? replaceID : 'Aguardar humano'), { type: 'default', btn_yes: 'Salvar', btn_no: 'Cancelar', msg: msgAtual })
+    if (!confirm) {
+      return
+    }
+    let toast = aToast("Aguarde...", {
+      type: 'promise',
+      position: 'center',
+      animation: 'bottom-to-top',
+      breakWindow: true,
+    });
+    let text = $('#modal-text-bg').find('textarea').val()
+    fluxo[replaceID].message = text;
+    console.log('text:', text)
+    getID(id).value = text;
+
+    let req = await requestPost('v1/bot/messages', { message: text, id: replaceID })
+
+    console.log('req: ', req)
+    if (req?.success) {
+      aToastUpdate(toast, 'success', req.message);
+      return
+    }
+    aToastUpdate(toast, 'error', req.message);
+    // aToast('Mensagem alterada com sucesso.', {
+    //   type: 'success'
+    // })
+  }
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js"></script>
+<script>
+  
+'<% if (user.chatbot?.on && user.chatbot?.qr) { %>'
+  let qr = '<%= user.chatbot?.qr %>'
+  let code = '<%= user.chatbot?.code %>'
+  // dividir os 4 primeiros caracteres do codigo para ficar 1234-5678
+  code = code.substring(0, 4) + '-' + code.substring(4, 8);
+  if (qr || code) {
+    // add qrcode modal
+    document.querySelector('#qr-code-modal img').src = qr;
+    document.getElementById('pairingCode').innerHTML = code;
+    toggleQrCodeModal()
+    showQrCodeModal('<%= user.uuid  %>', true);
+  }
+' <% } %>'
+  async function showQrCodeModal(id, de_inicio = false) {
+    let escaneado = false;
+    let tentativas = 1;
+    let loop;
+    if (de_inicio) {
+      await check();
+    }
+    loop = setInterval(async () => {
+      if (escaneado) {
+        clearInterval(loop);
+        return;
+      }
+      if (tentativas >= 10) {
+        clearInterval(loop);
+        aToast('Tempo de espera excedido', {
+          type: 'error'
+        })
+        toggleQrCodeModal()
+        // $.toast({
+        //     text: 'Tempo de espera excedido',
+        //     showHideTransition: 'fade',
+        //     hideAfter: true,
+        //     position: 'top-right',
+        //     loaderBg: '#ff6849',
+        //     icon: 'error',
+        //     hideAfter: 3000,
+        //     afterHidden: function() {
+        //         // fechar modal
+        //     toggleQrCodeModal()
+        //     }
+        // });
+        return;
+      }
+      await check();
+
+      tentativas++;
+    }, 10000);
+    async function check() {
+      const connection = await getInfoConnection(id);
+      const qrCode = connection?.qr;
+      let pairingCode = connection?.code;
+  // dividir os 4 primeiros caracteres do codigo para ficar 1234-5678
+  pairingCode = pairingCode.substring(0, 4) + '-' + pairingCode.substring(4, 8);
+      if (connection?.success) {
+        // definir a imagem do qr code
+        if (connection.ativo && qrCode) {
+          const modal = document.getElementById('qr-code-modal');
+          if (modal.classList.contains('hidden')) {
+            toggleQrCodeModal()
+          }
+          document.querySelector('#qr-code-modal img').src = qrCode;
+          document.getElementById('pairingCode').innerHTML = pairingCode;
+        } else {
+          escaneado = true;
+          if (connection.ativo) {
+            if (tentativas === 0) {
+              clearInterval(loop);
+              return;
+            }
+            aToast('Conexão ativa', {
+              type: 'success'
+            });
+
+            document.querySelector('#qr-code-modal img').src = '../icons/certo.png';
+            const t = setTimeout(() => {
+              toggleQrCodeModal()
+              clearTimeout(t)
+            }, 5000);
+            // $.toast({
+            //     text: 'Conexão ativa',
+            //     showHideTransition: 'fade',
+            //     hideAfter: true,
+            //     position: 'top-right',
+            //     loaderBg: '#ff6849',
+            //     icon: 'success',
+            //     hideAfter: 3000,
+            //     afterHidden: function() {
+            //         location.reload();
+            //     }
+            // });
+          } else {
+            if (!de_inicio) {
+              aToast('Erro ao conectar', {
+                type: 'error'
+              });
+            }
+            // $.toast({
+            //     text: 'Erro ao conectar',
+            //     showHideTransition: 'fade',
+            //     hideAfter: true,
+            //     position: 'top-right',
+            //     loaderBg: '#ff6849',
+            //     icon: 'error',
+            //     hideAfter: 3000,
+            //     afterHidden: function() {
+            //         location.reload();
+            //     }
+            // });
+          }
+        }
+      }
+    }
+  }
+
+  async function getInfoConnection(id) {
+    try {
+      const url = `/v1/bot/getinfo/:id`.replace(':id', id)
+      const response = await fetch(url);
+      const r = await response.json();
+      console.log('response: ', r)
+      return r;
+    } catch (err) {
+      return {
+        error: true,
+        message: 'Erro ao obter informações da conexão'
+      };
+    }
+  }
+
+
+  function toggleQrCodeModal() {
+    const modal = document.getElementById('qr-code-modal');
+    modal.classList.toggle('hidden');
+  }
+</script>

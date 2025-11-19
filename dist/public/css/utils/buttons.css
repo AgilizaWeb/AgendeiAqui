@@ -1,0 +1,113 @@
+.btnPositive {
+    background-color: darkgreen;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px 3px #00000028;
+    transition: 0.3s;
+    border: 0;
+    color: white;
+    cursor: pointer;
+    letter-spacing: .7px;
+    transition: transform 0.01s ease-in;
+    font-size: 20px;
+}
+.btnPositive i {
+    font-size: 20px;
+    margin-right: 5px;
+}
+.btnPositive:hover{
+    background-color: green;
+}
+
+/* ------------------------- */
+
+.btnNegative {
+    background-color: darkred;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px 3px #00000028;
+    transition: 0.3s;
+    border: 0;
+    color: white;
+    cursor: pointer;
+    letter-spacing: .7px;
+    transition: transform 0.01s ease-in;
+}
+.btnNegative i {
+    font-size: 20px;
+    margin-right: 5px;
+}
+.btnNegative:hover{
+    background-color: red;
+}
+
+/* ------------------------- */
+
+.btnBlue {
+    background-color: darkblue;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px 3px #00000028;
+    transition: 0.3s;
+    border: 0;
+    color: white;
+    cursor: pointer;
+    letter-spacing: .7px;
+    transition: transform 0.01s ease-in;
+}
+.btnBlue i {
+    font-size: 20px;
+    margin-right: 5px;
+}
+.btnBlue:hover{
+    background-color: blue;
+}
+
+/* ------------------------- */
+
+.btnYellow {
+    background-color: darkgoldenrod;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 0 1px 4px 3px #00000028;
+    transition: 0.3s;
+    border: 0;
+    color: white;
+    cursor: pointer;
+    letter-spacing: .7px;
+    transition: transform 0.01s ease-in;
+    font-size: 20px;
+}
+.btnYellow i {
+    font-size: 20px;
+    margin-right: 5px;
+}
+.btnYellow:hover{
+    background-color: goldenrod;
+}
+
+/* caso seja uma largura maior que 400 */
+@media (max-width: 400px) {
+    .btnPositive,
+    .btnNegative,
+    .btnBlue,
+    .btnYellow,
+    .btnPositive i,
+    .btnNegative i,
+    .btnBlue i,
+    .btnYellow i {
+        font-size: 10px;
+    }
+}
+@media (max-width: 600px) {
+    .btnPositive,
+    .btnNegative,
+    .btnBlue,
+    .btnYellow,
+    .btnPositive i,
+    .btnNegative i,
+    .btnBlue i,
+    .btnYellow i {
+        font-size: 12px;
+    }
+}

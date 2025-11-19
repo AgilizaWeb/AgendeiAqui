@@ -1,0 +1,62 @@
+.fullScreen {
+    width: 100%;
+    height: 100vh;
+}
+.fullH {
+    width: 100%;
+}
+.fullV{
+    height: 100%;
+}
+.displayCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.hLeft {
+    display: flex;
+    justify-content: left;
+    justify-content: flex-start;
+}
+
+.hRight {
+    display: flex;
+    justify-content: right;
+    justify-content: flex-end;
+}
+
+.vCenter {
+    display: flex;
+    align-items: center;
+}
+
+.vTop {
+    display: flex;
+    align-items: start;
+}
+
+.vBottom {
+    display: flex;
+    align-items: end;
+}
+.vAlign{
+    flex-direction: column;
+}
+
+.txtCenter {
+    text-align: center;
+}
+
+.txtRight {
+    text-align: right;
+}
+
+.txtLeft {
+    text-align: left;
+}

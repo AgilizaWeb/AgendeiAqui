@@ -1,0 +1,128 @@
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/datatables/css/jquery.dataTables.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/select2/css/select2.min.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/select2.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/css/slim.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/slim.css" />
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+<div id="wallet_container"></div>
+
+<div class="container mx-auto my-3">
+  <h1 class="mb-4 text-center text-2xl font-bold">Faturas</h1>
+
+
+  <div class="table-wrapper table-responsive">
+    <!-- <div class="overflow-auto"> -->
+    <table id="datatable1"
+      class="w-full text-gray-400 border-separate space-y-6 text-sm table display responsive nowrap dataTable no-footer dtr-inline collapsed">
+      <thead class="bg-zinc-700 text-white">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3 text-center">Plano</th>
+          <th class="p-3 text-center">Valor</th>
+          <!-- <th class="p-3 text-center">Vencimento</th> -->
+          <th class="p-3 text-center">Pago em</th>
+          <th class="p-3 text-center">Status</th>
+          <th class="p-3 text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="faturasTable">
+        <% faturas.forEach(fatura=> { %>
+          <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+            <td class="p-3 text-center font-medium capitalize">
+              <%= fatura.id %>
+            </td>
+            <td class="p-3 text-center font-medium capitalize">
+              <%= fatura.plano.nome %>
+                <%= fatura.plano.duracao===1 ? 'Mensal' :fatura.plano.duracao===3 ? 'Trimestral' : 'Anual' %>
+            </td>
+            <td class="p-3 text-center">R$ <%= new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2,
+                maximumFractionDigits: 2 }).format(parseFloat(fatura.status !== 1 ? fatura.plano.valor : fatura.valor)) %>
+            </td>
+            <!-- <td class="p-3 text-center">
+              <%#= fatura.vencimento ? fatura.vencimento : 'N/A' %>
+            </td> -->
+            <td class="p-3 text-center">
+              <% const [ano, mes, dia] = !fatura.pagoEm ? '//' : fatura.pagoEm.split('-') %>
+              <%= fatura.pagoEm ? `${dia}/${mes}/${ano}` : 'N/A' %>
+            </td>
+            <td class="p-3 text-center">
+              <span
+                class="<%= fatura.status === 0 ? 'bg-yellow-400' : fatura.status === 1 ? 'bg-green-400' : 'bg-red-400' %> text-gray-50 rounded-md px-2">
+                <%= fatura.status===0 ? 'Pendente' : fatura.status===1 ? 'Pago' : 'Cancelado' %>
+              </span>
+            </td>
+            <td class="p-3 text-center">
+              <% if (fatura.status===0) { %>
+                <button onclick="pagarFatura(<%= fatura.id %>)"
+                  class="bg-green-500 hover:bg-green-700 text-white py-1 px-3 rounded-full">Pagar</button>
+                <% } %>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+  
+  <%- include('../script_tables/js.ejs') %>
+
+<script>
+  async function pagarFatura(id) {
+    let req = await requestPost(`faturas/pagar/${id}`, {});
+    console.log('pagarFatura-req:', req);
+    const preferenceId = req.pref;
+    const url = req.url;
+    const public_key = req.public_key;
+    if (url) {
+      window.open(url, '_blank');
+      return;
+    }
+    const mp = new MercadoPago(public_key, {
+      locale: 'pt-BR'
+    });
+    if (document.querySelector('#wallet_container')) {
+      mp.checkout({
+        preference: {
+          id: preferenceId
+        },
+        render: {
+          container: '#wallet_container', // Indica onde o checkout será exibido
+          label: 'Pagar', // Muda o texto do botão de pagamento (opcional)
+        },
+        autoOpen: true, // Abre o checkout assim que estiver pronto
+        // Callback quando o checkout é aberto
+        onReady: function () {
+          $('.btn-contratar').hide(); // Oculta o botão CONTRATAR
+        },
+        onError: (error) => console.error('onError:', error)
+      });
+    }
+  }
+  $(function () {
+    'use strict';
+
+    $('#datatable1').DataTable({
+      "order": [[0, "desc"]],
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Buscar...',
+        sSearch: '',
+        lengthMenu: '_MENU_ ítens',
+      }
+    });
+
+    $('#datatable2').DataTable({
+      bLengthChange: false,
+      searching: false,
+      responsive: true
+    });
+
+    // Select2
+    $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+
+  });
+</script>

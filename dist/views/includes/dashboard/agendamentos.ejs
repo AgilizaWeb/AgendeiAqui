@@ -1,0 +1,524 @@
+<!-- Adicione isso no cabeçalho do seu arquivo HTML -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<style>
+  :root {
+    --fc-page-bg-color: #d0d0d04d;
+    --fc-list-event-hover-bg-color: lightgray;
+  }
+  tr .fc-col-header-cell.fc-day {
+    background-color: var(--fc-page-bg-color);
+  }
+  .fc-direction-ltr .fc-toolbar > * > :not(:first-child) {
+    margin-left: 0;
+}
+  .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; 
+    gap: 5px;
+  }
+  .fc-theme-standard .fc-list-day-cushion,
+  .fc .fc-cell-shaded, 
+  .fc .fc-day-disabled {
+    background-color: transparent;
+    background: transparent;
+  }
+  .fc .fc-toolbar-title {
+    width: max-content;
+  }
+  body[data-mode="dark"] {
+    --fc-page-bg-color: #000;
+    --fc-list-event-hover-bg-color: black;
+  }
+@media (max-width: 640px) {
+  .fc .fc-toolbar-title {
+    font-size: 15px;
+  }
+  .fc .fc-button {
+    border: 1px solid transparent;
+    padding: .2em .30em;
+    font-size: 1em;
+    line-height: 1;
+    border-radius: .25em;
+  }
+  .fc .fc-button .fc-icon {
+      font-size: 1em;
+  }
+  .fc-toolbar-chunk {
+    width: min-content;
+  }
+}
+@media (max-width: 400px) {
+  .fc .fc-toolbar-title {
+    font-size: 12px;
+  }
+  .fc .fc-col-header-cell-cushion {
+    font-size: 12px;
+  }
+}
+</style>
+<div class="w-full my-3 px-2">
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Agendamentos
+
+    <div class="absolute right-0">
+      <div onclick="toggleCriarAgendamento(false)"
+        class="shadow-sm shadow-green-600 hover:shadow-green-700 cursor-pointer group relative bg-green-500 hover:bg-green-600 flex items-center px-2 py-1 rounded-[1px] transition-all duration-300 overflow-hidden">
+        <span class="mr-8 text-zinc-200 font-semibold max-xss:text-xs">Criar</span>
+        <i
+          class="text-white transition-all duration-300 group-hover:rotate-180 group-hover:w-full w-8 absolute fi fi-rr-plus bg-green-600 h-full right-0 flex items-center justify-center px-1"></i>
+      </div>
+    </div>
+
+  </h1>
+
+  <script>
+    let agendamentos = []
+    let MyCalendar;
+    $(document).ready(function () {
+      $('#filter-profissionais').change(function () {
+        filtersAgendamentos()
+      });
+      $('#filter-status').change(function () {
+        filtersAgendamentos()
+      });
+      $('#filter-services').change(function () {
+        filtersAgendamentos()
+      });
+
+
+      function filtersAgendamentos() {
+        if (MyCalendar) MyCalendar.refetchEvents()
+      }
+    })
+  </script>
+  <div class="border-y pb-2 py-1 px-3">
+    <h2 class="font-bold mb-1 flex items-center"><i class="fi fi-br-search mr-1 flex"></i>Filtros:</h2>
+    <div class="w-full flex items-center flex-wrap justify-between gap-2">
+      <select id="filter-profissionais"
+        class="<%= user.admin ? '' : 'hidden' %> cursor-pointer block max-sm:text-xss bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 py-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">
+
+        <option class="" value="all">Profissionais</option>
+        <% for (const id in profissionais) { %>
+          <option value="<%= profissionais[id].id %>">
+            <%= profissionais[id]?.nome %>
+          </option>
+          <% } %>
+      </select>
+      <select id="filter-services"
+        class="cursor-pointer block max-sm:text-xss bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 py-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">
+
+        <option class="" value="all">Serviços</option>
+        <% for (const id in services) { %>
+          <option value="<%= services[id].id %>">
+            <%= services[id].name %>
+          </option>
+          <% } %>
+      </select>
+      <select id="filter-status"
+        class="cursor-pointer block max-sm:text-xss bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 py-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">
+
+        <option class="" value="all">Status</option>
+        <option value="0">Agendado</option>
+        <option value="1">Confirmado</option>
+        <option value="3">Finalizado</option>
+        <option value="2">Cancelado</option>
+      </select>
+
+      <!-- criar um search do tipo number para pesquisar por id do agendamento -->
+      <style>
+        /* Remove os botões de aumentar/diminuir no input number */
+        input[type=number]::-webkit-outer-spin-button,
+        input[type=number]::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+
+        input[type=number] {
+          -moz-appearance: textfield;
+        }
+      </style>
+      <label for="search_agendamento_id"
+        class="max-sm:text-xss text-xs bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 px-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">Filtrar
+        por ID
+        <input type="number" id="search_agendamento_id"
+          class="block bg-transparent text-base max-sm:text-xss border text-gray-700 dark:text-zinc-100 px-1 rounded leading-tight focus:outline-none"
+          placeholder="ID">
+      </label>
+      <script>
+        // filtro dos agendamentos por id
+        $('#search_agendamento_id').on('input', function () {
+          let search = $(this).val()
+          searchById(search)
+        })
+        function searchById(search, data) {
+          if (!data && !search) {
+            return
+          }
+          let element = document.querySelector(`[data-agendamento_id="${search}"]`);
+          if (!element && !data) {
+            agendamentos.map(agendamento => {
+              if (Number(agendamento.id) === Number(search)) {
+                data = agendamento
+              }
+            })
+            if (!data) {
+              toastr.error('Agendamento não encontrado')
+              return
+            }
+          }
+          console.log('data:', data)
+          if (!element) {
+            const index = data?.service.id
+            const id = search || data?.id;
+          let modalHtml = `
+        <div  data-date="${data?.data}" data-profissional="${data.profissional.nome}"
+        data-clienteName="${data?.cliente?.name}" data-service="${data.service.name}"
+        data-clienteContato="${data?.cliente?.contato}" data-status="${data.status}"
+        onclick="$(this).toggleClass('hidden')"
+        data-agendamento_id="${id}" id="agendamento_${id+'_'+index}" class="agendamentos_ fixed z-[1] w-full h-screen flex justify-center items-center top-0 left-0 bg-[#00000096]">
+      <div onclick="event.stopPropagation()"
+        class="w-[90%] md:w-[60%] flex flex-wrap justify-between items-center py-1 px-2 bg-zinc-50 dark:bg-black drop-shadow shadow shadow-zinc-900 dark:shadow-zinc-300 rounded">
+        <div class="flex flex-col sm:h-full">
+
+          <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+            <h1 class="mr-1 font-medium leading-tight">Nome:</h1>
+            <h2 class="font-light leading-tight">
+              ${data?.cliente?.name}
+            </h2>
+          </div>
+
+
+          <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+            <h1 class="mr-1 font-medium leading-tight">Contato:</h1>
+            <h2 class="font-light leading-tight">
+              ${data?.cliente?.contato}
+            </h2>
+          </div>
+
+          <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+            <h1 class="mr-1 font-medium leading-tight">Data:</h1>
+            <h2 class="font-light leading-tight">
+              ${`${data?.data} das ${data.inicio} às ${data.fim}`}
+            </h2>
+          </div>
+
+          <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+            <h1 class="mr-1 font-medium leading-tight">Serviço:</h1>
+            <h2 class="font-light leading-tight">
+              ${data.service.name}
+            </h2>
+          </div>
+
+          <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+            <h1 class="mr-1 font-medium leading-tight">Profissional:</h1>
+            <h2 class="font-light leading-tight">
+              ${data.profissional.nome}
+            </h2>
+          </div>
+          <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+            <h1 class="mr-1 font-medium leading-tight">ID do agendamento:</h1>
+            <h2 class="font-light leading-tight">
+              ${id}
+            </h2>
+          </div>
+
+          <div class="flex gap-1 items-center w-full">
+            <button id="edit_${id+'_'+index}"
+              onclick="showEditAgendamentos(Number('${id}'), Number('${data.service.id}'), Number('${data.profissional.id}'), '${data.data}', '${data.inicio}')"
+              class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full whitespace-nowrap">
+              <i class="fi fi-rr-edit mr-1 flex"></i>
+              Editar Agendamento
+            </button>
+            <button onclick="alterarStatus(4, '${index}', '${id}')" id="4_${id+'_'+index}"
+              class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-red-600 hover:bg-red-500 text-white w-full whitespace-nowrap">
+              <i class="fi fi-sr-trash-xmark mr-1 sm:text-xl flex text-white "></i>
+              Excluir
+            </button>
+          </div>
+
+        </div>
+        <div class="max-sm:w-full max-sm:mt-2 max-sm:border-t border-black dark:border-white max-sm:shadow-lg">
+          <h1 class="text-xs">Alterar Status:</h1>
+          <div class="max-sm:w-full max-sm:flex justify-center grid gap-1 max-xss:text-xss text-xs sm:text-base">
+            <button onclick="alterarStatus('0', '${index}', '${id}')" id="0_${id+'_'+index}"
+              class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+              <i
+                class="fi fi-br-check mr-1 sm:text-2xl flex transition-all duration-1000 transform text-green-500 ${data.status !== 0 ? 'sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]' : ''}"></i>
+              Agendado
+            </button>
+            <button onclick="alterarStatus('1', '${index}', '${id}')" id="1_${id+'_'+index}"
+              class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+              <i
+                class="fi fi-br-check mr-1 sm:text-2xl flex transition-all duration-1000 transform text-green-500 ${data.status !== 1 ? 'sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]' : ''}"></i>
+              Confirmado
+            </button>
+            <button onclick="alterarStatus(3, +'${index}', '${id}')" id="3_${id+'_'+index}"
+              class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+              <i
+                class="fi fi-br-check mr-1 sm:text-2xl flex transition-all duration-1000 transform text-green-500 ${data.status !== 3 ? 'sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]' : ''}"></i>
+              Finalizado
+            </button>
+            <button onclick="alterarStatus('2', +'${index}', '${id}')" id="2_${id+'_'+index}"
+              class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white w-full">
+              <i
+                class="fi fi-br-check mr-1 sm:text-2xl flex transition-all duration-1000 transform text-green-500 ${data.status !== 2 ? 'sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]' : ''}"></i>
+              Cancelado
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+          `;
+          $('body').append(modalHtml);
+          $(`#agendamento_${data.id}`).removeClass('hidden');
+            return
+          }
+          document.querySelectorAll('.agendamentos_').forEach(element => {
+            let id = $(element).data('agendamento_id')
+            console.log('id:', id)
+            if ((id + '').includes(search + '')) {
+              $(element).removeClass('hidden')
+            } else {
+              $(element).addClass('hidden')
+            }
+          });
+        }
+      </script>
+
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Contêiner do calendário -->
+  <div class="w-full h-[90vh] relative">
+  <div class="absolute top-0 left-0 right-0 bottom-0 sm:px-5" id='calendar'></div>
+</div>
+          <!-- <div id='calendar'></div> -->
+
+          <script>
+          
+          `<% const maximo = { open: '00:00:00', close: '00:00:00' } %>
+            <% empresa.atendimento.map(horario => { %>
+              <% if (!horario.disponivel || !horario.isEmpresa) { return } %>
+              <% const open = horario.open+':00' %>
+              <% const close = horario.close+':00' %>
+              <% if (maximo.open === '00:00:00' || open < maximo.open) maximo.open = open; %>
+              <% if (maximo.close === '00:00:00' || close > maximo.close) maximo.close = close; %>
+            <% }) %>`
+              
+            const slotMinTime = '<%= maximo.open %>';
+            const slotMaxTime = '<%= maximo.close %>';
+            // document.addEventListener('DOMContentLoaded', function() {
+              let calendarEl = document.getElementById('calendar');
+          
+              MyCalendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'listWeek',
+                locale: 'pt-br',
+                editable: true,
+                headerToolbar: {
+                  left: 'prev,next today',
+                  center: 'title',
+                  right: 'dayGridMonth,timeGridWeek,timeGridDay listDay,listWeek'
+                },
+                buttonText: {
+                  today: 'Hoje'
+                },
+                firstDay: 1, // Segunda-feira
+                views: {
+                  dayGridMonth: {
+                    type: 'dayGrid',
+                    buttonText: 'Mês',
+                    dayHeaderFormat: { weekday: 'short' },
+                    dayMaxEventRows: 3, // Limitar o número de eventos por dia
+                  },
+                  timeGridWeek: {
+                    type: 'timeGrid',
+                    duration: { weeks: 1 },
+                    dayHeaderFormat: { weekday: 'short', month: 'numeric', day: 'numeric', omitCommas: true },//{ weekday: 'short' },
+                    buttonText: 'Semana',
+                    slotLabelFormat: {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    },
+                    allDaySlot: false, // Remove a opção "all-day" na visualização por semana
+                    slotMinTime,
+                    slotMaxTime
+                  },
+                  timeGridDay: {
+                    type: 'timeGrid',
+                    duration: { days: 1 },
+                    buttonText: 'Dia',
+                    slotLabelFormat: {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    },
+                    allDaySlot: false, // Remove a opção "all-day" na visualização por semana
+                    slotMinTime,
+                    slotMaxTime
+                  },
+                  listDay: {
+                    type: 'list',
+                    duration: { days: 1 },
+                    buttonText: 'Lista Diaria',
+                    allDaySlot: false // Remove a opção "all-day" na visualização por lista
+                  },
+                  listWeek: {
+                    type: 'list',
+                    duration: { weeks: 1 },
+                    buttonText: 'Lista Semanal',
+                    allDaySlot: false // Remove a opção "all-day" na visualização por lista
+                  }
+                },
+                events: function(fetchInfo, successCallback, failureCallback) {
+                  const intervalo = (fetchInfo.end - fetchInfo.start) / (1000 * 60 * 60 * 24);
+                  // Fazer uma requisição para obter os agendamentos do mês atual
+                  let fp = $('#filter-profissionais').children("option:selected").val();
+                  let fs = $('#filter-status').children("option:selected").val();
+                  let fsv = $('#filter-services').children("option:selected").val();
+                  const body = {
+                      start: fetchInfo.startStr.split('T')[0],
+                      end: fetchInfo.endStr.split('T')[0],
+                    }
+                  if (fp !== 'all') {
+                    body.profissionalId = fp
+                  }
+                  if (fs !== 'all') {
+                    body.status = fs
+                  }
+                  if (fsv !== 'all') {
+                    body.serviceId = fsv
+                  }
+                  $.ajax({
+                    url: '/v1/getAgendamentos', // URL da sua API para obter agendamentos
+                    method: 'POST',
+                    data: body,
+                    success: function(data) {
+                      if (!data.success) {
+                        aToast(data.message, {
+                          type: 'error'
+                        })
+                        return
+                      }
+                      agendamentos = data.agendamentos || []
+                      console.log('data:', data);
+                      console.log('body:', body);
+                      // if (agendamentos.length === 0) {
+                      //   aToast(`Nenhum agendamento encontrado para o intervalo de ${intervalo} dias`, {
+                      //     type: 'info'
+                      //   })
+                      //   return
+                      // }
+                      // Formatar os dados para o FullCalendar
+                      let events = agendamentos.map(function(agendamento) {
+                        return {
+                          title: agendamento.service.name + ' - ' + agendamento.cliente.name,
+                          start: agendamento.data_global + 'T' + agendamento.inicio,
+                          end: agendamento.data_global + 'T' + agendamento.fim,
+                          extendedProps: agendamento
+                        };
+                      });
+                      successCallback(events);
+                    },
+                    error: function(e) {
+                      console.error('Erro ao buscar agendamentos:', e);
+                      failureCallback();
+                    }
+                  });
+                },
+                eventClick: function(info) {
+                  // Exibir detalhes do agendamento ao clicar no evento
+                  searchById('', info.event.extendedProps)
+                  // alert('Agendamento: ' + info.event.title + '\nProfissional: ' + info.event.extendedProps.profissional + '\nStatus: ' + info.event.extendedProps.status);
+                },
+                dateClick: function(info) {
+                  // Mudar para a visualização do dia clicado
+                  MyCalendar.changeView('timeGridDay', info.dateStr);
+                },
+                noEventsContent: function(arg) {
+                  return 'Nenhum agendamento encontrado';
+                },
+                eventChange: function(info) {
+                  // Atualizar o agendamento ao arrastar e soltar
+                  console.log('Evento alterado:', info.event.title, info.event.start, info.event.end);
+                },
+              });
+          
+              MyCalendar.render();
+            // });
+          </script>
+<script>
+
+  let agendamento_editado = {
+    service: '',
+    service_id: Number,
+    profissional: '',
+    data: '',
+    inicio: ''
+  }
+  async function showEditAgendamentos(service, service_id, profissional, data, inicio) {
+    agendamento_editado = {
+      service,
+      service_id,
+      profissional,
+      data,
+      inicio
+    }
+
+    console.log(service, service_id, profissional, data, inicio)
+    toggleEditAgendamento(false)
+    $('#edit_data_agendamento').val(data)
+    $('#edittext_inicio_agendamento').val(inicio)
+    $('#edit_inicio_agendamento').html('')
+    // $('#edit_inicio_agendamento').html(`<h1 onclick="getHorarios()" class="w-full flex justify-center items-center">Inicio: ${inicio}
+    //         <i class="fi fi-rs-edit ml-1 flex text-green-500"></i> </h1>`)
+    $('#edit_inicio_agendamento').addClass('flex justify-center bg-zinc-600 hover:bg-zinc-500')
+    $('#edit_inicio_agendamento').removeClass('mygrid')
+
+    let req = await requestPost('../v1/getdatasdisponiveis', { profissional })
+    console.log('req success ag: ', req)
+    setDatapicker('edit_data_agendamento', req.res)
+  }
+
+  async function alterarStatus(status = Number(status), index = Number(index), service = String) {
+    if (Number(status) === 4) {
+      let confirm = await showConfirm('Tem certeza que deseja deletar este agendamento?', { type: 'error', btn_yes: 'Deletar', btn_no: 'Cancelar' })
+      if (!confirm) {
+        return
+      }
+    }
+
+    const body = {
+      "status": Number(status),
+      "service": service,
+      "service_id": Number(index),
+      "agendamento_id": Number(service)
+    }
+    // alert(body)
+    console.log('body:', body)
+    let req = await requestPost('/v1/alterarstatus', body)
+    console.log('req: ', req)
+    if (req?.success) {
+      $(`#0_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      $(`#1_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      $(`#2_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      $(`#3_${service}_${index}`).find('i').addClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      $(`#agendamento_${service}_${index}`).data('status', status)
+
+      $(`#${status}_${service}_${index}`).find('i').removeClass('sm:opacity-0 max-sm:scale-0 max-sm:text-[0px]')
+      console.log('remove:', status === 4)
+      if (Number(status) === 4) {
+        console.log('element_remove:', `#agendamento_${service}_${index}`)
+        $(`#agendamento_${service}_${index}`).remove()
+      }
+      toastr.success(req.message)
+      return
+    }
+    toastr.error(req.message)
+    console.log(status, index, service)
+  }
+</script>

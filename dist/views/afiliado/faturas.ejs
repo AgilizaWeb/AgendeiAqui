@@ -1,0 +1,116 @@
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/datatables/css/jquery.dataTables.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/select2/css/select2.min.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/select2.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/css/slim.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/slim.css" />
+
+<div class="container mx-auto my-3">
+  <h1 class="mb-4 text-center text-2xl font-bold">Faturas</h1>
+
+
+  <div class="table-wrapper table-responsive">
+    <!-- <div class="overflow-auto"> -->
+    <table id="datatableFatura"
+      class="w-full text-gray-400 border-separate space-y-6 text-sm table display responsive nowrap dataTable no-footer dtr-inline collapsed" style="width: 100%;">
+      <thead class="bg-zinc-700 text-white">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3 text-center">Empresa</th>
+          <th class="p-3 text-center">Plano</th>
+          <th class="p-3 text-center">Valor</th>
+          <th class="p-3 text-center">Seu ganho</th>
+          <th class="p-3 text-center">Pago em</th>
+          <th class="p-3 text-center">Status</th>
+        </tr>
+      </thead>
+      <tbody id="faturasTable">
+        <% faturas.forEach(fatura=> { %>
+          <tr data-faturaId="<%= fatura.id %>" class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+            <td class="p-3 text-center font-medium capitalize">
+              <%= fatura.id %>
+            </td>
+            <td class="p-3 text-center">
+              <%= fatura.empresa.nome %>
+            </td>
+            <td class="p-3 text-center font-medium capitalize">
+              <%= fatura.plano.nome %>
+                <%= fatura.plano.duracao===1 ? 'Mensal' :fatura.plano.duracao===3 ? 'Trimestral' : 'Anual' %>
+            </td>
+            <td class="p-3 text-center">R$ <%= new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2,
+                maximumFractionDigits: 2 }).format(parseFloat((fatura.status !== 1 ? fatura.plano.valor : fatura.valor))) %>
+            </td>
+            <td class="p-3 text-center text-<%= fatura.status === 0 ? 'yellow' : fatura.status === 1 ? 'green' : 'red' %>-500">
+              <% const lucro =  'R$ '+new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(parseFloat((fatura.status !== 1 ? fatura.plano.valor : fatura.valor)  * (fatura.porcentagemAfiliado / 100))) %>
+              <% if (fatura.status === 1) { %>
+                <%= lucro %>
+              <% } else { %>
+                <s><%= lucro %></s>
+              <% } %>
+            </td>
+            <td class="p-3 text-center">
+              <% const [ano, mes, dia]=!fatura.pagoEm ? '//' : fatura.pagoEm.split('-') %>
+                <%= fatura.pagoEm ? `${dia}/${mes}/${ano}` : 'N/A' %>
+            </td>
+            <td class="p-3 text-center font-medium">
+              <div class="flex items-center justify-center gap-1">
+                <div class="w-2 h-2 flex rounded-full bg-<%= fatura.status === 0 ? 'yellow' : fatura.status === 1 ? 'green' : 'red' %>-500"></div>
+                <span class="text-<%= fatura.status === 0 ? 'yellow' : fatura.status === 1 ? 'green' : 'red' %>-500"><%= fatura.status === 0 ? 'Pendente' : fatura.status === 1 ? 'Pago' : 'Cancelado' %></span>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+          <!-- definir linha para mostrar o lucro total -->
+          <!-- <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+            <td class="p-3 text-center font-medium capitalize">
+              Lucro Total
+            </td>
+            <td class="p-3 text-center">
+            </td>
+            <td class="p-3 text-center font-medium capitalize">
+            </td>
+            <td class="p-3 text-center">
+            </td>
+            <td class="p-3 text-center">
+              R$ <%#= new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2,
+                maximumFractionDigits: 2 }).format(parseFloat(faturas.reduce((acc, fatura)=> acc + fatura.plano.valor  * (superAdmin.porcentagemAfiliado / 100), 0)) ) %>
+            </td>
+            <td class="p-3 text-center">
+            </td>
+            <td class="p-3 text-center font-medium">
+            </td> -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+  
+  <%- include('../script_tables/js.ejs') %>
+
+<script>
+  $(function () {
+    'use strict';
+
+    $('#datatableFatura').DataTable({
+      "order": [[0, "desc"]],
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Buscar...',
+        sSearch: '',
+        lengthMenu: '_MENU_ ítens',
+      }
+    });
+
+    $('#datatable2').DataTable({
+      bLengthChange: false,
+      searching: false,
+      responsive: true
+    });
+
+    // Select2
+    $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+
+  });
+</script>

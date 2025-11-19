@@ -1,0 +1,209 @@
+<div class="w-full my-3 px-2">
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Dashboard
+  </h1>
+
+  <div class="flex justify-end mb-4">
+    <form id="searchForm" class="mt-5 flex justify-end max-sm:justify-center items-center flex-wrap gap-2">
+      <div class="flex justify-center items-center flex-wrap gap-2">
+        <div class="relative">
+          <label for="startDate" class="absolute -top-1/2">Data de Início</label>
+          <input type="date"
+            class="px-2 py-3 max-sm:px-1 max-sm:py-2 max-sm:text-xs text-sm border border-zinc-500 dark:border-zinc-200 bg-zinc-100 dark:bg-zinc-700 text-black dark:text-white rounded"
+            id="startDate" name="startDate">
+        </div>
+        <div class="relative">
+          <label for="endDate" class="absolute -top-1/2">Data de Fim</label>
+          <input type="date"
+            class="px-2 py-3 max-sm:px-1 max-sm:py-2 max-sm:text-xs text-sm border border-zinc-500 dark:border-zinc-200 bg-zinc-100 dark:bg-zinc-700 text-black dark:text-white rounded"
+            id="endDate" name="endDate">
+        </div>
+      </div>
+      <div class="h-full">
+        <button type="button"
+          class="flex items-center justify-center px-2 py-3 max-sm:px-1 max-sm:py-2 max-sm:text-xs text-sm border border-zinc-500 dark:border-zinc-200 rounded bg-blue-500"
+          onclick="filterByDate()">
+          Pesquisar<i class="fi fi-bs-search flex ml-1"></i>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="grid grid-cols-2 max-xs:grid-cols-1 lg:grid-cols-4 gap-4 gap-y-10">
+    <div class="shadow-blue-500 group border border-blue-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-blue-500 flex flex-col items-center relative py-10">
+      <div class="text-blue-500 group-hover:border-b-8 border-b-2 border-blue-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fi fi-bs-building fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Total de Empresas</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="total-empresas" class="text-2xl">
+            <%#= totalEmpresas %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="shadow-orange-500 group border border-orange-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-orange-500 flex flex-col items-center relative py-10">
+      <div class="text-orange-500 group-hover:border-b-8 border-b-2 border-orange-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fas fa-file-invoice-dollar fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Total de Faturas</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="total-faturas" class="text-2xl">
+            <%#= faturasPagas.length + faturasPendentes.length %>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="shadow-yellow-500 group border border-yellow-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-yellow-500 flex flex-col items-center relative py-10">
+      <div class="text-yellow-500 group-hover:border-b-8 border-b-2 border-yellow-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fas fa-dollar-sign fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Total Pendente</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="faturas-pendentes" class="text-2xl">R$ <%#= (faturasPendentes.reduce((acc, fatura)=> acc +
+              fatura.plano.valor, 0) * (superAdmin.porcentagemAfiliado / 100)).toFixed(2) %></p>
+        </div>
+      </div>
+    </div>
+    <div class="shadow-green-500 group border border-green-500 p-3 rounded-lg shadow-md hover:shadow-lg hover:shadow-green-500 flex flex-col items-center relative py-10">
+      <div class="text-green-500 group-hover:border-b-8 border-b-2 border-green-500 bg-zinc-100 dark:bg-zinc-950 rounded-full w-14 h-14 flex items-center justify-center absolute z-0 bottom-[80%]">
+        <i class="fas fa-dollar-sign fa-2x"></i>
+      </div>
+      <div class="text-center flex flex-col items-center justify-center mx-0 my-auto">
+        <h2 class="text-xl font-bold">Total Ganho</h2>
+        <div class="flex items-center justify-center gap-1">
+          <p id="faturas-pagas" class="text-2xl">R$ <%#= faturasPagas.reduce((acc, fatura)=> acc + fatura.plano.valor,
+              0).toFixed(2) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8 px-[5%]">
+    <div id="estatisticas-chart" class="text-black"></div>
+  </div>
+
+  <div class="mt-8 px-[5%]">
+    <div id="vendas-plano-chart" class="text-black"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script>
+    const startDate = document.querySelector('#startDate');
+    const endDate = document.querySelector('#endDate');
+    const currentDate = new Date();
+    const currentDateString = currentDate.toISOString().split('T')[0];
+    const inicioMes = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).toISOString().split('T')[0];
+    const fimMes = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).toISOString().split('T')[0];
+    startDate.value = inicioMes;
+    endDate.value = fimMes;
+
+    let estatisticasChart;
+    let vendasPlanoChart;
+
+    // Dados para os gráficos
+    let faturasPagas; // = <%#- JSON.stringify(faturasPagas) %>;
+    let faturasPendentes; // = <%#- JSON.stringify(faturasPendentes) %>;
+    let totalVendasPlano; // = <%#- JSON.stringify(totalVendas_plano) %>;
+    // showEstatisticasChat();
+    // showVendasPlanoChart();
+
+    function showEstatisticasChat() {
+      console.log('showEstatisticasChat:', faturasPagas, '\n-\n', faturasPendentes);
+      if (estatisticasChart) {
+        estatisticasChart.destroy();
+      }
+      const estatisticasChartOptions = {
+        chart: {
+          type: 'pie',
+          height: 350
+        },
+        series: [faturasPagas.length, faturasPendentes.length],
+        labels: ['Faturas Pagas', 'Faturas Pendentes'],
+        colors: ['#00E396', '#FF4560']
+      };
+
+      estatisticasChart = new ApexCharts(document.querySelector("#estatisticas-chart"), estatisticasChartOptions);
+      estatisticasChart.render();
+    }
+
+
+    function showVendasPlanoChart() {
+      console.log('showVendasPlanoChart:', totalVendasPlano);
+      if (vendasPlanoChart) {
+        vendasPlanoChart.destroy();
+      }
+      // Gráfico de Vendas por Plano
+      const vendasPlanoChartOptions = {
+        chart: {
+          type: 'bar',
+          height: 350
+        },
+        series: [{
+          name: 'Total de Vendas',
+          data: totalVendasPlano.map(plano => plano._count.fatura)
+        }],
+        xaxis: {
+        categories: totalVendasPlano.map(plano => {
+          const { nome, duracao } = plano;
+          const duracaoStr = duracao <= 1 ? 'Mensal' : duracao <= 3 ? 'Trimestral' : 'Anual';
+          return `${nome} - ${duracaoStr}`;
+        })
+        },
+        colors: ['#008FFB']
+      };
+
+      vendasPlanoChart = new ApexCharts(document.querySelector("#vendas-plano-chart"), vendasPlanoChartOptions);
+      vendasPlanoChart.render();
+    }
+
+    // Função para filtrar por data
+    function filterByDate() {
+      const datainicial = startDate.value;
+      const datafinal = endDate.value;
+      let toast = aToast("Aguarde...", {
+        type: 'promise',
+        position: 'center',
+        animation: 'bottom-to-top',
+        breakWindow: true,
+      });
+
+      $.ajax({
+        url: './getestatisticas',
+        method: 'POST',
+        data: { datainicial, datafinal },
+        success: function (data) {
+          // console.log('Dados recebidos:', data);
+          const { success, message, faturasPagas: newFaturasPagas, faturasPendentes: newFaturasPendentes, totalVendasPlano: newTotalVendasPlano, totalEmpresas } = data;
+
+          if (success) {
+            faturasPagas = newFaturasPagas;
+            faturasPendentes = newFaturasPendentes;
+            totalVendasPlano = newTotalVendasPlano;
+            document.getElementById('total-empresas').innerText = totalEmpresas;
+            document.getElementById('total-faturas').innerText = faturasPagas.length + faturasPendentes.length;
+            document.getElementById('faturas-pendentes').innerText = 'R$ ' + (faturasPendentes.reduce((acc, fatura) => acc + fatura.plano.valor * (fatura.porcentagemAfiliado / 100), 0)).toFixed(2);
+            document.getElementById('faturas-pagas').innerText = 'R$ ' + (faturasPagas.reduce((acc, fatura) => acc + fatura.valor * (fatura.porcentagemAfiliado / 100), 0)).toFixed(2);
+            // console.log('newTotalVendasPlano', newTotalVendasPlano);
+            if (newTotalVendasPlano) {
+              totalVendasPlano = newTotalVendasPlano;
+              showVendasPlanoChart();
+              showEstatisticasChat();
+            }
+          } else {
+            // aToastUpdate(toast, 'error', message, 5000);
+          }
+          aToastUpdate(toast, success ? 'success' : 'error', message, success ? 1000 : 5000);
+        },
+        error: function (error) {
+          console.error('Erro ao buscar estatísticas:', error);
+          aToastUpdate(toast, 'error', 'Erro ao buscar estatísticas', 5000);
+        }
+      });
+    }
+    filterByDate();
+  </script>
+</div>

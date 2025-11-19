@@ -1,0 +1,199 @@
+
+<div class="container mx-auto my-3">
+  <h1 class="mb-4 text-center text-2xl font-bold">Configurações gerais</h1>
+
+    <form onsubmit="saveSettings(event)">
+      <div class="mb-4 flex flex-col justify-center items-center">
+        <img id="logo_prev_id" class="w-28 mb-2" src="../icons/logo.png" alt="Logo da empresa">
+        <label for="logo_upload_id"
+          class="text-white text-center flex items-center px-4 py-1 rounded-sm cursor-pointer bg-blue-500 hover:bg-blue-600">
+          <i class="fi fi-br-picture mr-1 flex text-green-500"></i>Definir logo da empresa
+        </label>
+        <input id="logo_upload_id" type="file" accept="image/*" class="hidden">
+      </div>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-name', icon: 'fi fi-rs-pen-field', placeholder: 'Nome do app', value: superadmin.applicationName, myclass: '' }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-domain', icon: 'fi fi-rs-pen-field', placeholder: 'Dominio do app', value: superadmin.domain }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-diasTeste', type: 'number', icon: 'fi fi-rs-pen-field', placeholder: 'Dias de teste', value: superadmin.diasTeste }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-porcentagemAfiliadoPrimeiraCompra', type: 'number', icon: 'fi fi-rs-pen-field', placeholder: 'Comissão primeira fatura', value: superadmin.porcentagemAfiliadoPrimeiraCompra }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-porcentagemAfiliado', type: 'number', icon: 'fi fi-rs-pen-field', placeholder: 'Comissão recorrente', value: superadmin.porcentagemAfiliado }) %>
+      <%#- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-diasTeste', type: 'checkbox', icon: 'fi fi-rs-pen-field', placeholder: 'Em manutenção', value: superadmin.maintenance }) %>
+      <div class="mygrid bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300 mb-1">
+        <div class="flex gap-1 items-center relative">
+          <%- include('../includes/dashboard/components/checkbox.ejs', {verify: superadmin.maintenance, id: 'settings-maintenance' }) %>
+          <span class="text-nowrap max-xs:text-xs max-sm:text-sm">Em manutenção</span>
+        </div>
+      </div>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-authorizationBotZap', type: 'text', icon: 'fi fi-rs-pen-field', placeholder: 'Authorization do BotZap para uso global', value: superadmin.authorizationBotZap }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-sessionBotZap', type: 'text', icon: 'fi fi-rs-pen-field', placeholder: 'Sessão do BotZap para o Sistema', value: superadmin.sessionBotZap }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-cloudflareEmail', type: 'text', icon: 'fi fi-rs-pen-field', placeholder: 'CloudFlare E-mail', value: superadmin.cloudflareEmail, hidden: true }) %>
+      <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-cloudflareApiKey', type: 'text', icon: 'fi fi-rs-pen-field', placeholder: 'CloudFlare Api Key', value: superadmin.cloudflareApiKey, hidden: true }) %>
+      
+      <div class="flex gap-1 items-center mt-2 relative bg-zinc-50 dark:bg-zinc-700 p-1 rounded dark:shadow-zinc-300">
+        <%- include('../includes/dashboard/components/checkbox.ejs', {id: `change_password_checkbox`}) %>
+          <span>Alterar senha</span>
+      </div>
+      <script>
+        $('#change_password_checkbox').click(function () {
+          togglePasswordFields();
+        });
+      </script>
+      <!-- <div class="flex gap-1 items-center mt-2">
+        <input type="checkbox" id="change_password_checkbox" onclick="togglePasswordFields()">
+        <span>Alterar senha</span>
+      </div> -->
+      <div id="password_fields" class="hidden flex-col w-full">
+        <%- include('../includes/dashboard/components/input_text.ejs', { id: 'user_password_id' , icon: 'fi fi-rs-lock' , placeholder: 'Nova senha' }) %>
+        <%- include('../includes/dashboard/components/input_text.ejs', { id: 'user_confirm_password_id' , icon: 'fi fi-rs-lock' , placeholder: 'Confirmar nova senha' }) %>
+      </div>
+
+      
+      <h1 class="mt-2">Escolha o gateway para receber os pagamentos</h1>
+      <div class="flex gap-2 mb-2 flex-wrap w-full">
+        <% superadmin.gateways.forEach(gateway => { %>
+          <div>
+            <input class="peer sr-only" value="<%= gateway.nome %>" name="payment_gateway" id="<%= gateway.nome %>" type="radio" <%= gateway.ativo ? 'checked' : '' %>  />
+            <div
+              class="flex h-20 w-52 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-zinc-300 bg-zinc-50 dark:bg-zinc-500 p-1 transition-transform duration-150 hover:border-blue-400 active:scale-95 peer-checked:border-blue-500 peer-checked:shadow-md peer-checked:shadow-blue-400"
+            >
+              <label class="flex flex-col w-full h-full cursor-pointer items-center justify-center text-sm text-zinc-500 dark:text-zinc-50 peer-checked:text-blue-500"
+                for="<%= gateway.nome %>" >
+                <img src="<%= gateway.nome == 'MercadoPago' ? 'icons/pagamento_mercadopago.png' : (gateway.nome == 'Asaas' ? 'icons/pagamento_asaas' : 'icons/pagamento_manual.png') %>" alt="Mercado Pago" class="h-8 peer-checked:fill-blue-500" />
+                <span><%= gateway.nome == 'MercadoPago' ? 'Mercado Pago' : (gateway.nome == 'PixManual' ? 'Pix Manual' : gateway.nome) %></span>
+              </label>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+
+      <% superadmin.gateways.forEach(gateway => { %>
+        <div id="<%= gateway.nome %>-container" <%= !gateway.ativo ? 'class=hidden' : '' %>>
+          <% Object.keys(gateway.dados).forEach(idKey => { %>
+            <%- include('../includes/dashboard/components/input_text.ejs', { id: 'settings-'+idKey, data: 'data-id='+idKey, type: 'text', icon: 'fi fi-rs-pen-field', placeholder: idKey.replace(/_/g, ' ') || 'Access Token', value: gateway.dados[idKey], labelclass: 'capitalize' }) %>
+          <% }) %>
+        </div>
+      <% }) %>
+      
+      <div class="w-full flex justify-center mt-5">
+        <button type="submit" class="flex justify-center items-center px-6 py-3 font-bold bg-green-100 text-green-700 hover:bg-green-200 hover:text-green-800 rounded sm:text-2xl">
+          <i class="fi fi-sr-floppy-disk-circle-arrow-right flex text-green-700 hover:text-green-800 mr-1 sm:text-2xl"></i>
+          Salvar
+        </button>
+      </div>
+    </form>
+
+</div>
+<script>
+  function togglePasswordFields() {
+    $('#password_fields').toggleClass('hidden');
+    if ($('#password_fields').hasClass('hidden')) {
+      $('#user_password_id').removeAttr('required');
+      $('#user_confirm_password_id').removeAttr('required');
+    } else {
+      $('#user_password_id').attr('required', 'required');
+      $('#user_confirm_password_id').attr('required', 'required');
+    }
+  }
+  if ($('#password_fields').hasClass('hidden')) {
+      $('#user_password_id').removeAttr('required');
+      $('#user_confirm_password_id').removeAttr('required');
+    } else {
+      $('#user_password_id').attr('required', 'required');
+      $('#user_confirm_password_id').attr('required', 'required');
+    }
+
+const gatewaysInputs = document.querySelectorAll('input[name="payment_gateway"]')
+  $('input[name="payment_gateway"]').on('change', function (e) {
+    const value = e.target.value;
+    gatewaysInputs.forEach(input => {
+      const container = document.getElementById(input.value + '-container')
+      if (input.value !== value) {
+        container.classList.add('hidden')
+      } else {
+        container.classList.remove('hidden')
+      }
+    })
+  })
+  
+  $('#logo_upload_id').on('change', function (e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      $('#logo_prev_id').attr('src', e.target.result);
+    }
+    reader.readAsDataURL(file);
+  });
+  async function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+  async function saveSettings(event) {
+    event.preventDefault();
+    let password = $('#change_password_checkbox').is(':checked') ? $('#user_password_id').val() : null;
+    let confirmPassword = $('#change_password_checkbox').is(':checked') ? $('#user_confirm_password_id').val() : null;
+    const alterar_password = document.getElementById('change_password_checkbox').checked;
+    console.log('alterar_password', alterar_password);
+
+    if (password && password !== confirmPassword) {
+      toastr.warning('As senhas não coincidem');
+      return;
+    }
+    const applicationName = $('#settings-name').val();
+    const domain = $('#settings-domain').val();
+    const diasTeste = Number($('#settings-diasTeste').val());
+
+    const porcentagemAfiliadoPrimeiraCompra = Number($('#settings-porcentagemAfiliadoPrimeiraCompra').val());
+    const porcentagemAfiliado = Number($('#settings-porcentagemAfiliado').val());
+
+    const maintenance = $('#settings-maintenance').is(':checked');
+    const authorizationBotZap = $('#settings-authorizationBotZap').val();
+    const sessionBotZap = $('#settings-sessionBotZap').val();
+    const cloudflareEmail = $('#settings-cloudflareEmail').val();
+    const cloudflareApiKey = $('#settings-cloudflareApiKey').val();
+    const logoRes = $('#logo_upload_id')[0].files[0];
+    const logo = logoRes ? await toBase64(logoRes) : null;
+    
+    const gatewayName = $('input[name="payment_gateway"]:checked').val();
+    if (!gatewayName) {
+      aToast('Escolha um gateway de pagamento', {
+        type: 'warning'
+      })
+      return; 
+    }
+    const publicKey = $('#settings-publicKey').val();
+    const accessToken = $('#settings-accessToken').val();
+    
+    const apiKey = $('#settings-apiKey').val();
+
+    const gateway = {
+      nome: gatewayName,
+      dados: {}
+    }
+    const gatewayContainer = document.getElementById(gatewayName + '-container')
+    const inputs = gatewayContainer.querySelectorAll('input')
+    inputs.forEach(input => {
+      const data_id = input.getAttribute('data-id')
+      gateway.dados[data_id] = input.value
+    })
+    // console.log('gateway:', gateway)
+    // return
+    const body = { applicationName, logo, domain, diasTeste, porcentagemAfiliadoPrimeiraCompra, porcentagemAfiliado, maintenance, authorizationBotZap, sessionBotZap, cloudflareEmail, cloudflareApiKey, gateway, password, confirm_password: confirmPassword, alterar_password }
+    // console.log('body:', body)
+    // return
+    const req = await requestPost('/v1/superadmin/dashboard/edit_settings', body)
+    console.log('req:', req)
+    if (req?.success && logo) {
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+    }
+    aToast(req.message, {
+      type: req?.success ?'success' : 'error',
+      progress: true,
+    })
+
+  }
+</script>

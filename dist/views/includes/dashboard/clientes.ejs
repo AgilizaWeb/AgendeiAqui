@@ -1,0 +1,137 @@
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/datatables/css/jquery.dataTables.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/datatables.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/lib/select2/css/select2.min.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/select2.css" />
+<!-- <link rel="stylesheet" type="text/css" href="https://teste.vipconnect.top/css/slim.css" /> -->
+<link rel="stylesheet" type="text/css" href="/css/bootstrap/slim.css" />
+
+<div class="container mx-auto my-3">
+  <!-- <h1 class="mb-4 text-center text-2xl font-bold">Clientes</h1> -->
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Clientes
+
+    <div class="absolute right-0">
+      <div onclick="toggleAddCliente(false, true)"
+        class="shadow-sm shadow-green-600 hover:shadow-green-700 cursor-pointer group relative bg-green-500 hover:bg-green-600 flex items-center px-2 py-1 rounded-[1px] transition-all duration-300 overflow-hidden">
+        <span class="mr-8 text-zinc-200 font-semibold max-xss:text-xs">Add</span>
+        <i
+          class="text-white transition-all duration-300 group-hover:rotate-180 group-hover:w-full w-8 absolute fi fi-rr-plus bg-green-600 h-full right-0 flex items-center justify-center px-1"></i>
+      </div>
+    </div>
+
+  </h1>
+
+
+
+  <div class="table-wrapper table-responsive">
+    <!-- <div class="overflow-auto"> -->
+    <table id="datatable1"
+      class="w-full text-gray-400 border-separate space-y-6 text-sm table display responsive nowrap dataTable no-footer dtr-inline collapsed">
+      <thead class="bg-zinc-700 text-white">
+        <tr>
+          <th class="p-3">ID</th>
+          <th class="p-3 text-center">Nome</th>
+          <th class="p-3 text-center">Contato</th>
+          <th class="p-3 text-center">Agendamentos</th>
+          <th class="p-3 text-center">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="faturasTable">
+        <% clientes.forEach(cliente=> { %>
+          <tr class="bg-zinc-50 dark:bg-zinc-900 text-black dark:text-white">
+            <td class="p-3 text-center font-medium capitalize">
+              <%= cliente.id %>
+            </td>
+            <td class="p-3 text-center font-medium capitalize">
+              <%= cliente.name %>
+            </td>
+            <td class="p-3 text-center font-medium capitalize contact">
+              <%= cliente.contato %>
+            </td>
+            <td class="p-3 text-center">
+              <%= cliente.agendamentos.length %>
+            </td>
+            <td class="p-3 text-center">
+              <div class="flex justify-center gap-1">
+                <button id="edit_<%= cliente.id %>" onclick="edit_cliente('<%= cliente.id %>', '<%= cliente.name %>', '<%= cliente.contato %>', <%= cliente.cobrarConfirmacao %>, <%= cliente.chatbot %>)"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white relative group">
+                  <i class="fi fi-rs-gears flex text-2xl"></i>
+                  <span
+                    class="absolute z-1 pointer-events-none bg-zinc-600 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+                    Editar</span>
+                </button>
+                <button id="delete_<%= cliente.id %>" onclick="delete_cliente('<%= cliente.id %>')"
+                  class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-red-600 hover:bg-red-500 text-white relative group">
+                  <i class="fi fi-sr-trash-xmark flex text-2xl"></i>
+                  <span
+                    class="absolute z-1 pointer-events-none bg-red-500 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+                    Excluir</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css"
+  href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+  
+  <%- include('../script_tables/js.ejs') %>
+
+<script>
+  
+  function edit_cliente(id, name, contato, cobrarConfirmacao, chatbotAtivo) {
+    toggleAddCliente(false, false)
+    $('#cliente_input-name').val(name);
+    $('#cliente_input-contato').val(formatPhoneNumber(contato));
+    $('#cobrarConfirmacao_cliente').prop('checked', cobrarConfirmacao);
+    $('#chatbotAtivo').prop('checked', chatbotAtivo);
+    $('#save_cliente').data('id_cliente', id)
+    // formatar o número de telefone ativando o campo
+      $('#cliente_input-contato').trigger('input');
+  }
+  async function delete_cliente(id) {
+    let confirm = await showConfirm('Tem certeza que deseja deletar este cliente, sera excluido todos os agendamentos salvos referentes a ele', { type: 'error', btn_yes: 'Deletar', btn_no: 'Cancelar' })
+    if (!confirm) {
+      return
+    }
+    let body = {
+      id_cliente: id
+    }
+    const req = await requestPost('/v1/delete_cliente', body)
+    if (req?.success) {
+      $(`#delete_${id}`).closest('tr').remove()
+      aToast(req.message, {
+        type: 'success',
+        progress: true,
+      })
+      return
+    }
+  }
+
+</script>
+<script>
+  document.querySelectorAll('.contact').forEach(contact => {
+    let text = contact.innerText;
+    contact.innerText = formatPhoneNumber(text);
+  });
+  $(function () {
+    'use strict';
+
+    $('#datatable1').DataTable({
+      "order": [[0, "desc"]],
+      responsive: true,
+      language: {
+        searchPlaceholder: 'Buscar...',
+        sSearch: '',
+        lengthMenu: '_MENU_ ítens',
+      }
+    });
+
+    // Select2
+    $('.dataTables_length select').select2({ minimumResultsForSearch: Infinity });
+  });
+</script>

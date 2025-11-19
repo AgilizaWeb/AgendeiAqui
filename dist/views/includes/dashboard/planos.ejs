@@ -1,0 +1,225 @@
+<style>
+  .planos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .plano {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: left;
+  }
+
+  .plano h3 {
+    margin-top: 0;
+  }
+
+  .plano p {
+    white-space: pre-line;
+    margin-bottom: 10px;
+  }
+
+  .plano .valor {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+
+
+  .plano .btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 10px;
+  }
+
+  .plano .btn:hover {
+    background-color: #0056b3;
+  }
+
+  .radio-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  .radio-group label {
+    margin: 0 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  .radio-group input {
+    margin-right: 5px;
+  }
+
+  .radio-group input[type="radio"] {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.3s;
+    position: relative;
+  }
+
+  .radio-group input[type="radio"]:checked {
+    background-color: #007bff;
+  }
+
+  .radio-group input[type="radio"]:checked::before {
+    content: '';
+    display: block;
+    width: 10px;
+    height: 10px;
+    margin: 5px;
+    background-color: #fff;
+    border-radius: 50%;
+  }
+
+  .radio-group input[type="radio"]::after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #007bff;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s;
+  }
+
+  .radio-group input[type="radio"]:checked::after {
+    transform: scale(1.2);
+  }
+
+  .modulos {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .modulo {
+    display: flex;
+    gap: 5px;
+    font-size: 14px;
+  }
+
+  .modulo i {
+    font-size: 18px;
+  }
+</style>
+
+<div class="w-full my-3 px-2">
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Planos
+  </h1>
+
+  <div class="radio-group">
+    <label>
+      <input type="radio" name="plano" value="mensal" checked onclick="filtrarPlanos('mensal')"> Mensal
+    </label>
+    <label>
+      <input type="radio" name="plano" value="trimestral" onclick="filtrarPlanos('trimestral')"> Trimestral
+    </label>
+    <label>
+      <input type="radio" name="plano" value="anual" onclick="filtrarPlanos('anual')"> Anual
+    </label>
+  </div>
+
+  <div class="w-full flex flex-wrap justify-center items-center py-1 px-2 rounded">
+    <div class="planos" id="planos-container">
+      <% planos.forEach(plano=> { %>
+        <div class="plano bg-zinc-50 dark:bg-zinc-700" data-duracao="<%= plano.duracao %>">
+          <h3 class="w-full text-center font-bold text-xl text-white border-b b-g-zinc-400">
+            <%= plano.nome %>
+          </h3>
+          <!-- <span class="text-green-500 border-b b-g-zinc-400 mb-2"><%#= plano.descricao.replace(/\\n/g, '\n') %>:</span> -->
+          <div class="h-full flex flex-col justify-between">
+            <div>
+
+              <div class="modulos my-4">
+                <div class="modulo justify-between w-full agendamento">
+                  <div class="w-full flex items-center justify-start"><i class="w-5 flex justify-center mr-1 fas fa-calendar-check"></i> Agendamento no site</div> <i
+                    class="fi fi-rs-<%= plano.sistema ? 'check-circle text-green-500' : 'circle-xmark text-red-500' %>"></i>
+                </div>
+                <div class="modulo justify-between w-full financeiro">
+                  <div class="w-full flex items-center justify-start"><i class="w-5 flex justify-center mr-1 fas fa-dollar-sign"></i> Financeiro</div> <i
+                    class="fi fi-rs-check-circle text-green-500"></i>
+                </div>
+                <div class="modulo justify-between w-full profissional">
+                  <div class="w-full flex items-center justify-start"><i class="w-5 flex justify-center mr-1 fas fa-user-tie"></i> Profissional</div> <i
+                    class="fi fi-rs-check-circle text-green-500"></i>
+                </div>
+                <div class="modulo justify-between w-full servico">
+                  <div class="w-full flex items-center justify-start"><i class="w-5 flex justify-center mr-1 fas fa-concierge-bell"></i> Serviço</div> <i
+                    class="fi fi-rs-check-circle text-green-500"></i>
+                </div>
+                <div class="modulo justify-between w-full chatbot">
+                  <div class="w-full flex items-center justify-start"><i class="w-5 flex justify-center mr-1 fas fa-robot"></i> Chatbot</div> <i
+                    class="fi fi-rs-<%= plano.chatbot ? 'check-circle text-green-500' : 'circle-xmark text-red-500' %>"></i>
+                </div>
+                <div class="modulo justify-between w-full chatbot">
+                  <div class="w-full flex items-center justify-start"><i class="w-5 flex justify-center mr-1 fas fa-calendar-check"></i> Agendamento no whatsapp</div> <i
+                    class="fi fi-rs-<%= plano.chatbot ? 'check-circle text-green-500' : 'circle-xmark text-red-500' %>"></i>
+                </div>
+              </div>
+              <div><span class=" text-gray-500 max-sm:text-[12px]">
+                  <%= plano.descricao.replace(/\n/g, '\n' ) %>
+                </span></div>
+            </div>
+            <div>
+
+              <div class="text-gray-100 font-normal text-xs">Duração: <span class="text-gray-100 font-normal text-xs">
+                  <%= plano.duracao===1 ? '30 Dias' : plano.duracao===3 ? '3 Meses' : '1 Ano' %>
+                </span></div>
+              <div class="valor">R$ <%= new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2,
+                  maximumFractionDigits: 2 }).format(parseFloat(plano.valor)) %>
+              </div>
+              <a href="/assinar/<%= plano.id %>" class="btn">Assinar</a>
+            </div>
+          </div>
+
+
+        </div>
+        <% }) %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function filtrarPlanos(tipo) {
+    const planos = document.querySelectorAll('.plano');
+    planos.forEach(plano => {
+      const duracao = parseInt(plano.getAttribute('data-duracao'));
+      if ((tipo === 'mensal' && duracao === 1) ||
+        (tipo === 'trimestral' && duracao === 3) ||
+        (tipo === 'anual' && duracao === 12)) {
+        plano.style.display = 'block';
+      } else {
+        plano.style.display = 'none';
+      }
+    });
+  }
+
+  // Inicializar com planos mensais visíveis
+  filtrarPlanos('mensal');
+</script>

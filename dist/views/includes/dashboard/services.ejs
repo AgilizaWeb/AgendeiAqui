@@ -1,0 +1,158 @@
+<div class="w-full my-3 px-2">
+  <h1 class="mb-2 font-bold w-full text-center relative text-2xl font-mono flex items-center justify-center">
+    Serviços
+
+    <div class="absolute right-0">
+      <div onclick="toggleAddService(false, true)"
+        class="shadow-sm shadow-green-600 hover:shadow-green-700 cursor-pointer group relative bg-green-500 hover:bg-green-600 flex items-center px-2 py-1 rounded-[1px] transition-all duration-300 overflow-hidden">
+        <span class="mr-8 text-zinc-200 font-semibold max-xss:text-xs">Add</span>
+        <i
+          class="text-white transition-all duration-300 group-hover:rotate-180 group-hover:w-full w-8 absolute fi fi-rr-plus bg-green-600 h-full right-0 flex items-center justify-center px-1"></i>
+      </div>
+    </div>
+
+  </h1>
+
+  <script>
+    $(document).ready(function () {
+      $('#filter-services').change(function () {
+        filterServices()
+      });
+
+
+      function filterServices() {
+        var fs = $('#filter-services').children("option:selected").val();
+
+        document.querySelectorAll('.services_').forEach(element => {
+          let s = $(element).data('service-name')
+          if (fs === 'all' || s === fs) {
+            $(element).removeClass('hidden')
+          } else {
+            $(element).addClass('hidden')
+          }
+        });
+      }
+    })
+  </script>
+  <div class="border-y pb-2 py-1 px-3">
+    <h2 class="font-bold mb-1 flex items-center"><i class="fi fi-br-search mr-1 flex"></i>Filtros:</h2>
+    <div class="w-full flex items-center flex-wrap justify-between gap-2">
+      <select id="filter-services"
+        class="cursor-pointer block max-sm:text-xss bg-zinc-100 dark:bg-zinc-700 border-none shadow shadow-zinc-500 text-gray-700 dark:text-zinc-100 py-1 rounded leading-tight focus:outline-none dark:shadow-zinc-300">
+
+        <option class="" value="all">Serviços</option>
+        <% services.forEach(service => { %>
+          <option>
+            <%= service.name %>
+          </option>
+          <% }) %>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="w-full p-2 flex flex-col items-center gap-5">
+  <% services.forEach(service => { %>
+    <% const id = service.id %>
+    <div data-service-name="<%= service.name %>" data-service-id="<%= id %>" id="service_<%= id %>" data-service="<%= JSON.stringify(service) %>"
+      class="services_ scrollView w-full flex flex-wrap justify-between items-center py-1 px-2 bg-zinc-50 dark:bg-black drop-shadow shadow shadow-zinc-900 dark:shadow-zinc-300 rounded">
+      <div class="mygrid w-full sm:h-full">
+        <h1 class="font-bold max-xss:text-xss text-xs sm:text-base ">Nome</h1>
+        <h1 class="font-bold text-center max-xss:text-xss text-xs sm:text-base ">Agendamentos</h1>
+        <h1 class="font-bold text-center max-xss:text-xss text-xs sm:text-base ">Ações</h1>
+      </div>
+      <div class="mygrid w-full sm:h-full">
+
+        <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto">
+          <h2 class="font-light leading-tight">
+            <%= service.name %>
+          </h2>
+        </div>
+
+        <div class="flex items-end max-xss:text-xss text-xs sm:text-base my-auto justify-center">
+          <h2 class="font-light leading-tight">
+            <%= service.agendamentos.length %>
+          </h2>
+        </div>
+        <!-- <div class="flex justify-center items-end max-xss:text-xss text-xs sm:text-base my-auto">
+          <h2 class="font-light leading-tight">
+            <%#= service.admin ? 'Sim' : 'Não' %>
+          </h2>
+        </div> -->
+        <div class="flex justify-center gap-1">
+          <button id="edit_<%= id %>" onclick="edit_service('<%= id %>')"
+            class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-zinc-600 hover:bg-zinc-500 text-white relative group">
+            <i class="fi fi-rs-gears flex text-2xl"></i>
+            <span
+              class="absolute z-1 pointer-events-none bg-zinc-600 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+              Editar</span>
+          </button>
+          <button id="delete_<%= id %>" onclick="delete_service('<%= id %>')"
+            class="px-0.5 sm:px-1 py-px flex justify-center items-center rounded-sm bg-red-600 hover:bg-red-500 text-white relative group">
+            <i class="fi fi-sr-trash-xmark flex text-2xl"></i>
+            <span
+              class="absolute z-1 pointer-events-none bg-red-500 text-white rounded-sm opacity-0 group-hover:opacity-100 translate-y-0 group-hover:-translate-y-full duration-400 transition-all transform px-1">
+              Excluir</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+    <% }) %>
+</div>
+<script>
+  async function delete_service(id_service) {
+    let confirm = await showConfirm('Tem certeza que deseja deletar este serviço, sera excluido todos os agendamentos salvos referentes a ele', { type: 'error', btn_yes: 'Deletar', btn_no: 'Cancelar' })
+    if (!confirm) {
+      return
+    }
+
+    let req = await requestPost('/v1/delete_service', { id_service })
+    console.log('req: ', req)
+    if (req?.success) {
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000);
+      aToast(req.message, {
+        type: 'success'
+      })
+      return
+    }
+    aToast(req.message, {
+      type: 'error'
+    })
+  }
+
+  async function edit_service(id) {
+
+    let req = await requestPost('/v1/get_service', { id })
+    if (req?.success) {
+      $('#save_service').data('id_service', id)
+      const service = req.service
+      console.log('service: ', service)
+      let pros_ = document.querySelectorAll('.profissionais_check')
+      pros_.forEach(element => {
+        let id = element.id
+        console.log('id:', id)
+        service.profissionais.forEach(array => {
+          // console.log(array)
+          const array_id = array.id + ''
+          console.log(array_id === id.split('-')[0], array_id, id.split('-')[0])
+          if (array_id === id.split('-')[0]) {
+            $(element).prop('checked', true)
+          }
+        });
+        console.log()
+      });
+      $('#service_input-name').val(service.name);
+      $('#service_input-time').val(service.time);
+      $('#service_input-value').val(valorFormat_real(service.value));
+
+      toggleAddService(false)
+      return
+    }
+    aToast(req.message, {
+      type: 'error'
+    })
+  }
+</script>
